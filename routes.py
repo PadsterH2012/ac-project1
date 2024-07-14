@@ -1,4 +1,4 @@
-from models import User, db
+from models import User, Project, db
 from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
@@ -159,3 +159,43 @@ def init_app(app):
             flash('Agent settings updated successfully!', 'success')
             return redirect(url_for('agent_settings'))
         return render_template("agent_settings.html", settings=current_user.agent_settings)
+
+    @app.route("/projects")
+    @login_required
+    def projects():
+        user_projects = Project.query.filter_by(user_id=current_user.id).all()
+        return render_template("projects.html", projects=user_projects)
+
+    @app.route("/projects/create", methods=["GET", "POST"])
+    @login_required
+    def create_project():
+        if request.method == "POST":
+            title = request.form.get('title')
+            description = request.form.get('description')
+            new_project = Project(title=title, description=description, user_id=current_user.id)
+            db.session.add(new_project)
+            db.session.commit()
+            flash('Project created successfully!', 'success')
+            return redirect(url_for('projects'))
+        return render_template("create_project.html")
+
+    @app.route("/projects/<int:project_id>/delete", methods=["POST"])
+    @login_required
+    def delete_project(project_id):
+        project = Project.query.get_or_404(project_id)
+        if project.user_id != current_user.id:
+            flash('You do not have permission to delete this project.', 'error')
+            return redirect(url_for('projects'))
+        db.session.delete(project)
+        db.session.commit()
+        flash('Project deleted successfully!', 'success')
+        return redirect(url_for('projects'))
+
+    @app.route("/projects/<int:project_id>/continue")
+    @login_required
+    def continue_project(project_id):
+        project = Project.query.get_or_404(project_id)
+        if project.user_id != current_user.id:
+            flash('You do not have permission to access this project.', 'error')
+            return redirect(url_for('projects'))
+        return render_template("continue_project.html", project=project)

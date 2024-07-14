@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -13,6 +14,7 @@ class User(UserMixin, db.Model):
     oauth_id = db.Column(db.String(120), nullable=True)
     provider_settings = db.Column(db.JSON, nullable=True)
     agent_settings = db.Column(db.JSON, nullable=True)
+    projects = db.relationship('Project', backref='user', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -24,4 +26,24 @@ class User(UserMixin, db.Model):
         return {
             'id': self.id,
             'username': self.username
+        }
+
+class Project(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Project('{self.title}')"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
         }
