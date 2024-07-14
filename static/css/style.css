@@ -35,9 +35,36 @@ nav ul li a {
 
 main {
     flex: 1;
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar h2 {
+    margin-top: 0;
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.sidebar button:hover {
+    background-color: #e9ecef;
+}
+
+.dashboard-content {
+    flex: 1;
     padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
 }
 
 footer {
@@ -128,4 +155,8 @@ button:hover {
 .alert-error {
     background-color: #f8d7da;
     color: #721c24;
+}
+
+.ml-4 {
+    margin-left: 1rem;
 }
