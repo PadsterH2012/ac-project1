@@ -12,13 +12,10 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script src="{{ url_for('static', filename='js/Sidebar.js') }}" type="text/babel"></script>
-    <script type="text/babel">
+    <script src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+    <script>
         ReactDOM.render(
-            <Sidebar />,
+            React.createElement(Sidebar),
             document.getElementById('sidebar-root')
         );
     </script>
