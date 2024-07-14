@@ -8,10 +8,12 @@ from models import User, Project, Agent, Provider, db
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
 
-def init_oauth(app):
-    oauth.init_app(app)
+google = None
+facebook = None
 
+def init_oauth(app):
     global google, facebook
+    oauth.init_app(app)
 
     if 'google' not in oauth.remote_apps:
         google = oauth.remote_app(
@@ -40,56 +42,55 @@ def init_oauth(app):
             authorize_url='https://www.facebook.com/dialog/oauth'
         )
 
-    @routes.route('/oauth-login/<provider>')
-    def oauth_login(provider):
-        if provider == 'google':
-            return google.authorize(callback=url_for('oauth_callback', provider=provider, _external=True))
-        elif provider == 'facebook':
-            return facebook.authorize(callback=url_for('oauth_callback', provider=provider, _external=True))
-        else:
-            flash('Unsupported OAuth provider', 'error')
-            return redirect(url_for('index'))
+@routes.route('/oauth-login/<provider>')
+def oauth_login(provider):
+    if provider == 'google':
+        return google.authorize(callback=url_for('routes.oauth_callback', provider=provider, _external=True))
+    elif provider == 'facebook':
+        return facebook.authorize(callback=url_for('routes.oauth_callback', provider=provider, _external=True))
+    else:
+        flash('Unsupported OAuth provider', 'error')
+        return redirect(url_for('routes.index'))
 
+@routes.route('/oauth-callback/<provider>')
+def oauth_callback(provider):
+    if provider == 'google':
+        resp = google.authorized_response()
+        if resp is None or resp.get('access_token') is None:
+            flash('Access denied: reason={} error={}'.format(
+                request.args['error_reason'],
+                request.args['error_description']
+            ), 'error')
+            return redirect(url_for('routes.index'))
+        session['google_token'] = (resp['access_token'], '')
+        me = google.get('userinfo')
+        user_email = me.data['email']
+        user_id = me.data['id']
+    elif provider == 'facebook':
+        resp = facebook.authorized_response()
+        if resp is None or 'access_token' not in resp:
+            flash('Access denied: reason={} error={}'.format(
+                request.args['error_reason'],
+                request.args['error_description']
+            ), 'error')
+            return redirect(url_for('routes.index'))
+        session['facebook_token'] = (resp['access_token'], '')
+        me = facebook.get('/me?fields=id,email')
+        user_email = me.data['email']
+        user_id = me.data['id']
+    else:
+        flash('Unsupported OAuth provider', 'error')
+        return redirect(url_for('routes.index'))
 
-    @routes.route('/oauth-callback/<provider>')
-    def oauth_callback(provider):
-        if provider == 'google':
-            resp = google.authorized_response()
-            if resp is None or resp.get('access_token') is None:
-                flash('Access denied: reason={} error={}'.format(
-                    request.args['error_reason'],
-                    request.args['error_description']
-                ), 'error')
-                return redirect(url_for('index'))
-            session['google_token'] = (resp['access_token'], '')
-            me = google.get('userinfo')
-            user_email = me.data['email']
-            user_id = me.data['id']
-        elif provider == 'facebook':
-            resp = facebook.authorized_response()
-            if resp is None or 'access_token' not in resp:
-                flash('Access denied: reason={} error={}'.format(
-                    request.args['error_reason'],
-                    request.args['error_description']
-                ), 'error')
-                return redirect(url_for('index'))
-            session['facebook_token'] = (resp['access_token'], '')
-            me = facebook.get('/me?fields=id,email')
-            user_email = me.data['email']
-            user_id = me.data['id']
-        else:
-            flash('Unsupported OAuth provider', 'error')
-            return redirect(url_for('index'))
+    user = User.query.filter_by(email=user_email).first()
+    if user is None:
+        user = User(username=user_email.split('@')[0], email=user_email, oauth_provider=provider, oauth_id=user_id)
+        db.session.add(user)
+        db.session.commit()
 
-        user = User.query.filter_by(email=user_email).first()
-        if user is None:
-            user = User(username=user_email.split('@')[0], email=user_email, oauth_provider=provider, oauth_id=user_id)
-            db.session.add(user)
-            db.session.commit()
-
-        session['user_id'] = user.id
-        flash('Logged in successfully.', 'success')
-        return redirect(url_for('index'))
+    session['user_id'] = user.id
+    flash('Logged in successfully.', 'success')
+    return redirect(url_for('routes.index'))
     @routes.route("/", methods=["GET", "POST"])
     def index():
         if current_user.is_authenticated:
@@ -337,3 +338,7 @@ def init_oauth(app):
 def init_app(app):
     init_oauth(app)
     app.register_blueprint(routes)
+
+    # Register all route handlers
+    from . import route_handlers
+    route_handlers.register_routes(routes)
