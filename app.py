@@ -2,8 +2,10 @@ from flask import Flask
 from models import db
 import routes
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 login_manager = LoginManager()
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
@@ -17,14 +19,18 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'index'
-
-    with app.app_context():
-        db.create_all()  # This will create all tables based on current models
+    migrate.init_app(app, db)
 
     # Register routes
     routes.init_app(app)
 
     return app
+
+@app.cli.command("db_migrate")
+def db_migrate():
+    with app.app_context():
+        from migrations import add_provider_id_to_agent
+        add_provider_id_to_agent.upgrade()
 
 @login_manager.user_loader
 def load_user(user_id):
