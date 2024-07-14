@@ -153,26 +153,53 @@ button:hover {
 .ml-4 {
     margin-left: 1rem;
 }
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    transition: all 0.3s;
+}
+
+.sidebar.active {
+    margin-left: -250px;
+}
+
+main {
+    transition: all 0.3s;
+}
+
+main.active {
+    margin-left: 0;
+}
+
 @media (max-width: 767.98px) {
     .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        z-index: 100;
-        padding: 48px 0 0;
-        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-        transition: all 0.3s;
-        transform: translateX(-100%);
+        margin-left: -250px;
     }
-
-    .sidebar.show {
-        transform: translateX(0);
+    .sidebar.active {
+        margin-left: 0;
     }
-
+    main {
+        margin-left: 0;
+    }
+    main.active {
+        margin-left: 250px;
+    }
     #sidebarToggle {
-        position: absolute;
+        display: block;
+        position: fixed;
         top: 0.5rem;
-        right: 0.5rem;
+        left: 0.5rem;
+        z-index: 101;
+    }
+}
+
+@media (min-width: 768px) {
+    #sidebarToggle {
+        display: none;
     }
 }
