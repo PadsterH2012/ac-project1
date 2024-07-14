@@ -2,6 +2,7 @@ from models import User, db
 from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
+from flask_login import login_required, current_user
 
 oauth = OAuth()
 
@@ -42,6 +43,8 @@ def init_app(app):
         else:
             flash('Unsupported OAuth provider', 'error')
             return redirect(url_for('index'))
+
+    app.add_url_rule('/settings', 'settings', settings, methods=['GET', 'POST'])
 
     @app.route('/oauth-callback/<provider>')
     def oauth_callback(provider):
@@ -129,3 +132,15 @@ def init_app(app):
         session.pop('user_id', None)
         flash('You have been logged out.', 'success')
         return redirect(url_for('index'))
+
+    @app.route("/settings", methods=["GET", "POST"])
+    @login_required
+    def settings():
+        if request.method == "POST":
+            email = request.form.get('email')
+            if email and email != current_user.email:
+                current_user.email = email
+                db.session.commit()
+                flash('Settings updated successfully!', 'success')
+            return redirect(url_for('settings'))
+        return render_template("settings.html")
