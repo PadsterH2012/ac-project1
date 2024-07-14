@@ -8,11 +8,6 @@ login_manager = LoginManager()
 migrate = Migrate()
 
 def create_app():
-    from models import User  # Add this import at the top of the file
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -28,6 +23,11 @@ def create_app():
 
     # Register routes
     routes.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        from models import User
+        return User.query.get(int(user_id))
 
     return app
 
