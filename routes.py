@@ -215,7 +215,8 @@ def init_app(app):
                 user_id=current_user.id,
                 provider_id=provider_id,
                 temperature=temperature,
-                system_prompt=system_prompt
+                system_prompt=system_prompt,
+                project_id=None  # Set project_id to None for agents created in settings
             )
             db.session.add(new_agent)
             db.session.commit()

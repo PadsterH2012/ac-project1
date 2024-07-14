@@ -33,12 +33,13 @@ class Agent(db.Model):
     name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)  # Changed to nullable
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=False)
     temperature = db.Column(db.Float, nullable=False, default=0.7)
     system_prompt = db.Column(db.Text, nullable=True)
 
     provider = db.relationship('Provider', backref='agents')
+    project = db.relationship('Project', backref='agents')  # Add this line
 
     def __repr__(self):
         return f"Agent('{self.name}', '{self.role}')"
