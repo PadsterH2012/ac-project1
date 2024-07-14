@@ -88,6 +88,28 @@ button:hover {
     background-color: #2d4373;
 }
 
+.oauth-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.oauth-button.google {
+    background-color: #DB4437;
+}
+
+.oauth-button.facebook {
+    background-color: #3b5998;
+}
+
+.oauth-button:hover {
+    opacity: 0.9;
+}
+
 .flashed-messages {
     margin-top: 1rem;
 }

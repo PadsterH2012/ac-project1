@@ -1,8 +1,87 @@
 from models import User, db
 from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_oauthlib.client import OAuth
+
+oauth = OAuth()
+
+google = oauth.remote_app(
+    'google',
+    consumer_key='your_google_consumer_key',
+    consumer_secret='your_google_consumer_secret',
+    request_token_params={
+        'scope': 'email'
+    },
+    base_url='https://www.googleapis.com/oauth2/v1/',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+)
+
+facebook = oauth.remote_app(
+    'facebook',
+    consumer_key='your_facebook_app_id',
+    consumer_secret='your_facebook_app_secret',
+    request_token_params={'scope': 'email'},
+    base_url='https://graph.facebook.com',
+    request_token_url=None,
+    access_token_url='/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth'
+)
 
 def init_app(app):
+    oauth.init_app(app)
+
+    @app.route('/oauth-login/<provider>')
+    def oauth_login(provider):
+        if provider == 'google':
+            return google.authorize(callback=url_for('oauth_callback', provider=provider, _external=True))
+        elif provider == 'facebook':
+            return facebook.authorize(callback=url_for('oauth_callback', provider=provider, _external=True))
+        else:
+            flash('Unsupported OAuth provider', 'error')
+            return redirect(url_for('index'))
+
+    @app.route('/oauth-callback/<provider>')
+    def oauth_callback(provider):
+        if provider == 'google':
+            resp = google.authorized_response()
+            if resp is None or resp.get('access_token') is None:
+                flash('Access denied: reason={} error={}'.format(
+                    request.args['error_reason'],
+                    request.args['error_description']
+                ), 'error')
+                return redirect(url_for('index'))
+            session['google_token'] = (resp['access_token'], '')
+            me = google.get('userinfo')
+            user_email = me.data['email']
+            user_id = me.data['id']
+        elif provider == 'facebook':
+            resp = facebook.authorized_response()
+            if resp is None or 'access_token' not in resp:
+                flash('Access denied: reason={} error={}'.format(
+                    request.args['error_reason'],
+                    request.args['error_description']
+                ), 'error')
+                return redirect(url_for('index'))
+            session['facebook_token'] = (resp['access_token'], '')
+            me = facebook.get('/me?fields=id,email')
+            user_email = me.data['email']
+            user_id = me.data['id']
+        else:
+            flash('Unsupported OAuth provider', 'error')
+            return redirect(url_for('index'))
+
+        user = User.query.filter_by(email=user_email).first()
+        if user is None:
+            user = User(username=user_email.split('@')[0], email=user_email, oauth_provider=provider, oauth_id=user_id)
+            db.session.add(user)
+            db.session.commit()
+
+        session['user_id'] = user.id
+        flash('Logged in successfully.', 'success')
+        return redirect(url_for('index'))
     @app.route("/", methods=["GET", "POST"])
     def index():
         if 'user_id' in session:
@@ -15,12 +94,13 @@ def init_app(app):
     def register():
         if request.method == "POST":
             username = request.form.get('username')
+            email = request.form.get('email')
             password = request.form.get('password')
-            existing_user = User.query.filter_by(username=username).first()
+            existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
             if existing_user:
-                flash('Username already exists.', 'error')
+                flash('Username or email already exists.', 'error')
             else:
-                new_user = User(username=username, password=generate_password_hash(password))
+                new_user = User(username=username, email=email, password=generate_password_hash(password))
                 db.session.add(new_user)
                 db.session.commit()
                 flash('Registered successfully. Please log in.', 'success')

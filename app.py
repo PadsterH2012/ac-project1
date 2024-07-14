@@ -7,6 +7,10 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "your_secret_key_here"  # Replace with a real secret key
+    app.config["GOOGLE_ID"] = "your_google_client_id"
+    app.config["GOOGLE_SECRET"] = "your_google_client_secret"
+    app.config["FACEBOOK_APP_ID"] = "your_facebook_app_id"
+    app.config["FACEBOOK_APP_SECRET"] = "your_facebook_app_secret"
     db.init_app(app)
 
     with app.app_context():
