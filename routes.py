@@ -133,14 +133,29 @@ def init_app(app):
         flash('You have been logged out.', 'success')
         return redirect(url_for('index'))
 
-    @app.route("/settings", methods=["GET", "POST"])
+    @app.route("/settings", methods=["GET"])
     @login_required
     def settings():
-        if request.method == "POST":
-            email = request.form.get('email')
-            if email and email != current_user.email:
-                current_user.email = email
-                db.session.commit()
-                flash('Settings updated successfully!', 'success')
-            return redirect(url_for('settings'))
         return render_template("settings.html")
+
+    @app.route("/settings/provider", methods=["GET", "POST"])
+    @login_required
+    def provider_settings():
+        if request.method == "POST":
+            provider_settings = request.form.to_dict()
+            current_user.provider_settings = provider_settings
+            db.session.commit()
+            flash('Provider settings updated successfully!', 'success')
+            return redirect(url_for('provider_settings'))
+        return render_template("provider_settings.html", settings=current_user.provider_settings)
+
+    @app.route("/settings/agent", methods=["GET", "POST"])
+    @login_required
+    def agent_settings():
+        if request.method == "POST":
+            agent_settings = request.form.to_dict()
+            current_user.agent_settings = agent_settings
+            db.session.commit()
+            flash('Agent settings updated successfully!', 'success')
+            return redirect(url_for('agent_settings'))
+        return render_template("agent_settings.html", settings=current_user.agent_settings)
