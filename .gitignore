@@ -1,7 +1,7 @@
 .aider*
 venv*
 users.db
-__pycache__
+__pycache__*
 pandoc-3.2.1-1-amd64/
 node_modules/
 static/js/bundle.js
