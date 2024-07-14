@@ -1,7 +1,7 @@
-# AC-Project1: Flask User Management System
+# AC-Project1: Idea Incubator
 
 ## Description
-AC-Project1 is a robust Flask-based web application for user management. It provides essential functionality for user authentication, registration, and data retrieval, all within a clean and intuitive interface.
+AC-Project1 is a robust Flask-based web application called Idea Incubator. It provides essential functionality for user management, including user authentication, registration, and data retrieval, all within a clean and intuitive interface.
 
 ## Features
 - User registration with username, email, and password
