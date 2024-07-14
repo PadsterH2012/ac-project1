@@ -1,4 +1,4 @@
-from models import User, Project, Agent, db
+from models import User, Project, Agent, Provider, db
 from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
