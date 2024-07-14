@@ -4,8 +4,9 @@
 AC-Project1 is a robust Flask-based web application for user management. It provides essential functionality for user authentication, registration, and data retrieval, all within a clean and intuitive interface.
 
 ## Features
-- User registration with username and password
+- User registration with username, email, and password
 - Secure user login and session management
+- OAuth login support for Google and Facebook
 - User dashboard for logged-in users
 - User logout functionality
 - User data retrieval API endpoint
@@ -58,6 +59,8 @@ AC-Project1 is a robust Flask-based web application for user management. It prov
 - Passwords are hashed before storing in the database
 - User sessions are managed securely
 - CSRF protection is enabled by default in Flask
+- OAuth integration for secure third-party authentication
+- Email validation during registration
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -75,3 +78,5 @@ This project is open source and available under the [MIT License](LICENSE).
 - Flask and its extensions
 - SQLAlchemy for database ORM
 - Werkzeug for password hashing
+- Flask-OAuthlib for OAuth integration
+- Google and Facebook for OAuth services
