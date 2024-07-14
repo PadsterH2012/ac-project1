@@ -53,7 +53,6 @@ AC-Project1 is a robust Flask-based web application called Idea Incubator. It pr
   - `dashboard.html`: User dashboard page
 - `static/`: Static files
   - `css/style.css`: Custom styles for the application
-  - `js/main.js`: JavaScript file for potential future enhancements
 
 ## Security Features
 - Passwords are hashed before storing in the database
@@ -80,3 +79,4 @@ This project is open source and available under the [MIT License](LICENSE).
 - Werkzeug for password hashing
 - Flask-OAuthlib for OAuth integration
 - Google and Facebook for OAuth services
+- Bootstrap for responsive design
