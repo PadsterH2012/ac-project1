@@ -223,29 +223,29 @@ def init_app(app):
             flash('Agent added successfully!', 'success')
             return redirect(url_for('agent_settings'))
 
-        @app.route("/settings/agent/<int:agent_id>/edit", methods=["GET", "POST"])
-        @login_required
-        def edit_agent(agent_id):
-            agent = Agent.query.get_or_404(agent_id)
-            if agent.user_id != current_user.id:
-                flash('You do not have permission to edit this agent.', 'error')
-                return redirect(url_for('agent_settings'))
-
-            providers = Provider.query.filter_by(user_id=current_user.id).all()
-
-            if request.method == "POST":
-                agent.name = request.form.get('name')
-                agent.role = request.form.get('role')
-                agent.provider_id = request.form.get('provider_id')
-                agent.temperature = float(request.form.get('temperature', 0.7))
-                agent.system_prompt = request.form.get('system_prompt')
-                db.session.commit()
-                flash('Agent updated successfully!', 'success')
-                return redirect(url_for('agent_settings'))
-
-            return render_template("edit_agent.html", agent=agent, providers=providers)
-
         return render_template("agent_settings.html", providers=providers, agents=agents)
+
+    @app.route("/settings/agent/<int:agent_id>/edit", methods=["GET", "POST"])
+    @login_required
+    def edit_agent(agent_id):
+        agent = Agent.query.get_or_404(agent_id)
+        if agent.user_id != current_user.id:
+            flash('You do not have permission to edit this agent.', 'error')
+            return redirect(url_for('agent_settings'))
+
+        providers = Provider.query.filter_by(user_id=current_user.id).all()
+
+        if request.method == "POST":
+            agent.name = request.form.get('name')
+            agent.role = request.form.get('role')
+            agent.provider_id = request.form.get('provider_id')
+            agent.temperature = float(request.form.get('temperature', 0.7))
+            agent.system_prompt = request.form.get('system_prompt')
+            db.session.commit()
+            flash('Agent updated successfully!', 'success')
+            return redirect(url_for('agent_settings'))
+
+        return render_template("edit_agent.html", agent=agent, providers=providers)
 
     @app.route("/projects")
     @login_required
