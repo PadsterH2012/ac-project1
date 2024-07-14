@@ -1,4 +1,7 @@
-from flask import Blueprint
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
+from flask_login import login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash
+from models import User, Project, Agent, Provider, db
 from flask_oauthlib.client import OAuth
 
 routes = Blueprint('routes', __name__)
@@ -285,5 +288,6 @@ def init_app(app):
     init_oauth(app)
     app.register_blueprint(routes)
 
-    # Import route handlers
-    import route_handlers
+    # Import and register route handlers
+    from . import route_handlers
+    route_handlers.register_routes(routes)
