@@ -8,7 +8,7 @@
         <h3>Register</h3>
         <form method="POST" action="{{ url_for('register') }}">
             <input type="text" name="username" placeholder="Username" required>
-            <input type="email" name="email" placeholder="Email" required>
+            <input type="email" name="email" placeholder="Email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address">
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Register</button>
         </form>
