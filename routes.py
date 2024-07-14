@@ -1,5 +1,6 @@
 from app import app
 from models import User
+from flask import jsonify
 
 @app.route("/users", methods=["GET"])
 def get_users():
