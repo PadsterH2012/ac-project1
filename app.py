@@ -19,7 +19,7 @@ def create_app():
     login_manager.login_view = 'index'
 
     with app.app_context():
-        db.create_all()
+        db.create_all()  # This will create all tables based on current models
 
     # Register routes
     routes.init_app(app)
