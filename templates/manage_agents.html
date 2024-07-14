@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Manage AI Agents for {{ project.title }}</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="agent_name">Agent Name:</label>
+        <input type="text" class="form-control" id="agent_name" name="agent_name" required>
+    </div>
+    <div class="form-group">
+        <label for="agent_role">Agent Role:</label>
+        <select class="form-control" id="agent_role" name="agent_role" required>
+            <option value="Project Planner">AI Agent Project Planner</option>
+            <option value="Project Writer">AI Agent Project Writer</option>
+            <option value="Architect">AI Agent Architect</option>
+            <option value="Database SME">AI Agent Database SME</option>
+            <option value="UX Design SME">AI Agent UX Design SME</option>
+            <option value="Coding SME">AI Agent Coding SME</option>
+            <option value="Coding Developer">AI Agent Coding Developer</option>
+            <option value="Test Developer">AI Agent Test Developer</option>
+            <option value="Code Tester">AI Agent Code Tester</option>
+            <option value="Web Researcher">AI Agent Web Researcher</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Agent</button>
+</form>
+
+<h2>Current Agents</h2>
+<ul class="list-group mt-3">
+    {% for agent in project.agents %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ agent.name }} ({{ agent.role }})
+        <form action="{{ url_for('delete_agent', project_id=project.id, agent_id=agent.id) }}" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this agent?')">Delete</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('continue_project', project_id=project.id) }}" class="btn btn-secondary mt-3">Back to Project</a>
+{% endblock %}

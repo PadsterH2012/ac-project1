@@ -1,4 +1,4 @@
-from models import User, Project, db
+from models import User, Project, Agent, db
 from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
@@ -199,3 +199,34 @@ def init_app(app):
             flash('You do not have permission to access this project.', 'error')
             return redirect(url_for('projects'))
         return render_template("continue_project.html", project=project)
+
+    @app.route("/projects/<int:project_id>/manage_agents", methods=["GET", "POST"])
+    @login_required
+    def manage_agents(project_id):
+        project = Project.query.get_or_404(project_id)
+        if project.user_id != current_user.id:
+            flash('You do not have permission to access this project.', 'error')
+            return redirect(url_for('projects'))
+    
+        if request.method == "POST":
+            agent_name = request.form.get('agent_name')
+            agent_role = request.form.get('agent_role')
+            new_agent = Agent(name=agent_name, role=agent_role, user_id=current_user.id, project_id=project.id)
+            db.session.add(new_agent)
+            db.session.commit()
+            flash('Agent added successfully!', 'success')
+            return redirect(url_for('manage_agents', project_id=project.id))
+    
+        return render_template("manage_agents.html", project=project)
+
+    @app.route("/projects/<int:project_id>/agents/<int:agent_id>/delete", methods=["POST"])
+    @login_required
+    def delete_agent(project_id, agent_id):
+        agent = Agent.query.get_or_404(agent_id)
+        if agent.user_id != current_user.id:
+            flash('You do not have permission to delete this agent.', 'error')
+            return redirect(url_for('manage_agents', project_id=project_id))
+        db.session.delete(agent)
+        db.session.commit()
+        flash('Agent deleted successfully!', 'success')
+        return redirect(url_for('manage_agents', project_id=project_id))

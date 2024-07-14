@@ -15,6 +15,24 @@ class User(UserMixin, db.Model):
     provider_settings = db.Column(db.JSON, nullable=True)
     agent_settings = db.Column(db.JSON, nullable=True)
     projects = db.relationship('Project', backref='user', lazy=True)
+    agents = db.relationship('Agent', backref='user', lazy=True)
+
+class Agent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(50), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Agent('{self.name}', '{self.role}')"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'role': self.role
+        }
 
     def __repr__(self):
         return f"User('{self.username}')"
@@ -35,6 +53,7 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    agents = db.relationship('Agent', backref='project', lazy=True)
 
     def __repr__(self):
         return f"Project('{self.title}')"
