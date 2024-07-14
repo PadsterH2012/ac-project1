@@ -12,10 +12,21 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(120), nullable=True)
     oauth_provider = db.Column(db.String(20), nullable=True)
     oauth_id = db.Column(db.String(120), nullable=True)
-    provider_settings = db.Column(db.JSON, nullable=True)
     agent_settings = db.Column(db.JSON, nullable=True)
     projects = db.relationship('Project', backref='user', lazy=True)
     agents = db.relationship('Agent', backref='user', lazy=True)
+    providers = db.relationship('Provider', backref='user', lazy=True)
+
+class Provider(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    provider_type = db.Column(db.String(20), nullable=False)
+    api_key = db.Column(db.String(120), nullable=False)
+    model = db.Column(db.String(50), nullable=False)
+    url = db.Column(db.String(200), nullable=True)
+
+    def __repr__(self):
+        return f"Provider('{self.provider_type}', '{self.model}')"
 
 class Agent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
