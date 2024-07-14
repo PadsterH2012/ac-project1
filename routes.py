@@ -289,5 +289,5 @@ def init_app(app):
     app.register_blueprint(routes)
 
     # Import and register route handlers
-    from . import route_handlers
+    import route_handlers
     route_handlers.register_routes(routes)

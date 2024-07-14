@@ -2,7 +2,12 @@ from flask import render_template, request, flash, redirect, url_for, jsonify, s
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, Project, Agent, Provider, db
-from routes import routes, google, facebook
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
+from flask_login import login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash
+from models import User, Project, Agent, Provider, db
+
+routes = Blueprint('routes', __name__)
 
 @routes.route("/", methods=["GET", "POST"])
 def index():
