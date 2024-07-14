@@ -39,7 +39,10 @@
     <div class="container-fluid flex-grow-1">
         <div class="row h-100">
             {% if current_user.is_authenticated %}
-                <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+                <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                    <button id="sidebarToggle" class="btn btn-link d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
                             <li class="nav-item">
@@ -87,5 +90,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     {% block scripts %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var sidebarToggle = document.getElementById('sidebarToggle');
+            var sidebar = document.getElementById('sidebar');
+            
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+
+            // Close sidebar when clicking outside of it on mobile
+            document.addEventListener('click', function(event) {
+                var isClickInside = sidebar.contains(event.target) || sidebarToggle.contains(event.target);
+                if (!isClickInside && window.innerWidth < 768 && sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
