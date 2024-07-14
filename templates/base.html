@@ -12,6 +12,12 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
+                {% if 'user_id' not in session %}
+                    <li><a href="{{ url_for('index') }}#login">Login</a></li>
+                    <li><a href="{{ url_for('index') }}#register">Register</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% endif %}
             </ul>
         </nav>
     </header>

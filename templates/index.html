@@ -7,7 +7,7 @@
     <p>Please register or login to access the application.</p>
 
     <div class="auth-forms">
-        <div class="login-form">
+        <div id="login" class="login-form">
             <h3>Login</h3>
             <form method="POST" action="{{ url_for('index') }}">
                 <input type="hidden" name="login" value="1">
@@ -17,7 +17,7 @@
             </form>
         </div>
 
-        <div class="register-form">
+        <div id="register" class="register-form">
             <h3>Register</h3>
             <form method="POST" action="{{ url_for('index') }}">
                 <input type="hidden" name="register" value="1">
