@@ -13,6 +13,8 @@ AC-Project1 is a robust Flask-based web application called Idea Incubator. It pr
 - User data retrieval API endpoint
 - SQLite database integration for data persistence
 - Responsive design with custom CSS styling
+- AI Agent management system
+- Provider settings for AI services
 
 ## Installation
 1. Clone the repository:
@@ -39,7 +41,14 @@ AC-Project1 is a robust Flask-based web application called Idea Incubator. It pr
    ```
 2. Open a web browser and navigate to `http://localhost:5000`
 3. Register a new account or log in with existing credentials
-4. Explore the dashboard and logout functionality
+4. Explore the dashboard, projects, and AI agent management features
+
+## Key Features
+- User authentication and registration
+- Project management
+- AI Agent creation and management
+- Provider settings for AI services (e.g., OpenAI, Ollama)
+- Agent role selection and customization
 
 ## API Endpoints
 - GET `/users`: Retrieves a list of all users (username and ID)
@@ -47,11 +56,15 @@ AC-Project1 is a robust Flask-based web application called Idea Incubator. It pr
 ## Project Structure
 - `app.py`: Main application file, sets up Flask and database
 - `routes.py`: Contains all route definitions and view functions
-- `models.py`: Defines database models (User)
+- `models.py`: Defines database models (User, Project, Agent, Provider)
 - `templates/`: HTML templates for rendering pages
   - `base.html`: Base template with common structure
   - `index.html`: Home page with login and registration forms
   - `dashboard.html`: User dashboard page
+  - `projects.html`: Project management page
+  - `agent_settings.html`: AI Agent management page
+  - `provider_settings.html`: Provider settings page
+  - `edit_agent.html`: Edit AI Agent page
 - `static/`: Static files
   - `css/style.css`: Custom styles for the application
 
