@@ -26,13 +26,15 @@ def create_app():
 
     return app
 
-@app.cli.command("db_migrate")
-def db_migrate():
-    with app.app_context():
-        from migrations import add_provider_id_to_agent
-        add_provider_id_to_agent.upgrade()
+    @app.cli.command("db_migrate")
+    def db_migrate():
+        with app.app_context():
+            from migrations import add_provider_id_to_agent
+            add_provider_id_to_agent.upgrade()
 
-@login_manager.user_loader
-def load_user(user_id):
-    from models import User
-    return User.query.get(int(user_id))
+    @login_manager.user_loader
+    def load_user(user_id):
+        from models import User
+        return User.query.get(int(user_id))
+
+    return app
