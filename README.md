@@ -8,6 +8,7 @@ AC-Project1 is a robust Flask-based web application called Idea Incubator. It pr
 - Secure user login and session management
 - OAuth login support for Google and Facebook
 - User dashboard for logged-in users
+- User settings page for updating profile information
 - User logout functionality
 - User data retrieval API endpoint
 - SQLite database integration for data persistence

@@ -2,7 +2,12 @@
 
 {% block content %}
 <h1>User Settings</h1>
-<form method="POST">
+<ul>
+    <li><a href="{{ url_for('provider_settings') }}">Provider Settings</a></li>
+    <li><a href="{{ url_for('agent_settings') }}">Agent Settings</a></li>
+</ul>
+<h2>General Settings</h2>
+<form method="POST" action="{{ url_for('settings') }}">
     <div class="form-group">
         <label for="username">Username:</label>
         <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" readonly>

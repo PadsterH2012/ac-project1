@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Provider</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="provider_type">Provider Type:</label>
+        <input type="text" class="form-control" id="provider_type" name="provider_type" value="{{ provider.provider_type }}" readonly>
+    </div>
+    <div class="form-group">
+        <label for="api_key">API Key:</label>
+        <input type="text" class="form-control" id="api_key" name="api_key" value="{{ provider.api_key }}" required>
+    </div>
+    <div class="form-group">
+        <label for="model">Model:</label>
+        <input type="text" class="form-control" id="model" name="model" value="{{ provider.model }}" required>
+    </div>
+    {% if provider.provider_type == 'ollama' %}
+    <div class="form-group">
+        <label for="url">URL:</label>
+        <input type="url" class="form-control" id="url" name="url" value="{{ provider.url }}" required>
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Update Provider</button>
+</form>
+<a href="{{ url_for('provider_settings') }}" class="btn btn-secondary mt-3">Back to Provider Settings</a>
+{% endblock %}
