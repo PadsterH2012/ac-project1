@@ -1,10 +1,12 @@
 from models import User, db
-from flask import jsonify, render_template, request, flash, redirect, url_for
+from flask import jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
 def init_app(app):
     @app.route("/", methods=["GET", "POST"])
     def index():
+        if 'user_id' in session:
+            return render_template("dashboard.html")
         if request.method == "POST":
             if "login" in request.form:
                 return login()
@@ -22,6 +24,7 @@ def init_app(app):
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            session['user_id'] = user.id
             flash('Logged in successfully.', 'success')
             return redirect(url_for('index'))
         else:
@@ -39,4 +42,10 @@ def init_app(app):
             db.session.add(new_user)
             db.session.commit()
             flash('Registered successfully. Please log in.', 'success')
+        return redirect(url_for('index'))
+
+    @app.route("/logout")
+    def logout():
+        session.pop('user_id', None)
+        flash('You have been logged out.', 'success')
         return redirect(url_for('index'))
