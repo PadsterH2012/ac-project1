@@ -199,13 +199,30 @@ def init_app(app):
     @app.route("/settings/agent", methods=["GET", "POST"])
     @login_required
     def agent_settings():
+        providers = Provider.query.filter_by(user_id=current_user.id).all()
+        agents = Agent.query.filter_by(user_id=current_user.id).all()
+
         if request.method == "POST":
-            agent_settings = request.form.to_dict()
-            current_user.agent_settings = agent_settings
+            name = request.form.get('name')
+            role = request.form.get('role')
+            provider_id = request.form.get('provider_id')
+            temperature = float(request.form.get('temperature', 0.7))
+            system_prompt = request.form.get('system_prompt')
+
+            new_agent = Agent(
+                name=name,
+                role=role,
+                user_id=current_user.id,
+                provider_id=provider_id,
+                temperature=temperature,
+                system_prompt=system_prompt
+            )
+            db.session.add(new_agent)
             db.session.commit()
-            flash('Agent settings updated successfully!', 'success')
+            flash('Agent added successfully!', 'success')
             return redirect(url_for('agent_settings'))
-        return render_template("agent_settings.html", settings=current_user.agent_settings)
+
+        return render_template("agent_settings.html", providers=providers, agents=agents)
 
     @app.route("/projects")
     @login_required
@@ -277,3 +294,14 @@ def init_app(app):
         db.session.commit()
         flash('Agent deleted successfully!', 'success')
         return redirect(url_for('manage_agents', project_id=project_id))
+    @app.route("/settings/agent/<int:agent_id>/delete", methods=["POST"])
+    @login_required
+    def delete_agent(agent_id):
+        agent = Agent.query.get_or_404(agent_id)
+        if agent.user_id != current_user.id:
+            flash('You do not have permission to delete this agent.', 'error')
+            return redirect(url_for('agent_settings'))
+        db.session.delete(agent)
+        db.session.commit()
+        flash('Agent deleted successfully!', 'success')
+        return redirect(url_for('agent_settings'))

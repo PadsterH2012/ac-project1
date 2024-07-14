@@ -34,6 +34,11 @@ class Agent(db.Model):
     role = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
+    provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=False)
+    temperature = db.Column(db.Float, nullable=False, default=0.7)
+    system_prompt = db.Column(db.Text, nullable=True)
+
+    provider = db.relationship('Provider', backref='agents')
 
     def __repr__(self):
         return f"Agent('{self.name}', '{self.role}')"
@@ -42,7 +47,10 @@ class Agent(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'role': self.role
+            'role': self.role,
+            'provider': self.provider.to_dict(),
+            'temperature': self.temperature,
+            'system_prompt': self.system_prompt
         }
 
     def __repr__(self):
