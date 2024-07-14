@@ -1,40 +1,44 @@
 from models import User, Project, Agent, Provider, db
-from flask import jsonify, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, jsonify, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
 from flask_login import login_user, login_required, logout_user, current_user
+from models import User, Project, Agent, Provider, db
 
+routes = Blueprint('routes', __name__)
 oauth = OAuth()
 
-google = oauth.remote_app(
-    'google',
-    consumer_key='your_google_consumer_key',
-    consumer_secret='your_google_consumer_secret',
-    request_token_params={
-        'scope': 'email'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-)
-
-facebook = oauth.remote_app(
-    'facebook',
-    consumer_key='your_facebook_app_id',
-    consumer_secret='your_facebook_app_secret',
-    request_token_params={'scope': 'email'},
-    base_url='https://graph.facebook.com',
-    request_token_url=None,
-    access_token_url='/oauth/access_token',
-    authorize_url='https://www.facebook.com/dialog/oauth'
-)
-
-def init_app(app):
+def init_oauth(app):
     oauth.init_app(app)
 
-    @app.route('/oauth-login/<provider>')
+    global google, facebook
+
+    google = oauth.remote_app(
+        'google',
+        consumer_key=app.config['GOOGLE_CONSUMER_KEY'],
+        consumer_secret=app.config['GOOGLE_CONSUMER_SECRET'],
+        request_token_params={
+            'scope': 'email'
+        },
+        base_url='https://www.googleapis.com/oauth2/v1/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url='https://accounts.google.com/o/oauth2/token',
+        authorize_url='https://accounts.google.com/o/oauth2/auth',
+    )
+
+    facebook = oauth.remote_app(
+        'facebook',
+        consumer_key=app.config['FACEBOOK_APP_ID'],
+        consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+        request_token_params={'scope': 'email'},
+        base_url='https://graph.facebook.com',
+        request_token_url=None,
+        access_token_url='/oauth/access_token',
+        authorize_url='https://www.facebook.com/dialog/oauth'
+    )
+
+    @routes.route('/oauth-login/<provider>')
     def oauth_login(provider):
         if provider == 'google':
             return google.authorize(callback=url_for('oauth_callback', provider=provider, _external=True))
@@ -45,7 +49,7 @@ def init_app(app):
             return redirect(url_for('index'))
 
 
-    @app.route('/oauth-callback/<provider>')
+    @routes.route('/oauth-callback/<provider>')
     def oauth_callback(provider):
         if provider == 'google':
             resp = google.authorized_response()
@@ -84,7 +88,7 @@ def init_app(app):
         session['user_id'] = user.id
         flash('Logged in successfully.', 'success')
         return redirect(url_for('index'))
-    @app.route("/", methods=["GET", "POST"])
+    @routes.route("/", methods=["GET", "POST"])
     def index():
         if current_user.is_authenticated:
             return render_template("dashboard.html")
@@ -92,7 +96,7 @@ def init_app(app):
             return login()
         return render_template("index.html")
 
-    @app.route("/register", methods=["GET", "POST"])
+    @routes.route("/register", methods=["GET", "POST"])
     def register():
         if request.method == "POST":
             username = request.form.get('username')
@@ -109,7 +113,7 @@ def init_app(app):
                 return redirect(url_for('index'))
         return render_template("register.html")
 
-    @app.route("/users", methods=["GET"])
+    @routes.route("/users", methods=["GET"])
     def get_users():
         users = User.query.all()
         return jsonify([user.to_dict() for user in users])
@@ -126,25 +130,25 @@ def init_app(app):
             flash('Invalid username or password.', 'error')
             return redirect(url_for('index'))
 
-    @app.route("/logout")
+    @routes.route("/logout")
     @login_required
     def logout():
         logout_user()
         flash('You have been logged out.', 'success')
         return redirect(url_for('index'))
 
-    @app.route("/settings", methods=["GET"])
+    @routes.route("/settings", methods=["GET"])
     @login_required
     def settings():
         return render_template("settings.html")
 
-    @app.route("/settings/provider", methods=["GET"])
+    @routes.route("/settings/provider", methods=["GET"])
     @login_required
     def provider_settings():
         providers = Provider.query.filter_by(user_id=current_user.id).all()
         return render_template("provider_settings.html", providers=providers)
 
-    @app.route("/settings/provider/add", methods=["POST"])
+    @routes.route("/settings/provider/add", methods=["POST"])
     @login_required
     def add_provider():
         provider_type = request.form.get('provider_type')
@@ -164,7 +168,7 @@ def init_app(app):
         flash('Provider added successfully!', 'success')
         return redirect(url_for('provider_settings'))
 
-    @app.route("/settings/provider/<int:provider_id>/edit", methods=["GET", "POST"])
+    @routes.route("/settings/provider/<int:provider_id>/edit", methods=["GET", "POST"])
     @login_required
     def edit_provider(provider_id):
         provider = Provider.query.get_or_404(provider_id)
@@ -183,7 +187,7 @@ def init_app(app):
 
         return render_template("edit_provider.html", provider=provider)
 
-    @app.route("/settings/provider/<int:provider_id>/delete", methods=["POST"])
+    @routes.route("/settings/provider/<int:provider_id>/delete", methods=["POST"])
     @login_required
     def delete_provider(provider_id):
         provider = Provider.query.get_or_404(provider_id)
@@ -196,7 +200,7 @@ def init_app(app):
         flash('Provider deleted successfully!', 'success')
         return redirect(url_for('provider_settings'))
 
-    @app.route("/settings/agent", methods=["GET", "POST"])
+    @routes.route("/settings/agent", methods=["GET", "POST"])
     @login_required
     def agent_settings():
         providers = Provider.query.filter_by(user_id=current_user.id).all()
@@ -225,7 +229,7 @@ def init_app(app):
 
         return render_template("agent_settings.html", providers=providers, agents=agents)
 
-    @app.route("/settings/agent/<int:agent_id>/edit", methods=["GET", "POST"])
+    @routes.route("/settings/agent/<int:agent_id>/edit", methods=["GET", "POST"])
     @login_required
     def edit_agent(agent_id):
         agent = Agent.query.get_or_404(agent_id)
@@ -247,13 +251,13 @@ def init_app(app):
 
         return render_template("edit_agent.html", agent=agent, providers=providers)
 
-    @app.route("/projects")
+    @routes.route("/projects")
     @login_required
     def projects():
         user_projects = Project.query.filter_by(user_id=current_user.id).all()
         return render_template("projects.html", projects=user_projects)
 
-    @app.route("/projects/create", methods=["GET", "POST"])
+    @routes.route("/projects/create", methods=["GET", "POST"])
     @login_required
     def create_project():
         if request.method == "POST":
@@ -266,7 +270,7 @@ def init_app(app):
             return redirect(url_for('projects'))
         return render_template("create_project.html")
 
-    @app.route("/projects/<int:project_id>/delete", methods=["POST"])
+    @routes.route("/projects/<int:project_id>/delete", methods=["POST"])
     @login_required
     def delete_project(project_id):
         project = Project.query.get_or_404(project_id)
@@ -278,7 +282,7 @@ def init_app(app):
         flash('Project deleted successfully!', 'success')
         return redirect(url_for('projects'))
 
-    @app.route("/projects/<int:project_id>/continue")
+    @routes.route("/projects/<int:project_id>/continue")
     @login_required
     def continue_project(project_id):
         project = Project.query.get_or_404(project_id)
@@ -287,7 +291,7 @@ def init_app(app):
             return redirect(url_for('projects'))
         return render_template("continue_project.html", project=project)
 
-    @app.route("/projects/<int:project_id>/manage_agents", methods=["GET", "POST"])
+    @routes.route("/projects/<int:project_id>/manage_agents", methods=["GET", "POST"])
     @login_required
     def manage_agents(project_id):
         project = Project.query.get_or_404(project_id)
@@ -306,7 +310,7 @@ def init_app(app):
     
         return render_template("manage_agents.html", project=project)
 
-    @app.route("/projects/<int:project_id>/agents/<int:agent_id>/delete", methods=["POST"])
+    @routes.route("/projects/<int:project_id>/agents/<int:agent_id>/delete", methods=["POST"])
     @login_required
     def delete_agent(project_id, agent_id):
         agent = Agent.query.get_or_404(agent_id)
@@ -317,7 +321,7 @@ def init_app(app):
         db.session.commit()
         flash('Agent deleted successfully!', 'success')
         return redirect(url_for('manage_agents', project_id=project_id))
-    @app.route("/settings/agent/<int:agent_id>/delete", methods=["POST"])
+    @routes.route("/settings/agent/<int:agent_id>/delete", methods=["POST"])
     @login_required
     def delete_agent_from_settings(agent_id):
         agent = Agent.query.get_or_404(agent_id)
@@ -328,3 +332,6 @@ def init_app(app):
         db.session.commit()
         flash('Agent deleted successfully!', 'success')
         return redirect(url_for('agent_settings'))
+def init_app(app):
+    init_oauth(app)
+    app.register_blueprint(routes)
