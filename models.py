@@ -39,7 +39,7 @@ class Agent(db.Model):
     system_prompt = db.Column(db.Text, nullable=True)
 
     provider = db.relationship('Provider', backref='agents')
-    project = db.relationship('Project', backref='agents')  # Add this line
+    project = db.relationship('Project', back_populates='agents')
 
     def __repr__(self):
         return f"Agent('{self.name}', '{self.role}')"
@@ -73,7 +73,7 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    agents = db.relationship('Agent', backref='project', lazy=True)
+    agents = db.relationship('Agent', back_populates='project', lazy=True)
 
     def __repr__(self):
         return f"Project('{self.title}')"
