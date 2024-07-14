@@ -46,18 +46,21 @@ footer {
     text-align: center;
 }
 
-.auth-forms {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-}
-
-.login-form, .register-form {
+.auth-form {
     background-color: white;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 45%;
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+.auth-form h3 {
+    margin-top: 0;
+}
+
+.auth-form p {
+    margin-top: 1rem;
 }
 
 form {
