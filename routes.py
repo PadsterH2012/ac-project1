@@ -7,8 +7,8 @@ from flask_oauthlib.client import OAuth
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
 
-google = None
-facebook = None
+google = oauth.remote_app('google')
+facebook = oauth.remote_app('facebook')
 
 def init_oauth(app):
     global google, facebook
