@@ -296,7 +296,7 @@ def init_app(app):
         return redirect(url_for('manage_agents', project_id=project_id))
     @app.route("/settings/agent/<int:agent_id>/delete", methods=["POST"])
     @login_required
-    def delete_agent(agent_id):
+    def delete_agent_from_settings(agent_id):
         agent = Agent.query.get_or_404(agent_id)
         if agent.user_id != current_user.id:
             flash('You do not have permission to delete this agent.', 'error')
