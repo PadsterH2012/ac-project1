@@ -1,8 +1,8 @@
 from models import User, db
-from flask import jsonify, render_template, request, flash, redirect, url_for, session
+from flask import jsonify, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_oauthlib.client import OAuth
-from flask_login import login_required, current_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 oauth = OAuth()
 
@@ -86,7 +86,7 @@ def init_app(app):
         return redirect(url_for('index'))
     @app.route("/", methods=["GET", "POST"])
     def index():
-        if 'user_id' in session:
+        if current_user.is_authenticated:
             return render_template("dashboard.html")
         if request.method == "POST":
             return login()
@@ -119,7 +119,7 @@ def init_app(app):
         password = request.form.get('password')
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            session['user_id'] = user.id
+            login_user(user)
             flash('Logged in successfully.', 'success')
             return redirect(url_for('index'))
         else:
@@ -127,8 +127,9 @@ def init_app(app):
             return redirect(url_for('index'))
 
     @app.route("/logout")
+    @login_required
     def logout():
-        session.pop('user_id', None)
+        logout_user()
         flash('You have been logged out.', 'success')
         return redirect(url_for('index'))
 
