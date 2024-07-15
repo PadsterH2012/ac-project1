@@ -405,7 +405,11 @@ def chat():
             ai_response = response_data.get('response', '')
             if not ai_response and response_data.get('done_reason') == 'load':
                 return jsonify({"response": "The AI model is still loading. Please try again in a moment."}), 202
-            return jsonify({"response": ai_response})
+            return jsonify({
+                "response": ai_response,
+                "agent_name": agent.name,
+                "agent_role": agent.role
+            })
         else:
             return jsonify({"error": "Failed to get response from AI provider"}), 500
     else:

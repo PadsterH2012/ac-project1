@@ -37,7 +37,7 @@ async function sendMessage() {
         } else {
             const data = await response.json();
             // Display AI response
-            displayMessage('AI Agent', data.response);
+            displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -60,13 +60,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function displayMessage(sender, text) {
+function displayMessage(sender, text, agentName = '', agentRole = '') {
     const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', sender === 'You' ? 'user' : 'other');
 
     const avatarElement = document.createElement('img');
-    avatarElement.src = sender === 'You' ? 'https://websim.ai/avatar4.jpg' : 'https://websim.ai/ai_avatar.jpg';
+    avatarElement.src = sender === 'You' ? 'https://websim.ai/avatar4.jpg' : '/static/avatars/' + agentName.toLowerCase().replace(/\s+/g, '_') + '.jpg';
     avatarElement.alt = sender;
     avatarElement.classList.add('avatar');
 
@@ -75,7 +75,7 @@ function displayMessage(sender, text) {
     
     const senderNameElement = document.createElement('span');
     senderNameElement.classList.add('sender-name');
-    senderNameElement.textContent = sender;
+    senderNameElement.textContent = sender === 'You' ? sender : `${agentName} - ${agentRole}`;
 
     const messageTextElement = document.createElement('p');
     messageTextElement.textContent = text;
