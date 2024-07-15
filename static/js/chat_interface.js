@@ -33,11 +33,26 @@ function sendMessage() {
 
     const avatarElement = document.createElement('img');
     avatarElement.src = user.avatar;
+    avatarElement.alt = user.name;
     avatarElement.classList.add('avatar');
 
     const bubbleElement = document.createElement('div');
     bubbleElement.classList.add('bubble');
-    bubbleElement.innerHTML = `<span class="sender-name">${user.name}</span><br>${messageText}`;
+    
+    const senderNameElement = document.createElement('span');
+    senderNameElement.classList.add('sender-name');
+    senderNameElement.textContent = user.name;
+
+    const messageTextElement = document.createElement('p');
+    messageTextElement.textContent = messageText;
+
+    const timestampElement = document.createElement('span');
+    timestampElement.classList.add('timestamp');
+    timestampElement.textContent = new Date().toLocaleTimeString();
+
+    bubbleElement.appendChild(senderNameElement);
+    bubbleElement.appendChild(messageTextElement);
+    bubbleElement.appendChild(timestampElement);
 
     messageElement.appendChild(avatarElement);
     messageElement.appendChild(bubbleElement);
