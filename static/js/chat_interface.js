@@ -78,7 +78,37 @@ function openTab(event, tabName) {
 }
 
 function performAction(action) {
-    alert(`Performing action: ${action}`);
+    if (action === 'Download') {
+        // Trigger the backup process
+        fetch('/backup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                backup_projects: true,
+                backup_agents: true,
+                backup_providers: true
+            }),
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'backup.json';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the backup.');
+        });
+    } else {
+        alert(`Performing action: ${action}`);
+    }
 }
 
 function navigateVFS(path) {
