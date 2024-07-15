@@ -249,3 +249,25 @@ def edit_project(project_id):
         return redirect(url_for('routes.projects'))
     
     return render_template("edit_project.html", project=project)
+
+@routes.route("/edit_agent/<int:agent_id>", methods=["GET", "POST"])
+@login_required
+def edit_agent(agent_id):
+    agent = Agent.query.get_or_404(agent_id)
+    if agent.user_id != current_user.id:
+        flash('You do not have permission to edit this agent.', 'error')
+        return redirect(url_for('routes.agent_settings'))
+    
+    providers = Provider.query.filter_by(user_id=current_user.id).all()
+    
+    if request.method == "POST":
+        agent.name = request.form.get('name')
+        agent.role = request.form.get('role')
+        agent.provider_id = request.form.get('provider_id')
+        agent.temperature = request.form.get('temperature')
+        agent.system_prompt = request.form.get('system_prompt')
+        db.session.commit()
+        flash('Agent updated successfully!', 'success')
+        return redirect(url_for('routes.agent_settings'))
+    
+    return render_template("edit_agent.html", agent=agent, providers=providers)
