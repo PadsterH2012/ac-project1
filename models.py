@@ -53,7 +53,7 @@ class Agent(db.Model):
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=False)
     temperature = db.Column(db.Float, nullable=False, default=0.7)
     system_prompt = db.Column(db.Text, nullable=True)
-    avatar = db.Column(db.String(255), nullable=True)  # New field for avatar file path
+    avatar = db.Column(db.String(255), nullable=True)  # Stores the randomized avatar filename
 
     @staticmethod
     def get_default_system_prompt(role):

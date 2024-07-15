@@ -9,7 +9,7 @@ from datetime import datetime
 import json
 import requests
 from ollama_connection import connect_to_ollama
-from utils import save_avatar
+from utils import save_avatar, get_avatar_url
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -415,7 +415,7 @@ def chat():
                 "response": ai_response,
                 "agent_name": agent.name,
                 "agent_role": agent.role,
-                "agent_avatar": agent.avatar or 'default_agent.jpg'
+                "agent_avatar": get_avatar_url(agent.avatar)
             })
         else:
             print("Failed to get response from AI provider")  # Log error

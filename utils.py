@@ -2,7 +2,7 @@ import os
 import uuid
 from PIL import Image
 from werkzeug.utils import secure_filename
-from flask import current_app
+from flask import current_app, url_for
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -21,3 +21,7 @@ def save_avatar(file):
         
         return filename
     return None
+def get_avatar_url(filename):
+    if filename:
+        return url_for('static', filename=f'avatars/{filename}')
+    return url_for('static', filename='avatars/default_agent.jpg')
