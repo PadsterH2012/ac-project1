@@ -33,7 +33,7 @@ async function sendMessage() {
         } else {
             const data = await response.json();
             // Display AI response
-            displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
+            displayMessage('AI Agent', data.response, data.agent_name, data.agent_role, data.agent_avatar);
         }
 
         // User message is already displayed before the API call
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function displayMessage(sender, text, agentName = '', agentRole = '') {
+function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
     const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', sender === 'You' ? 'user' : 'other');
@@ -66,8 +66,8 @@ function displayMessage(sender, text, agentName = '', agentRole = '') {
     const avatarElement = document.createElement('img');
     if (sender === 'You') {
         avatarElement.src = 'https://websim.ai/avatar4.jpg';
-    } else if (agentName) {
-        avatarElement.src = data.agent_avatar;
+    } else if (agentAvatar) {
+        avatarElement.src = agentAvatar;
     } else {
         avatarElement.src = '/static/avatars/default_agent.jpg';
     }
@@ -173,29 +173,7 @@ function navigateVFS(path) {
 
 // Initialize the chat
 window.onload = function() {
-    fetch('/chat', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: "Hello, I'm ready to assist you with your project. How can I help you today?" }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Received data:', data);
-        displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        displayMessage('System', `An error occurred while initializing the chat: ${error.message}`);
-    });
+    console.log('Chat interface initialized');
 };
 
 function navigateVFS(path) {
