@@ -33,8 +33,8 @@
     <div class="form-group">
         <label for="provider_type">Provider Type:</label>
         <select class="form-control" id="provider_type" name="provider_type" required>
-            <option value="openai" {{ 'selected' if provider.provider_type == 'openai' else '' }}>OpenAI</option>
-            <option value="ollama" {{ 'selected' if provider.provider_type == 'ollama' else '' }}>Ollama</option>
+            <option value="openai" {{ 'selected' if provider.provider_type|default('') == 'openai' else '' }}>OpenAI</option>
+            <option value="ollama" {{ 'selected' if provider.provider_type|default('') == 'ollama' else '' }}>Ollama</option>
         </select>
     </div>
     <div class="form-group">
