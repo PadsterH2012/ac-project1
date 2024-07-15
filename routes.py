@@ -138,3 +138,15 @@ def create_project():
         flash('Project created successfully!', 'success')
         return redirect(url_for('routes.projects'))
     return render_template("create_project.html")
+
+@routes.route("/delete_project/<int:project_id>", methods=["POST"])
+@login_required
+def delete_project(project_id):
+    project = Project.query.get_or_404(project_id)
+    if project.user_id != current_user.id:
+        flash('You do not have permission to delete this project.', 'error')
+        return redirect(url_for('routes.projects'))
+    db.session.delete(project)
+    db.session.commit()
+    flash('Project deleted successfully!', 'success')
+    return redirect(url_for('routes.projects'))
