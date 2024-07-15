@@ -1,11 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ project.title }}</h1>
-<p>{{ project.description }}</p>
-<p>Created at: {{ project.created_at }}</p>
-<p>Last updated: {{ project.updated_at }}</p>
-<!-- Add more project-specific content and functionality here -->
-<a href="{{ url_for('manage_agents', project_id=project.id) }}" class="btn btn-primary">Manage AI Agents</a>
-<a href="{{ url_for('projects') }}" class="btn btn-secondary">Back to Projects</a>
+<div class="container">
+    <h1>{{ project.title }}</h1>
+    <p class="lead">{{ project.description }}</p>
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Created at:</strong> {{ project.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+        <div class="col-md-6">
+            <p><strong>Last updated:</strong> {{ project.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        </div>
+    </div>
+    
+    <h2>Project Progress</h2>
+    <div class="progress mb-3">
+        <div class="progress-bar" role="progressbar" style="width: {{ project.progress }}%;" aria-valuenow="{{ project.progress }}" aria-valuemin="0" aria-valuemax="100">{{ project.progress }}%</div>
+    </div>
+    
+    <form method="POST" action="{{ url_for('routes.update_project_progress', project_id=project.id) }}">
+        <div class="form-group">
+            <label for="progress">Update Progress:</label>
+            <input type="number" class="form-control" id="progress" name="progress" min="0" max="100" value="{{ project.progress }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Update Progress</button>
+    </form>
+    
+    <h2 class="mt-4">Project Actions</h2>
+    <a href="{{ url_for('routes.manage_agents', project_id=project.id) }}" class="btn btn-info">Manage AI Agents</a>
+    <a href="{{ url_for('routes.projects') }}" class="btn btn-secondary">Back to Projects</a>
+</div>
 {% endblock %}
