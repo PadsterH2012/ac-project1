@@ -14,5 +14,37 @@
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
+
+    <hr>
+
+    <h2>Backup and Restore</h2>
+    <form action="{{ url_for('routes.backup') }}" method="post">
+        <div class="form-group">
+            <label>Backup Options:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="backup_projects" id="backup_projects" checked>
+                <label class="form-check-label" for="backup_projects">Projects</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="backup_agents" id="backup_agents" checked>
+                <label class="form-check-label" for="backup_agents">Agents</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="backup_providers" id="backup_providers" checked>
+                <label class="form-check-label" for="backup_providers">Providers</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Download Backup</button>
+    </form>
+
+    <hr>
+
+    <form action="{{ url_for('routes.restore') }}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="restore_file">Restore from Backup:</label>
+            <input type="file" class="form-control-file" id="restore_file" name="restore_file" accept=".json">
+        </div>
+        <button type="submit" class="btn btn-warning">Restore</button>
+    </form>
 </div>
 {% endblock %}

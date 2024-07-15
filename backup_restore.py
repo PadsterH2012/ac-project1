@@ -1,12 +1,14 @@
 import json
 from models import db, User, Project, Agent, Provider
+from ollama_connection import connect_to_ollama
 
 def backup_data(user_id, backup_type='all'):
     data = {}
     
     user = User.query.get(user_id)
     if not user:
-        return json.dumps({}, indent=2)
+        print(f"No user found with id: {user_id}")
+        return json.dumps({'error': 'User not found'}, indent=2)
     
     data['user'] = user.to_dict()
     
@@ -14,21 +16,27 @@ def backup_data(user_id, backup_type='all'):
         projects = Project.query.filter_by(user_id=user_id).all()
         if projects:
             data['projects'] = [project.to_dict() for project in projects]
+        else:
+            print(f"No projects found for user_id: {user_id}")
     
     if backup_type in ['all', 'agents']:
         agents = Agent.query.filter_by(user_id=user_id).all()
         if agents:
             data['agents'] = [agent.to_dict() for agent in agents]
+        else:
+            print(f"No agents found for user_id: {user_id}")
     
     if backup_type in ['all', 'providers']:
         providers = Provider.query.filter_by(user_id=user_id).all()
         if providers:
             data['providers'] = [provider.to_dict() for provider in providers]
+        else:
+            print(f"No providers found for user_id: {user_id}")
     
     # Check if any data was collected beyond user data
     if len(data) == 1 and 'user' in data:
-        print("No additional data found for the specified user and backup type")
-        return json.dumps({}, indent=2)
+        print(f"No additional data found for user_id: {user_id} and backup_type: {backup_type}")
+        return json.dumps({'error': 'No data found for backup'}, indent=2)
     
     return json.dumps(data, indent=2)
 
