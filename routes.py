@@ -128,19 +128,23 @@ def backup():
     
     backup_type = ','.join(backup_options) if backup_options else 'all'
     
-    backup_data_json = backup_data(current_user.id, backup_type)
-    
-    # Create a temporary file
-    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
-        temp_file.write(backup_data_json)
-        temp_file_path = temp_file.name
-    
-    # Generate a filename for the download
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"incubator_backup_{timestamp}.json"
-    
-    # Send the file
-    return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
+    try:
+        backup_data_json = backup_data(current_user.id, backup_type)
+        
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
+            temp_file.write(backup_data_json)
+            temp_file_path = temp_file.name
+        
+        # Generate a filename for the download
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"incubator_backup_{timestamp}.json"
+        
+        # Send the file
+        return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
+    except ValueError as e:
+        flash(str(e), 'error')
+        return redirect(url_for('routes.settings'))
 
 @routes.route("/restore", methods=['POST'])
 @login_required
