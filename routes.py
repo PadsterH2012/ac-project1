@@ -381,17 +381,20 @@ def delete_agent_from_settings(agent_id):
 @login_required
 def chat():
     message = request.json.get('message')
+    print(f"Received message: {message}")  # Log received message
     
     # Get the current user's AI agent (assuming one agent per user for simplicity)
     agent = Agent.query.filter_by(user_id=current_user.id).first()
     
     if not agent:
+        print(f"No AI agent found for user {current_user.id}")  # Log error
         return jsonify({"error": "No AI agent found for the current user"}), 404
     
     # Get the provider for the agent
     provider = Provider.query.get(agent.provider_id)
     
     if not provider:
+        print(f"No provider found for agent {agent.id}")  # Log error
         return jsonify({"error": "No provider found for the AI agent"}), 404
     
     # Prepare the prompt
@@ -399,12 +402,15 @@ def chat():
     
     # Make a request to the AI provider (e.g., Ollama)
     if provider.provider_type == 'ollama':
+        print(f"Connecting to Ollama at {provider.url}")  # Log connection attempt
         response_data = connect_to_ollama(provider.url, provider.model, prompt)
         
         if response_data:
             ai_response = response_data.get('response', '')
             if not ai_response and response_data.get('done_reason') == 'load':
+                print("AI model is still loading")  # Log loading status
                 return jsonify({"response": "The AI model is still loading. Please try again in a moment."}), 202
+            print(f"Received AI response: {ai_response[:50]}...")  # Log (truncated) AI response
             return jsonify({
                 "response": ai_response,
                 "agent_name": agent.name,
@@ -412,6 +418,8 @@ def chat():
                 "agent_avatar": agent.avatar or 'default_agent.jpg'
             })
         else:
+            print("Failed to get response from AI provider")  # Log error
             return jsonify({"error": "Failed to get response from AI provider"}), 500
     else:
+        print(f"Unsupported AI provider: {provider.provider_type}")  # Log error
         return jsonify({"error": "Unsupported AI provider"}), 400

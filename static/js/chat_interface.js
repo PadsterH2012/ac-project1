@@ -177,13 +177,21 @@ window.onload = function() {
         },
         body: JSON.stringify({ message: "Hello, I'm ready to assist you with your project. How can I help you today?" }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, body: ${text}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Received data:', data);
         displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
     })
     .catch(error => {
         console.error('Error:', error);
-        displayMessage('System', 'An error occurred while initializing the chat.');
+        displayMessage('System', `An error occurred while initializing the chat: ${error.message}`);
     });
 };
 
