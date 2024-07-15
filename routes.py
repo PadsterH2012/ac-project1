@@ -385,6 +385,9 @@ def chat():
         project_id = request.json.get('project_id')
         print(f"Received message: {message}")  # Log received message
         
+        if not message or not project_id:
+            return jsonify({"error": "Missing message or project ID"}), 400
+        
         # Get the current user's AI agent
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         
