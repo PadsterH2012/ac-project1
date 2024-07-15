@@ -140,6 +140,25 @@ def add_provider():
     flash('Provider added successfully!', 'success')
     return redirect(url_for('routes.provider_settings'))
 
+@routes.route("/edit_provider/<int:provider_id>", methods=["GET", "POST"])
+@login_required
+def edit_provider(provider_id):
+    provider = Provider.query.get_or_404(provider_id)
+    if provider.user_id != current_user.id:
+        flash('You do not have permission to edit this provider.', 'error')
+        return redirect(url_for('routes.provider_settings'))
+    
+    if request.method == "POST":
+        provider.provider_type = request.form.get('provider_type')
+        provider.api_key = request.form.get('api_key')
+        provider.model = request.form.get('model')
+        provider.url = request.form.get('url') if provider.provider_type == 'ollama' else None
+        db.session.commit()
+        flash('Provider updated successfully!', 'success')
+        return redirect(url_for('routes.provider_settings'))
+    
+    return render_template("edit_provider.html", provider=provider)
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
