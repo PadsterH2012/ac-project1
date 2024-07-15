@@ -150,3 +150,20 @@ def delete_project(project_id):
     db.session.commit()
     flash('Project deleted successfully!', 'success')
     return redirect(url_for('routes.projects'))
+
+@routes.route("/edit_project/<int:project_id>", methods=["GET", "POST"])
+@login_required
+def edit_project(project_id):
+    project = Project.query.get_or_404(project_id)
+    if project.user_id != current_user.id:
+        flash('You do not have permission to edit this project.', 'error')
+        return redirect(url_for('routes.projects'))
+    
+    if request.method == "POST":
+        project.title = request.form.get('title')
+        project.description = request.form.get('description')
+        db.session.commit()
+        flash('Project updated successfully!', 'success')
+        return redirect(url_for('routes.projects'))
+    
+    return render_template("edit_project.html", project=project)
