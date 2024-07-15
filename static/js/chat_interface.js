@@ -36,6 +36,21 @@ async function sendMessage() {
     }
 }
 
+// Add event listener for the send button
+document.addEventListener('DOMContentLoaded', function() {
+    const sendButton = document.querySelector('.message-input button');
+    sendButton.addEventListener('click', sendMessage);
+
+    // Add event listener for the Enter key in the input field
+    const messageInput = document.getElementById('messageInput');
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+});
+
 function displayMessage(sender, text) {
     const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
