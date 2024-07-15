@@ -106,6 +106,12 @@ def projects():
 def settings():
     return render_template("settings.html")
 
+@routes.route("/agent_settings")
+@login_required
+def agent_settings():
+    # Placeholder for agent settings
+    return render_template("agent_settings.html")
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')

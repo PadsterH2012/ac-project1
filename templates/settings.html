@@ -1,30 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>User Settings</h1>
-<ul>
-    <li><a href="{{ url_for('provider_settings') }}">Provider Settings</a></li>
-    <li><a href="{{ url_for('agent_settings') }}">Agent Settings</a></li>
-</ul>
-<h2>General Settings</h2>
-<form method="POST" action="{{ url_for('settings') }}">
-    <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" readonly>
-    </div>
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}">
-    </div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
-{% endblock %}
-{% extends "base.html" %}
-
-{% block content %}
 <div class="container">
     <h1>User Settings</h1>
-    <!-- Add your settings form or content here -->
-    <p>This is where users can manage their account settings.</p>
+    <ul>
+        <li><a href="{{ url_for('routes.agent_settings') }}">Agent Settings</a></li>
+    </ul>
+    <h2>General Settings</h2>
+    <form method="POST" action="{{ url_for('routes.settings') }}">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" readonly>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
 </div>
 {% endblock %}
