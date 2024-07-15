@@ -17,7 +17,7 @@ async function sendMessage() {
     messageInput.value = '';
 
     try {
-        // Send message to AI agent
+        // Send message to AI agents
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {
@@ -28,23 +28,20 @@ async function sendMessage() {
 
         console.log('Response status:', response.status);  // Debug log
 
-        if (response.status === 202) {
-            const data = await response.json();
-            displayMessage('System', data.response);
-            setTimeout(() => sendMessage(), 5000); // Retry after 5 seconds
-        } else if (!response.ok) {
+        if (!response.ok) {
             throw new Error('Network response was not ok');
-        } else {
-            const data = await response.json();
-            console.log('Received data:', data);  // Debug log
-            // Display AI response
-            displayMessage('AI Agent', data.response, data.agent_name, data.agent_role, data.agent_avatar);
-            
-            // Update project journal
-            updateProjectJournal(data.journal_entry);
         }
 
-        // User message is already displayed before the API call
+        const data = await response.json();
+        console.log('Received data:', data);  // Debug log
+
+        // Display AI responses
+        displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
+        displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
+        
+        // Update project journal
+        updateProjectJournal(data.journal_entry);
+
     } catch (error) {
         console.error('Error:', error);
         displayMessage('System', 'An error occurred while processing your message.');

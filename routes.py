@@ -383,24 +383,50 @@ def chat():
     message = request.json.get('message')
     print(f"Received message: {message}")  # Log received message
     
-    # Get the current user's AI agent (assuming one agent per user for simplicity)
-    agent = Agent.query.filter_by(user_id=current_user.id).first()
+    # Get the current user's AI agents
+    planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+    writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
     
-    if not agent:
-        print(f"No AI agent found for user {current_user.id}")  # Log error
-        return jsonify({"error": "No AI agent found for the current user"}), 404
+    if not planner_agent or not writer_agent:
+        print(f"Missing AI agents for user {current_user.id}")  # Log error
+        return jsonify({"error": "Missing AI agents for the current user"}), 404
     
-    # Get the provider for the agent
-    provider = Provider.query.get(agent.provider_id)
+    # Get the providers for the agents
+    planner_provider = Provider.query.get(planner_agent.provider_id)
+    writer_provider = Provider.query.get(writer_agent.provider_id)
     
-    if not provider:
-        print(f"No provider found for agent {agent.id}")  # Log error
-        return jsonify({"error": "No provider found for the AI agent"}), 404
+    if not planner_provider or not writer_provider:
+        print(f"Missing providers for agents")  # Log error
+        return jsonify({"error": "Missing providers for the AI agents"}), 404
     
-    # Prepare the prompt
-    prompt = f"{agent.system_prompt}\n\nHuman: {message}\n\nAI:"
+    # Prepare the prompts
+    planner_prompt = f"{planner_agent.system_prompt}\n\nHuman: {message}\n\nAI:"
+    writer_prompt = f"{writer_agent.system_prompt}\n\nHuman: {message}\n\nAI:"
     
-    # Make a request to the AI provider (e.g., Ollama)
+    # Make requests to the AI providers
+    planner_response = get_ai_response(planner_provider, planner_prompt)
+    writer_response = get_ai_response(writer_provider, writer_prompt)
+    
+    if planner_response and writer_response:
+        # Create a journal entry
+        journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}...\n\nWriter: {writer_response[:100]}..."
+        
+        return jsonify({
+            "planner_response": planner_response,
+            "writer_response": writer_response,
+            "journal_entry": journal_entry,
+            "planner_name": planner_agent.name,
+            "planner_role": planner_agent.role,
+            "planner_avatar": get_avatar_url(planner_agent.avatar),
+            "writer_name": writer_agent.name,
+            "writer_role": writer_agent.role,
+            "writer_avatar": get_avatar_url(writer_agent.avatar)
+        })
+    else:
+        print("Failed to get response from AI providers")  # Log error
+        return jsonify({"error": "Failed to get response from AI providers"}), 500
+
+def get_ai_response(provider, prompt):
     if provider.provider_type == 'ollama':
         print(f"Connecting to Ollama at {provider.url}")  # Log connection attempt
         response_data = connect_to_ollama(provider.url, provider.model, prompt)
@@ -409,17 +435,12 @@ def chat():
             ai_response = response_data.get('response', '')
             if not ai_response and response_data.get('done_reason') == 'load':
                 print("AI model is still loading")  # Log loading status
-                return jsonify({"response": "The AI model is still loading. Please try again in a moment."}), 202
+                return "The AI model is still loading. Please try again in a moment."
             print(f"Received AI response: {ai_response[:50]}...")  # Log (truncated) AI response
-            return jsonify({
-                "response": ai_response,
-                "agent_name": agent.name,
-                "agent_role": agent.role,
-                "agent_avatar": get_avatar_url(agent.avatar)
-            })
+            return ai_response
         else:
             print("Failed to get response from AI provider")  # Log error
-            return jsonify({"error": "Failed to get response from AI provider"}), 500
+            return None
     else:
         print(f"Unsupported AI provider: {provider.provider_type}")  # Log error
-        return jsonify({"error": "Unsupported AI provider"}), 400
+        return None
