@@ -264,13 +264,13 @@ def edit_agent(agent_id):
         agent.name = request.form.get('name')
         agent.role = request.form.get('role')
         agent.provider_id = request.form.get('provider_id')
-        agent.temperature = request.form.get('temperature')
+        agent.temperature = float(request.form.get('temperature'))
         agent.system_prompt = request.form.get('system_prompt')
         db.session.commit()
         flash('Agent updated successfully!', 'success')
         return redirect(url_for('routes.agent_settings'))
     
-    return render_template("edit_agent.html", agent=agent, providers=providers)
+    return render_template("edit_agent.html", title="Edit Agent", agent=agent, providers=providers)
 
 @routes.route("/delete_agent_from_settings/<int:agent_id>", methods=["POST"])
 @login_required
