@@ -116,6 +116,16 @@ def agent_settings():
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
 
+@routes.route("/continue_project/<int:project_id>")
+@login_required
+def continue_project(project_id):
+    project = Project.query.get_or_404(project_id)
+    if project.user_id != current_user.id:
+        flash('You do not have permission to access this project.', 'error')
+        return redirect(url_for('routes.projects'))
+    # Add your logic for continuing the project here
+    return render_template("continue_project.html", project=project)
+
 @routes.route("/create_project", methods=["GET", "POST"])
 @login_required
 def create_project():
