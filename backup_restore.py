@@ -16,6 +16,15 @@ def backup_data(user_id, backup_type='all'):
         providers = Provider.query.filter_by(user_id=user_id).all()
         data['providers'] = [provider.to_dict() for provider in providers]
     
+    # Add user data
+    user = User.query.get(user_id)
+    if user:
+        data['user'] = user.to_dict()
+    
+    # Check if any data was collected
+    if not data:
+        raise ValueError("No data found for the specified user and backup type")
+    
     return json.dumps(data, indent=2)
 
 def restore_data(user_id, backup_data):
