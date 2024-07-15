@@ -95,6 +95,12 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('routes.index'))
 
+@routes.route("/projects")
+@login_required
+def projects():
+    # Add your projects logic here
+    return render_template("projects.html")
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
