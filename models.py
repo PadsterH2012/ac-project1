@@ -55,10 +55,16 @@ class Agent(db.Model):
             'id': self.id,
             'name': self.name,
             'role': self.role,
-            'provider': self.provider.to_dict(),
+            'user_id': self.user_id,
+            'project_id': self.project_id,
+            'provider_id': self.provider_id,
             'temperature': self.temperature,
             'system_prompt': self.system_prompt
         }
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
 
     def __repr__(self):
         return f"User('{self.username}')"
