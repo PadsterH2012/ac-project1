@@ -106,11 +106,34 @@ def projects():
 def settings():
     return render_template("settings.html")
 
-@routes.route("/agent_settings")
+@routes.route("/agent_settings", methods=["GET", "POST"])
 @login_required
 def agent_settings():
     providers = Provider.query.filter_by(user_id=current_user.id).all()
-    return render_template("agent_settings.html", providers=providers)
+    if request.method == "POST":
+        name = request.form.get('name')
+        role = request.form.get('role')
+        provider_id = request.form.get('provider_id')
+        temperature = request.form.get('temperature')
+        system_prompt = request.form.get('system_prompt')
+
+        new_agent = Agent(
+            name=name,
+            role=role,
+            provider_id=provider_id,
+            temperature=temperature,
+            system_prompt=system_prompt,
+            user_id=current_user.id
+        )
+
+        db.session.add(new_agent)
+        db.session.commit()
+
+        flash('Agent added successfully!', 'success')
+        return redirect(url_for('routes.agent_settings'))
+
+    agents = Agent.query.filter_by(user_id=current_user.id).all()
+    return render_template("agent_settings.html", providers=providers, agents=agents)
 
 @routes.route("/provider_settings")
 @login_required
