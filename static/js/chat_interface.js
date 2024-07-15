@@ -233,9 +233,13 @@ function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
 }
 
+let currentProjectId;
+
 // Initialize the chat
 window.onload = function() {
     console.log('Chat interface initialized');
+    currentProjectId = document.getElementById('projectId').value;
+    console.log('Current project ID:', currentProjectId);
 };
 
 function navigateVFS(path) {
