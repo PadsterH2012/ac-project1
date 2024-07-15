@@ -9,6 +9,7 @@ from datetime import datetime
 import json
 import requests
 from ollama_connection import connect_to_ollama
+from utils import save_avatar
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -209,6 +210,13 @@ def agent_settings():
             system_prompt=system_prompt,
             user_id=current_user.id
         )
+
+        # Handle avatar upload
+        if 'avatar' in request.files:
+            avatar_file = request.files['avatar']
+            avatar_filename = save_avatar(avatar_file)
+            if avatar_filename:
+                new_agent.avatar = avatar_filename
 
         db.session.add(new_agent)
         db.session.commit()
