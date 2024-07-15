@@ -140,7 +140,7 @@ def backup():
     filename = f"incubator_backup_{timestamp}.json"
     
     # Send the file
-    return send_file(temp_file_path, as_attachment=True, attachment_filename=filename, cache_timeout=0)
+    return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
 
 @routes.route("/restore", methods=['POST'])
 @login_required
