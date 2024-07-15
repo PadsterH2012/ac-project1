@@ -1,5 +1,5 @@
 import json
-from models import db, Project, Agent, Provider
+from models import db, User, Project, Agent, Provider
 
 def backup_data(user_id, backup_type='all'):
     data = {}
