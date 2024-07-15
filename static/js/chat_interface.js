@@ -22,14 +22,17 @@ async function sendMessage() {
             body: JSON.stringify({ message: messageText }),
         });
 
-        if (!response.ok) {
+        if (response.status === 202) {
+            const data = await response.json();
+            displayMessage('System', data.response);
+            setTimeout(() => sendMessage(), 5000); // Retry after 5 seconds
+        } else if (!response.ok) {
             throw new Error('Network response was not ok');
+        } else {
+            const data = await response.json();
+            // Display AI response
+            displayMessage('AI Agent', data.response);
         }
-
-        const data = await response.json();
-
-        // Display AI response
-        displayMessage('AI Agent', data.response);
     } catch (error) {
         console.error('Error:', error);
         displayMessage('System', 'An error occurred while processing your message.');

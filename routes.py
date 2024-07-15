@@ -400,7 +400,10 @@ def chat():
         )
         
         if response.status_code == 200:
-            ai_response = response.json().get('response', '')
+            response_data = response.json()
+            ai_response = response_data.get('response', '')
+            if not ai_response and response_data.get('done_reason') == 'load':
+                return jsonify({"response": "The AI model is still loading. Please try again in a moment."}), 202
             return jsonify({"response": ai_response})
         else:
             return jsonify({"error": "Failed to get response from AI provider"}), 500
