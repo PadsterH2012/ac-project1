@@ -390,17 +390,9 @@ def chat():
     
     # Make a request to the AI provider (e.g., Ollama)
     if provider.provider_type == 'ollama':
-        response = requests.post(
-            provider.url,
-            json={
-                "model": provider.model,
-                "prompt": prompt,
-                "stream": False
-            }
-        )
+        response_data = connect_to_ollama(provider.url, provider.model, prompt)
         
-        if response.status_code == 200:
-            response_data = response.json()
+        if response_data:
             ai_response = response_data.get('response', '')
             if not ai_response and response_data.get('done_reason') == 'load':
                 return jsonify({"response": "The AI model is still loading. Please try again in a moment."}), 202
