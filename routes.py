@@ -416,6 +416,16 @@ def chat():
             project = Project.query.get(project_id)
             if project:
                 project.journal = (project.journal or "") + "\n\n" + journal_entry
+                
+                # Generate new scope
+                scope_prompt = f"{system_prompt}\n\nHuman: Based on the following project journal, create a comprehensive project scope:\n\n{project.journal}\n\nAI:"
+                scope_response = get_ai_response(planner_provider, scope_prompt)
+                
+                if scope_response:
+                    project.scope = scope_response
+                else:
+                    print("Failed to generate new project scope")
+                
                 db.session.commit()
             else:
                 print(f"Project not found: {project_id}")  # Log if project is not found
@@ -426,7 +436,8 @@ def chat():
                 "journal_entry": journal_entry,
                 "planner_name": planner_agent.name,
                 "planner_role": planner_agent.role,
-                "planner_avatar": get_avatar_url(planner_agent.avatar)
+                "planner_avatar": get_avatar_url(planner_agent.avatar),
+                "scope": project.scope
             })
         else:
             print("Failed to get response from AI provider")  # Log error

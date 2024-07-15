@@ -279,13 +279,8 @@ async function createProjectScope() {
 
         const data = await response.json();
         if (data.success) {
-            const scopeContent = document.getElementById('Scope');
-            if (scopeContent) {
-                scopeContent.innerHTML = `<h3>Project Scope</h3><p>${data.scope}</p>`;
-                console.log('Project scope created successfully');
-            } else {
-                console.error('Scope content element not found');
-            }
+            updateScopeContent(data.scope);
+            console.log('Project scope created successfully');
         } else {
             console.error('Failed to create project scope:', data.error);
         }
@@ -295,12 +290,47 @@ async function createProjectScope() {
     }
 }
 
+function updateScopeContent(scope) {
+    const scopeContent = document.getElementById('Scope');
+    if (scopeContent) {
+        scopeContent.innerHTML = `<h3>Project Scope</h3><p>${scope}</p>`;
+    } else {
+        console.error('Scope content element not found');
+    }
+}
+
 // Add this to your existing window.onload function or create one if it doesn't exist
 window.onload = function() {
     console.log('Chat interface initialized');
     document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
     document.getElementById('createScopeBtn').addEventListener('click', createProjectScope);
 };
+
+// Modify the existing sendMessage function
+async function sendMessage() {
+    // ... (existing code)
+
+    try {
+        // ... (existing code)
+
+        const data = await response.json();
+        console.log('Received data:', data);  // Debug log
+
+        // Display AI response
+        displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
+        
+        // Update project journal
+        updateProjectJournal(data.journal_entry);
+
+        // Update project scope
+        if (data.scope) {
+            updateScopeContent(data.scope);
+        }
+
+    } catch (error) {
+        // ... (existing error handling code)
+    }
+}
 
 let currentProjectId;
 
