@@ -32,7 +32,8 @@ async function sendMessage() {
         console.log('Response status:', response.status);  // Debug log
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Network response was not ok');
         }
 
         const data = await response.json();
@@ -44,12 +45,15 @@ async function sendMessage() {
         // Update project journal
         updateProjectJournal(data.journal_entry);
 
+        // Update project scope
+        if (data.scope) {
+            updateScopeContent(data.scope);
+        }
+
     } catch (error) {
         console.error('Error:', error);
         let errorMessage = 'An error occurred while processing your message.';
-        if (error.response && error.response.data && error.response.data.error) {
-            errorMessage = error.response.data.error;
-        } else if (error.message) {
+        if (error.message) {
             errorMessage = error.message;
         }
         displayMessage('System', errorMessage);
