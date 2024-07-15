@@ -2,11 +2,7 @@
 
 {% block content %}
 <div class="container">
-    <h1>User Settings</h1>
-    <ul>
-        <li><a href="{{ url_for('routes.agent_settings') }}">Agent Settings</a></li>
-    </ul>
-    <h2>General Settings</h2>
+    <h1>General Settings</h1>
     <form method="POST" action="{{ url_for('routes.settings') }}">
         <div class="form-group">
             <label for="username">Username:</label>
