@@ -16,6 +16,7 @@ def create_app():
     app.config["GOOGLE_CONSUMER_SECRET"] = "your_google_client_secret"
     app.config["FACEBOOK_APP_ID"] = "your_facebook_app_id"
     app.config["FACEBOOK_APP_SECRET"] = "your_facebook_app_secret"
+    app.config['UPLOAD_FOLDER'] = 'static/avatars'
     
     db.init_app(app)
     login_manager.init_app(app)
