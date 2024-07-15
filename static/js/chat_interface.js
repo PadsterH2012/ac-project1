@@ -39,6 +39,9 @@ async function sendMessage() {
             console.log('Received data:', data);  // Debug log
             // Display AI response
             displayMessage('AI Agent', data.response, data.agent_name, data.agent_role, data.agent_avatar);
+            
+            // Update project journal
+            updateProjectJournal(data.journal_entry);
         }
 
         // User message is already displayed before the API call
@@ -46,6 +49,14 @@ async function sendMessage() {
         console.error('Error:', error);
         displayMessage('System', 'An error occurred while processing your message.');
     }
+}
+
+function updateProjectJournal(journalEntry) {
+    const projectJournal = document.getElementById('projectJournal');
+    const entryElement = document.createElement('p');
+    entryElement.textContent = journalEntry;
+    projectJournal.appendChild(entryElement);
+    projectJournal.scrollTop = projectJournal.scrollHeight;
 }
 
 // Add event listener for the send button
