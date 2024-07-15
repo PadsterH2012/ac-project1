@@ -140,26 +140,25 @@ def backup():
     
     backup_type = ','.join(backup_options) if backup_options else 'all'
     
-    try:
-        print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
-        backup_data_json = backup_data(current_user.id, backup_type)
-        
-        # Create a temporary file
-        with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
-            temp_file.write(backup_data_json)
-            temp_file_path = temp_file.name
-        
-        # Generate a filename for the download
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"incubator_backup_{timestamp}.json"
-        
-        print(f"Sending file: {filename}")  # Debug print
-        
-        # Send the file
-        return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
-    except ValueError as e:
-        print(f"ValueError occurred: {str(e)}")  # Debug print
-        return jsonify({"error": str(e)}), 400
+    print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
+    backup_data_json = backup_data(current_user.id, backup_type)
+    
+    if backup_data_json == '{}':
+        return jsonify({"message": "No data found for backup"}), 404
+    
+    # Create a temporary file
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
+        temp_file.write(backup_data_json)
+        temp_file_path = temp_file.name
+    
+    # Generate a filename for the download
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"incubator_backup_{timestamp}.json"
+    
+    print(f"Sending file: {filename}")  # Debug print
+    
+    # Send the file
+    return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
 
 @routes.route("/restore", methods=['POST'])
 @login_required

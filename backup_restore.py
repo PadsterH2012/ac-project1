@@ -24,7 +24,8 @@ def backup_data(user_id, backup_type='all'):
     
     # Check if any data was collected
     if len(data) == 1 and 'user' in data:  # Only user data was collected
-        raise ValueError("No additional data found for the specified user and backup type")
+        print("No additional data found for the specified user and backup type")
+        return json.dumps({}, indent=2)
     
     return json.dumps(data, indent=2)
 
