@@ -119,6 +119,9 @@ def settings():
 @login_required
 def backup():
     print("Backup route called")  # Debug print
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 415
+    
     backup_options = []
     data = request.get_json()
     if data.get('backup_projects'):

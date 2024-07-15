@@ -85,6 +85,7 @@ function performAction(action) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 backup_projects: true,
