@@ -3,6 +3,7 @@ from werkzeug.security import check_password_hash
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash
 from datetime import datetime
+import json
 
 db = SQLAlchemy()
 
@@ -88,6 +89,18 @@ class Project(db.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'user_id': self.user_id
         }
+
+    @classmethod
+    def from_dict(cls, data):
+        project = cls(
+            title=data['title'],
+            description=data['description'],
+            user_id=data['user_id']
+        )
+        project.created_at = datetime.fromisoformat(data['created_at'])
+        project.updated_at = datetime.fromisoformat(data['updated_at'])
+        return project
