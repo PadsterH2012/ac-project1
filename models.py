@@ -49,10 +49,11 @@ class Agent(db.Model):
     name = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)  # Changed to nullable
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('provider.id'), nullable=False)
     temperature = db.Column(db.Float, nullable=False, default=0.7)
     system_prompt = db.Column(db.Text, nullable=True)
+    avatar = db.Column(db.String(255), nullable=True)  # New field for avatar file path
 
     @staticmethod
     def get_default_system_prompt(role):
