@@ -112,6 +112,12 @@ def agent_settings():
     # Placeholder for agent settings
     return render_template("agent_settings.html")
 
+@routes.route("/provider_settings")
+@login_required
+def provider_settings():
+    providers = Provider.query.filter_by(user_id=current_user.id).all()
+    return render_template("provider_settings.html", providers=providers)
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
