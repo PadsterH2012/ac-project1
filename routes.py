@@ -98,8 +98,8 @@ def logout():
 @routes.route("/projects")
 @login_required
 def projects():
-    # Add your projects logic here
-    return render_template("projects.html")
+    user_projects = Project.query.filter_by(user_id=current_user.id).all()
+    return render_template("projects.html", projects=user_projects)
 
 @routes.route("/settings")
 @login_required
@@ -119,5 +119,12 @@ def agent_settings():
 @routes.route("/create_project", methods=["GET", "POST"])
 @login_required
 def create_project():
-    # Add your create project logic here
+    if request.method == "POST":
+        title = request.form.get('title')
+        description = request.form.get('description')
+        new_project = Project(title=title, description=description, user_id=current_user.id)
+        db.session.add(new_project)
+        db.session.commit()
+        flash('Project created successfully!', 'success')
+        return redirect(url_for('routes.projects'))
     return render_template("create_project.html")
