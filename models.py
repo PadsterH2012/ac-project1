@@ -23,6 +23,15 @@ class User(UserMixin, db.Model):
     agents = db.relationship('Agent', backref='user', lazy=True)
     providers = db.relationship('Provider', backref='user', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'oauth_provider': self.oauth_provider,
+            'agent_settings': self.agent_settings
+        }
+
 class Provider(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
