@@ -5,6 +5,7 @@
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/chat_interface.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -25,100 +26,112 @@
             <div class="side-window">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link active" id="journal-tab" data-toggle="tab" href="#Journal" role="tab">Journal</a>
+                        <a class="nav-link active" id="journal-tab" data-bs-toggle="tab" href="#Journal" role="tab">Journal</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="scope-tab" data-toggle="tab" href="#Scope" role="tab">Scope</a>
+                        <a class="nav-link" id="scope-tab" data-bs-toggle="tab" href="#Scope" role="tab">Scope</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="hld-tab" data-toggle="tab" href="#HLD" role="tab">HLD</a>
+                        <a class="nav-link" id="hld-tab" data-bs-toggle="tab" href="#HLD" role="tab">HLD</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="lld-db-tab" data-toggle="tab" href="#LLD-DB" role="tab">LLD DB</a>
+                        <a class="nav-link" id="lld-db-tab" data-bs-toggle="tab" href="#LLD-DB" role="tab">LLD DB</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="lld-ux-tab" data-toggle="tab" href="#LLD-UX" role="tab">LLD UX</a>
+                        <a class="nav-link" id="lld-ux-tab" data-bs-toggle="tab" href="#LLD-UX" role="tab">LLD UX</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="lld-code-tab" data-toggle="tab" href="#LLD-Code" role="tab">LLD Code</a>
+                        <a class="nav-link" id="lld-code-tab" data-bs-toggle="tab" href="#LLD-Code" role="tab">LLD Code</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="coding-plan-tab" data-toggle="tab" href="#Coding-Plan" role="tab">Coding Plan</a>
+                        <a class="nav-link" id="coding-plan-tab" data-bs-toggle="tab" href="#Coding-Plan" role="tab">Coding Plan</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="nav-link" id="vfs-tab" data-toggle="tab" href="#VFS" role="tab">VFS</a>
+                        <a class="nav-link" id="vfs-tab" data-bs-toggle="tab" href="#VFS" role="tab">VFS</a>
                     </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
-            <div id="Journal" class="tab-content active">
-                <h3>Project Journal</h3>
-                <p>Keep track of your project's progress, decisions, and important milestones here.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="Scope" class="tab-content">
-                <h3>Project Scope</h3>
-                <p>Define and manage the project's scope here.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="HLD" class="tab-content">
-                <h3>High-Level Design</h3>
-                <p>Outline the overall system architecture and main components.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="LLD - DB" class="tab-content">
-                <h3>Low-Level Design - Database</h3>
-                <p>Detailed database design and schema.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="LLD - UX" class="tab-content">
-                <h3>Low-Level Design - User Experience</h3>
-                <p>Detailed user interface and experience design.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="LLD - Code" class="tab-content">
-                <h3>Low-Level Design - Code</h3>
-                <p>Detailed code structure and implementation plan.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="Coding Plan" class="tab-content">
-                <h3>Coding Plan</h3>
-                <p>Outline the implementation strategy and coding tasks.</p>
-                <ul>
-                </ul>
-            </div>
-            <div id="VFS" class="tab-content">
-                <h3>Virtual File System (VFS)</h3>
-                <div class="vfs-container">
-                    <div class="vfs-path">/</div>
-                    <div class="vfs-item folder" onclick="navigateVFS('projects')">
-                        <span class="vfs-icon"></span>projects
+                    <div class="tab-pane fade show active" id="Journal" role="tabpanel">
+                        <h3>Project Journal</h3>
+                        <p>Keep track of your project's progress, decisions, and important milestones here.</p>
+                        <ul>
+                        </ul>
                     </div>
-                    <div class="vfs-item folder" onclick="navigateVFS('documents')">
-                        <span class="vfs-icon"></span>documents
+                    <div class="tab-pane fade" id="Scope" role="tabpanel">
+                        <h3>Project Scope</h3>
+                        <p>Define and manage the project's scope here.</p>
+                        <ul>
+                        </ul>
                     </div>
-                    <div class="vfs-item file">
-                        <span class="vfs-icon"></span>readme.txt
+                    <div class="tab-pane fade" id="HLD" role="tabpanel">
+                        <h3>High-Level Design</h3>
+                        <p>Outline the overall system architecture and main components.</p>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="LLD-DB" role="tabpanel">
+                        <h3>Low-Level Design - Database</h3>
+                        <p>Detailed database design and schema.</p>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="LLD-UX" role="tabpanel">
+                        <h3>Low-Level Design - User Experience</h3>
+                        <p>Detailed user interface and experience design.</p>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="LLD-Code" role="tabpanel">
+                        <h3>Low-Level Design - Code</h3>
+                        <p>Detailed code structure and implementation plan.</p>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="Coding-Plan" role="tabpanel">
+                        <h3>Coding Plan</h3>
+                        <p>Outline the implementation strategy and coding tasks.</p>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div class="tab-pane fade" id="VFS" role="tabpanel">
+                        <h3>Virtual File System (VFS)</h3>
+                        <div class="vfs-container">
+                            <div class="vfs-path">/</div>
+                            <div class="vfs-item folder" onclick="navigateVFS('projects')">
+                                <span class="vfs-icon"></span>projects
+                            </div>
+                            <div class="vfs-item folder" onclick="navigateVFS('documents')">
+                                <span class="vfs-icon"></span>documents
+                            </div>
+                            <div class="vfs-item file">
+                                <span class="vfs-icon"></span>readme.txt
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="action-buttons">
-            <button class="action-button" onclick="performAction('Scope')">Scope</button>
-            <button class="action-button" onclick="performAction('HLD')">HLD</button>
-            <button class="action-button" onclick="performAction('LLD-DB')">LLD DB</button>
-            <button class="action-button" onclick="performAction('LLD-UX')">LLD UX</button>
-            <button class="action-button" onclick="performAction('LLD-Code')">LLD Code</button>
-            <button class="action-button" onclick="performAction('Plan')">Plan</button>
-            <button class="action-button" onclick="performAction('Write')">Write</button>
-            <button class="action-button" onclick="performAction('Download')">Download</button>
-            <button class="action-button" onclick="performAction('Upload')">Upload</button>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="action-buttons">
+                <button class="btn btn-primary action-button" onclick="performAction('Scope')">Scope</button>
+                <button class="btn btn-primary action-button" onclick="performAction('HLD')">HLD</button>
+                <button class="btn btn-primary action-button" onclick="performAction('LLD-DB')">LLD DB</button>
+                <button class="btn btn-primary action-button" onclick="performAction('LLD-UX')">LLD UX</button>
+                <button class="btn btn-primary action-button" onclick="performAction('LLD-Code')">LLD Code</button>
+                <button class="btn btn-primary action-button" onclick="performAction('Plan')">Plan</button>
+                <button class="btn btn-primary action-button" onclick="performAction('Write')">Write</button>
+                <button class="btn btn-primary action-button" onclick="performAction('Download')">Download</button>
+                <button class="btn btn-primary action-button" onclick="performAction('Upload')">Upload</button>
+            </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/chat_interface.js') }}"></script>
+{% endblock %}
    
