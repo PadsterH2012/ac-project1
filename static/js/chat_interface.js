@@ -161,37 +161,10 @@ function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
 }
 
-// Initialize the chat with some messages
+// Initialize the chat
 window.onload = function() {
     const chatMessages = document.getElementById('chatMessages');
-    messages.forEach(msg => {
-        const user = users.find(u => u.name === msg.sender);
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', user.name === 'You' ? 'user' : 'other');
-
-        const avatarElement = document.createElement('img');
-        avatarElement.src = user.avatar;
-        avatarElement.alt = user.name;
-        avatarElement.classList.add('avatar');
-
-        const bubbleElement = document.createElement('div');
-        bubbleElement.classList.add('bubble');
-        
-        const senderNameElement = document.createElement('span');
-        senderNameElement.classList.add('sender-name');
-        senderNameElement.textContent = user.name;
-
-        const messageTextElement = document.createElement('p');
-        messageTextElement.textContent = msg.text;
-
-        bubbleElement.appendChild(senderNameElement);
-        bubbleElement.appendChild(messageTextElement);
-
-        messageElement.appendChild(avatarElement);
-        messageElement.appendChild(bubbleElement);
-        chatMessages.appendChild(messageElement);
-    });
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    displayMessage('System', 'Welcome to the chat! How can I assist you today?');
 };
 
 function navigateVFS(path) {
