@@ -6,24 +6,27 @@ def backup_data(user_id, backup_type='all'):
     
     user = User.query.get(user_id)
     if not user:
-        raise ValueError("User not found")
+        return json.dumps({}, indent=2)
     
     data['user'] = user.to_dict()
     
     if backup_type in ['all', 'projects']:
         projects = Project.query.filter_by(user_id=user_id).all()
-        data['projects'] = [project.to_dict() for project in projects]
+        if projects:
+            data['projects'] = [project.to_dict() for project in projects]
     
     if backup_type in ['all', 'agents']:
         agents = Agent.query.filter_by(user_id=user_id).all()
-        data['agents'] = [agent.to_dict() for agent in agents]
+        if agents:
+            data['agents'] = [agent.to_dict() for agent in agents]
     
     if backup_type in ['all', 'providers']:
         providers = Provider.query.filter_by(user_id=user_id).all()
-        data['providers'] = [provider.to_dict() for provider in providers]
+        if providers:
+            data['providers'] = [provider.to_dict() for provider in providers]
     
-    # Check if any data was collected
-    if len(data) == 1 and 'user' in data:  # Only user data was collected
+    # Check if any data was collected beyond user data
+    if len(data) == 1 and 'user' in data:
         print("No additional data found for the specified user and backup type")
         return json.dumps({}, indent=2)
     
