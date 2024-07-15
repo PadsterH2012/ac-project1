@@ -271,3 +271,16 @@ def edit_agent(agent_id):
         return redirect(url_for('routes.agent_settings'))
     
     return render_template("edit_agent.html", agent=agent, providers=providers)
+
+@routes.route("/delete_agent_from_settings/<int:agent_id>", methods=["POST"])
+@login_required
+def delete_agent_from_settings(agent_id):
+    agent = Agent.query.get_or_404(agent_id)
+    if agent.user_id != current_user.id:
+        flash('You do not have permission to delete this agent.', 'error')
+        return redirect(url_for('routes.agent_settings'))
+    
+    db.session.delete(agent)
+    db.session.commit()
+    flash('Agent deleted successfully!', 'success')
+    return redirect(url_for('routes.agent_settings'))
