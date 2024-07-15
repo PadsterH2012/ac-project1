@@ -2,12 +2,18 @@
 async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
-    const messageText = messageInput.value;
+    let messageText = messageInput.value;
 
-    if (messageText.trim() === '') return;
+    if (messageText.trim() === '' && chatMessages.children.length === 0) {
+        messageText = "Hello, I'm the AI Agent Project Planner. How can I assist you with your project today?";
+    } else if (messageText.trim() === '') {
+        return;
+    }
 
-    // Display user message
-    displayMessage('You', messageText);
+    if (chatMessages.children.length > 0) {
+        // Display user message
+        displayMessage('You', messageText);
+    }
 
     // Clear input
     messageInput.value = '';
@@ -160,8 +166,7 @@ function navigateVFS(path) {
 
 // Initialize the chat
 window.onload = function() {
-    const chatMessages = document.getElementById('chatMessages');
-    displayMessage('System', 'Welcome to the chat! How can I assist you today?');
+    sendMessage();
 };
 
 function navigateVFS(path) {
