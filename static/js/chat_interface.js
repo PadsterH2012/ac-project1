@@ -22,10 +22,12 @@ async function sendMessage() {
     try {
         console.log('Preparing to send POST request');
         console.log('Message:', messageText);
-        console.log('Request body:', JSON.stringify({
+        const requestBody = JSON.stringify({
             message: messageText,
             project_id: currentProjectId
-        }));
+        });
+        console.log('Request body:', requestBody);
+        
         // Send message to AI agent
         console.log('Sending fetch request to /chat');
         const response = await fetch('/chat', {
@@ -33,22 +35,21 @@ async function sendMessage() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ 
-                message: messageText,
-                project_id: currentProjectId
-            }),
+            body: requestBody,
         });
 
         console.log('Response status:', response.status);
         console.log('Response headers:', response.headers);
 
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Network response was not ok');
+            throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
         }
 
-        const data = await response.json();
-        console.log('Received data:', data);
+        const data = JSON.parse(responseText);
+        console.log('Parsed data:', data);
         console.log('AI response:', data.planner_response);
 
         // Display AI response

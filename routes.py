@@ -381,11 +381,17 @@ def delete_agent_from_settings(agent_id):
 @login_required
 def chat():
     try:
+        print("Chat route called")  # Debug print
+        print(f"Request Content-Type: {request.content_type}")  # Debug print
+        print(f"Request data: {request.data}")  # Debug print
+        
         message = request.json.get('message')
         project_id = request.json.get('project_id')
         print(f"Received message: {message}")  # Log received message
+        print(f"Received project_id: {project_id}")  # Log received project_id
         
         if not message or not project_id:
+            print("Missing message or project ID")  # Debug print
             return jsonify({"error": "Missing message or project ID"}), 400
         
         # Get the current user's AI agent
@@ -434,14 +440,16 @@ def chat():
                 print(f"Project not found: {project_id}")  # Log if project is not found
                 return jsonify({"error": f"Project not found: {project_id}"}), 404
             
-            return jsonify({
+            response_data = {
                 "planner_response": planner_response,
                 "journal_entry": journal_entry,
                 "planner_name": planner_agent.name,
                 "planner_role": planner_agent.role,
                 "planner_avatar": get_avatar_url(planner_agent.avatar),
                 "scope": project.scope
-            })
+            }
+            print(f"Sending response: {response_data}")  # Debug print
+            return jsonify(response_data)
         else:
             print("Failed to get response from AI provider")  # Log error
             return jsonify({"error": "Failed to get response from AI provider"}), 500
