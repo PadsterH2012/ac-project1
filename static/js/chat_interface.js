@@ -21,9 +21,9 @@ async function sendMessage() {
 
     try {
         console.log('Preparing to send POST request');
-        console.log('Message:', message);
+        console.log('Message:', messageText);
         console.log('Request body:', JSON.stringify({
-            message: message,
+            message: messageText,
             project_id: currentProjectId
         }));
         // Send message to AI agent
