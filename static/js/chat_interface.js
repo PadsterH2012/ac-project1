@@ -8,6 +8,8 @@ async function sendMessage() {
         return;
     }
 
+    console.log('Sending message:', messageText);  // Debug log
+
     // Display user message
     displayMessage('You', messageText);
 
@@ -24,6 +26,8 @@ async function sendMessage() {
             body: JSON.stringify({ message: messageText }),
         });
 
+        console.log('Response status:', response.status);  // Debug log
+
         if (response.status === 202) {
             const data = await response.json();
             displayMessage('System', data.response);
@@ -32,6 +36,7 @@ async function sendMessage() {
             throw new Error('Network response was not ok');
         } else {
             const data = await response.json();
+            console.log('Received data:', data);  // Debug log
             // Display AI response
             displayMessage('AI Agent', data.response, data.agent_name, data.agent_role, data.agent_avatar);
         }
@@ -59,6 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
+    console.log('Displaying message:', { sender, text, agentName, agentRole, agentAvatar });  // Debug log
+
     const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', sender === 'You' ? 'user' : 'other');
@@ -100,6 +107,8 @@ function displayMessage(sender, text, agentName = '', agentRole = '', agentAvata
     chatMessages.appendChild(messageElement);
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    console.log('Message displayed');  // Debug log
 }
 
 function openTab(event, tabName) {
