@@ -49,89 +49,42 @@
                 <h3>Project Journal</h3>
                 <p>Keep track of your project's progress, decisions, and important milestones here.</p>
                 <ul>
-                    <li>Day 1: Project kickoff meeting</li>
-                    <li>Day 3: Finalized project scope</li>
-                    <li>Day 7: Completed High-Level Design</li>
-                    <li>Day 10: Started work on Low-Level Designs</li>
-                    <li>Day 15: Added Virtual File System (VFS) to the project</li>
-                    <li>Day 16: Implemented action buttons outside the side window for quick access</li>
-                    <li>Day 17: Adjusted action button layout for better readability</li>
                 </ul>
             </div>
             <div id="Scope" class="tab-content">
                 <h3>Project Scope</h3>
                 <p>Define and manage the project's scope here.</p>
                 <ul>
-                    <li>Project objectives</li>
-                    <li>Deliverables</li>
-                    <li>Timeline</li>
-                    <li>Resources required</li>
-                    <li>Implementation of Virtual File System</li>
-                    <li>External quick action buttons for improved user interaction</li>
-                    <li>Optimized button layout for better usability</li>
                 </ul>
             </div>
             <div id="HLD" class="tab-content">
                 <h3>High-Level Design</h3>
                 <p>Outline the overall system architecture and main components.</p>
                 <ul>
-                    <li>System overview</li>
-                    <li>Main modules</li>
-                    <li>Data flow</li>
-                    <li>Technology stack</li>
-                    <li>Virtual File System architecture</li>
-                    <li>External action button integration</li>
-                    <li>UI/UX considerations for action buttons</li>
                 </ul>
             </div>
             <div id="LLD - DB" class="tab-content">
                 <h3>Low-Level Design - Database</h3>
                 <p>Detailed database design and schema.</p>
                 <ul>
-                    <li>Entity-Relationship Diagram</li>
-                    <li>Table structures</li>
-                    <li>Indexes and constraints</li>
-                    <li>Data migration plan</li>
-                    <li>VFS metadata storage</li>
                 </ul>
             </div>
             <div id="LLD - UX" class="tab-content">
                 <h3>Low-Level Design - User Experience</h3>
                 <p>Detailed user interface and experience design.</p>
                 <ul>
-                    <li>Wireframes</li>
-                    <li>User flow diagrams</li>
-                    <li>Mockups</li>
-                    <li>Interaction design</li>
-                    <li>VFS user interface design</li>
-                    <li>External action button placement and functionality</li>
-                    <li>Button layout optimization for readability</li>
                 </ul>
             </div>
             <div id="LLD - Code" class="tab-content">
                 <h3>Low-Level Design - Code</h3>
                 <p>Detailed code structure and implementation plan.</p>
                 <ul>
-                    <li>Class diagrams</li>
-                    <li>Sequence diagrams</li>
-                    <li>API specifications</li>
-                    <li>Code organization</li>
-                    <li>VFS implementation details</li>
-                    <li>External action button event handlers</li>
-                    <li>CSS optimizations for button layout</li>
                 </ul>
             </div>
             <div id="Coding Plan" class="tab-content">
                 <h3>Coding Plan</h3>
                 <p>Outline the implementation strategy and coding tasks.</p>
                 <ul>
-                    <li>Task breakdown</li>
-                    <li>Coding standards</li>
-                    <li>Testing approach</li>
-                    <li>Code review process</li>
-                    <li>VFS integration plan</li>
-                    <li>External action button functionality implementation</li>
-                    <li>UI/UX refinements for action buttons</li>
                 </ul>
             </div>
             <div id="VFS" class="tab-content">
@@ -162,25 +115,5 @@
             <button class="action-button" onclick="performAction('Upload')">Upload</button>
         </div>
     </div>
-    <script>
-        const users = [
-            { name: 'Alice', avatar: 'https://websim.ai/avatar1.jpg' },
-            { name: 'Bob', avatar: 'https://websim.ai/avatar2.jpg' },
-            { name: 'Charlie', avatar: 'https://websim.ai/avatar3.jpg' },
-            { name: 'You', avatar: 'https://websim.ai/avatar4.jpg' }
-        ];
-
-        const messages = [
-            { sender: 'Alice', text: 'Hey team! I\'ve adjusted the action buttons to make them more readable.' },
-            { sender: 'Bob', text: 'Nice work, Alice! The centered text and smaller font size look much better.' },
-            { sender: 'Charlie', text: 'I agree, it\'s easier to read now. The buttons also look more uniform.' },
-            { sender: 'You', text: 'This is great! The new layout is both functional and visually appealing.' },
-            { sender: 'Alice', text: 'Thanks! I adjusted the CSS to center the text and made the buttons a bit taller to accommodate longer names.' },
-            { sender: 'Bob', text: 'It\'s a smart design choice. Now all the buttons look consistent, even with varying text lengths.' },
-            { sender: 'Charlie', text: 'This small change really improves the overall user experience. Good job!' },
-            { sender: 'You', text: 'Absolutely! Let\'s keep refining our UI like this to make it as user-friendly as possible.' }
-        ];
-
-     </script>
     {% endblock %}
    
