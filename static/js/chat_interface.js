@@ -37,7 +37,7 @@ async function sendMessage() {
 
         // Display AI responses
         displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
-        displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
+        // displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
         
         // Update project journal
         updateProjectJournal(data.journal_entry);
