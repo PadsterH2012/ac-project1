@@ -65,7 +65,7 @@ function sendMessage() {
 function openTab(event, tabName) {
     const tabContents = document.getElementsByClassName('tab-content');
     for (let i = 0; i < tabContents.length; i++) {
-        tabContents[i].classList.remove('active');
+        tabContents[i].style.display = 'none';
     }
 
     const tabs = document.getElementsByClassName('tab');
@@ -73,13 +73,50 @@ function openTab(event, tabName) {
         tabs[i].classList.remove('active');
     }
 
-    document.getElementById(tabName).classList.add('active');
+    document.getElementById(tabName).style.display = 'block';
     event.currentTarget.classList.add('active');
 }
 
 function performAction(action) {
     alert(`Performing action: ${action}`);
 }
+
+function navigateVFS(path) {
+    alert(`Navigating to: ${path}`);
+}
+
+// Initialize the chat with some messages
+window.onload = function() {
+    const chatMessages = document.getElementById('chatMessages');
+    messages.forEach(msg => {
+        const user = users.find(u => u.name === msg.sender);
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', user.name === 'You' ? 'user' : 'other');
+
+        const avatarElement = document.createElement('img');
+        avatarElement.src = user.avatar;
+        avatarElement.alt = user.name;
+        avatarElement.classList.add('avatar');
+
+        const bubbleElement = document.createElement('div');
+        bubbleElement.classList.add('bubble');
+        
+        const senderNameElement = document.createElement('span');
+        senderNameElement.classList.add('sender-name');
+        senderNameElement.textContent = user.name;
+
+        const messageTextElement = document.createElement('p');
+        messageTextElement.textContent = msg.text;
+
+        bubbleElement.appendChild(senderNameElement);
+        bubbleElement.appendChild(messageTextElement);
+
+        messageElement.appendChild(avatarElement);
+        messageElement.appendChild(bubbleElement);
+        chatMessages.appendChild(messageElement);
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+};
 
 function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
