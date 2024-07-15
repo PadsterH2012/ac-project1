@@ -46,7 +46,11 @@ async function sendMessage() {
 
     } catch (error) {
         console.error('Error:', error);
-        displayMessage('System', 'An error occurred while processing your message.');
+        let errorMessage = 'An error occurred while processing your message.';
+        if (error.response && error.response.data && error.response.data.error) {
+            errorMessage = error.response.data.error;
+        }
+        displayMessage('System', errorMessage);
     }
 }
 
