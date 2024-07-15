@@ -1,8 +1,11 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, Project, Agent, Provider, db
 from flask_oauthlib.client import OAuth
+from backup_restore import backup_data, restore_data
+import tempfile
+from datetime import datetime
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -101,10 +104,69 @@ def projects():
     user_projects = Project.query.filter_by(user_id=current_user.id).all()
     return render_template("projects.html", projects=user_projects)
 
-@routes.route("/settings")
+@routes.route("/settings", methods=['GET', 'POST'])
 @login_required
 def settings():
+    if request.method == 'POST':
+        # Handle form submission
+        current_user.email = request.form['email']
+        db.session.commit()
+        flash('Your settings have been updated.', 'success')
+        return redirect(url_for('routes.settings'))
     return render_template("settings.html")
+
+@routes.route("/backup", methods=['POST'])
+@login_required
+def backup():
+    backup_options = []
+    if request.form.get('backup_projects'):
+        backup_options.append('projects')
+    if request.form.get('backup_agents'):
+        backup_options.append('agents')
+    if request.form.get('backup_providers'):
+        backup_options.append('providers')
+    
+    backup_type = ','.join(backup_options) if backup_options else 'all'
+    
+    backup_data_json = backup_data(current_user.id, backup_type)
+    
+    # Create a temporary file
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
+        temp_file.write(backup_data_json)
+        temp_file_path = temp_file.name
+    
+    # Generate a filename for the download
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"incubator_backup_{timestamp}.json"
+    
+    # Send the file
+    return send_file(temp_file_path, as_attachment=True, attachment_filename=filename, cache_timeout=0)
+
+@routes.route("/restore", methods=['POST'])
+@login_required
+def restore():
+    if 'restore_file' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('routes.settings'))
+    
+    file = request.files['restore_file']
+    
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('routes.settings'))
+    
+    if file:
+        # Read the file content
+        backup_data_json = file.read().decode('utf-8')
+        
+        try:
+            # Restore the data
+            restore_data(current_user.id, backup_data_json)
+            flash('Data restored successfully', 'success')
+        except Exception as e:
+            flash(f'Error restoring data: {str(e)}', 'error')
+        
+        return redirect(url_for('routes.settings'))
 
 @routes.route("/agent_settings", methods=["GET", "POST"])
 @login_required
