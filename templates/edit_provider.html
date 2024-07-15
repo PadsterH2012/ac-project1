@@ -25,3 +25,42 @@
 </form>
 <a href="{{ url_for('provider_settings') }}" class="btn btn-secondary mt-3">Back to Provider Settings</a>
 {% endblock %}
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Edit Provider</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="provider_type">Provider Type:</label>
+        <select class="form-control" id="provider_type" name="provider_type" required>
+            <option value="openai" {% if provider.provider_type == 'openai' %}selected{% endif %}>OpenAI</option>
+            <option value="ollama" {% if provider.provider_type == 'ollama' %}selected{% endif %}>Ollama</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="api_key">API Key:</label>
+        <input type="text" class="form-control" id="api_key" name="api_key" value="{{ provider.api_key }}" required>
+    </div>
+    <div class="form-group">
+        <label for="model">Model:</label>
+        <input type="text" class="form-control" id="model" name="model" value="{{ provider.model }}" required>
+    </div>
+    <div class="form-group" id="url_group" {% if provider.provider_type != 'ollama' %}style="display: none;"{% endif %}>
+        <label for="url">URL:</label>
+        <input type="url" class="form-control" id="url" name="url" value="{{ provider.url }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Provider</button>
+    <a href="{{ url_for('routes.provider_settings') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+<script>
+document.getElementById('provider_type').addEventListener('change', function() {
+    var urlGroup = document.getElementById('url_group');
+    if (this.value === 'ollama') {
+        urlGroup.style.display = 'block';
+    } else {
+        urlGroup.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
