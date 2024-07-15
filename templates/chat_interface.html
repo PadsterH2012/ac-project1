@@ -11,21 +11,4 @@
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
-
-<script>
-document.getElementById('chat-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const chatInput = document.getElementById('chat-input');
-    const chatBox = document.getElementById('chat-box');
-    const message = chatInput.value;
-
-    // Append the message to the chat box
-    const messageElement = document.createElement('div');
-    messageElement.textContent = message;
-    chatBox.appendChild(messageElement);
-
-    // Clear the input field
-    chatInput.value = '';
-});
-</script>
 {% endblock %}
