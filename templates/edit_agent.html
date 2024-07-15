@@ -40,45 +40,5 @@
     </div>
     <button type="submit" class="btn btn-primary">Update Agent</button>
 </form>
-<a href="{{ url_for('agent_settings') }}" class="btn btn-secondary mt-3">Back to Agent Settings</a>
-<h1>Edit Agent</h1>
-<form method="POST">
-    <div class="form-group">
-        <label for="name">Agent Name:</label>
-        <input type="text" class="form-control" id="name" name="name" value="{{ agent.name }}" required>
-    </div>
-    <div class="form-group">
-        <label for="role">Agent Role:</label>
-        <select class="form-control" id="role" name="role" required>
-            <option value="AI Agent Project Planner" {% if agent.role == 'AI Agent Project Planner' %}selected{% endif %}>AI Agent Project Planner</option>
-            <option value="AI Agent Project Writer" {% if agent.role == 'AI Agent Project Writer' %}selected{% endif %}>AI Agent Project Writer</option>
-            <option value="AI Agent Architect" {% if agent.role == 'AI Agent Architect' %}selected{% endif %}>AI Agent Architect</option>
-            <option value="AI Agent Database SME" {% if agent.role == 'AI Agent Database SME' %}selected{% endif %}>AI Agent Database SME</option>
-            <option value="AI Agent UX Design SME" {% if agent.role == 'AI Agent UX Design SME' %}selected{% endif %}>AI Agent UX Design SME</option>
-            <option value="AI Agent Coding SME" {% if agent.role == 'AI Agent Coding SME' %}selected{% endif %}>AI Agent Coding SME</option>
-            <option value="AI Agent Coding Developer" {% if agent.role == 'AI Agent Coding Developer' %}selected{% endif %}>AI Agent Coding Developer</option>
-            <option value="AI Agent Test Developer" {% if agent.role == 'AI Agent Test Developer' %}selected{% endif %}>AI Agent Test Developer</option>
-            <option value="AI Agent Code Tester" {% if agent.role == 'AI Agent Code Tester' %}selected{% endif %}>AI Agent Code Tester</option>
-            <option value="AI Agent Web Researcher" {% if agent.role == 'AI Agent Web Researcher' %}selected{% endif %}>AI Agent Web Researcher</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="provider_id">Provider:</label>
-        <select class="form-control" id="provider_id" name="provider_id" required>
-            {% for provider in providers %}
-                <option value="{{ provider.id }}" {% if agent.provider_id == provider.id %}selected{% endif %}>{{ provider.provider_type }} - {{ provider.model }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="temperature">Temperature:</label>
-        <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" value="{{ agent.temperature }}" required>
-    </div>
-    <div class="form-group">
-        <label for="system_prompt">System Prompt:</label>
-        <textarea class="form-control" id="system_prompt" name="system_prompt" rows="3">{{ agent.system_prompt }}</textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Update Agent</button>
-    <a href="{{ url_for('routes.agent_settings') }}" class="btn btn-secondary">Cancel</a>
-</form>
+<a href="{{ url_for('routes.agent_settings') }}" class="btn btn-secondary mt-3">Back to Agent Settings</a>
 {% endblock %}
