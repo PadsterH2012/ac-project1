@@ -2,6 +2,11 @@
 
 {% block title %}Chat Interface{% endblock %}
 
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat_interface.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
     <div class="row">
