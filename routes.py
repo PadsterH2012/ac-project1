@@ -159,6 +159,18 @@ def edit_provider(provider_id):
     
     return render_template("edit_provider.html", provider=provider)
 
+@routes.route("/delete_provider/<int:provider_id>", methods=["POST"])
+@login_required
+def delete_provider(provider_id):
+    provider = Provider.query.get_or_404(provider_id)
+    if provider.user_id != current_user.id:
+        flash('You do not have permission to delete this provider.', 'error')
+        return redirect(url_for('routes.provider_settings'))
+    db.session.delete(provider)
+    db.session.commit()
+    flash('Provider deleted successfully!', 'success')
+    return redirect(url_for('routes.provider_settings'))
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
