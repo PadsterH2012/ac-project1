@@ -12,32 +12,35 @@ facebook = None
 
 def init_oauth(app):
     global google, facebook
-    oauth.init_app(app)
+    if not hasattr(oauth, 'app'):
+        oauth.init_app(app)
 
-    google = oauth.remote_app(
-        'google',
-        consumer_key=app.config['GOOGLE_CONSUMER_KEY'],
-        consumer_secret=app.config['GOOGLE_CONSUMER_SECRET'],
-        request_token_params={
-            'scope': 'email'
-        },
-        base_url='https://www.googleapis.com/oauth2/v1/',
-        request_token_url=None,
-        access_token_method='POST',
-        access_token_url='https://accounts.google.com/o/oauth2/token',
-        authorize_url='https://accounts.google.com/o/oauth2/auth',
-    )
+    if google is None:
+        google = oauth.remote_app(
+            'google',
+            consumer_key=app.config['GOOGLE_CONSUMER_KEY'],
+            consumer_secret=app.config['GOOGLE_CONSUMER_SECRET'],
+            request_token_params={
+                'scope': 'email'
+            },
+            base_url='https://www.googleapis.com/oauth2/v1/',
+            request_token_url=None,
+            access_token_method='POST',
+            access_token_url='https://accounts.google.com/o/oauth2/token',
+            authorize_url='https://accounts.google.com/o/oauth2/auth',
+        )
 
-    facebook = oauth.remote_app(
-        'facebook',
-        consumer_key=app.config['FACEBOOK_APP_ID'],
-        consumer_secret=app.config['FACEBOOK_APP_SECRET'],
-        request_token_params={'scope': 'email'},
-        base_url='https://graph.facebook.com',
-        request_token_url=None,
-        access_token_url='/oauth/access_token',
-        authorize_url='https://www.facebook.com/dialog/oauth'
-    )
+    if facebook is None:
+        facebook = oauth.remote_app(
+            'facebook',
+            consumer_key=app.config['FACEBOOK_APP_ID'],
+            consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+            request_token_params={'scope': 'email'},
+            base_url='https://graph.facebook.com',
+            request_token_url=None,
+            access_token_url='/oauth/access_token',
+            authorize_url='https://www.facebook.com/dialog/oauth'
+        )
     @routes.route("/", methods=["GET", "POST"])
     def index():
         if current_user.is_authenticated:
