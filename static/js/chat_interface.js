@@ -4,11 +4,12 @@ async function sendMessage() {
     const chatMessages = document.getElementById('chatMessages');
     let messageText = messageInput.value;
 
-    if (messageText.trim() === '' && chatMessages.children.length === 0) {
-        messageText = "Hello, I'm the AI Agent Project Planner. How can I assist you with your project today?";
-    } else if (messageText.trim() === '') {
+    if (messageText.trim() === '') {
         return;
     }
+
+    // Display user message
+    displayMessage('You', messageText);
 
     // Clear input
     messageInput.value = '';
@@ -35,10 +36,7 @@ async function sendMessage() {
             displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
         }
 
-        if (chatMessages.children.length === 1) {
-            // Display user message after the initial AI message
-            displayMessage('You', messageText);
-        }
+        // User message is already displayed before the API call
     } catch (error) {
         console.error('Error:', error);
         displayMessage('System', 'An error occurred while processing your message.');
@@ -66,7 +64,13 @@ function displayMessage(sender, text, agentName = '', agentRole = '') {
     messageElement.classList.add('message', sender === 'You' ? 'user' : 'other');
 
     const avatarElement = document.createElement('img');
-    avatarElement.src = sender === 'You' ? 'https://websim.ai/avatar4.jpg' : '/static/avatars/' + agentName.toLowerCase().replace(/\s+/g, '_') + '.jpg';
+    if (sender === 'You') {
+        avatarElement.src = 'https://websim.ai/avatar4.jpg';
+    } else if (agentName) {
+        avatarElement.src = `/static/avatars/${agentName.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+    } else {
+        avatarElement.src = '/static/avatars/default_agent.jpg';
+    }
     avatarElement.alt = sender;
     avatarElement.classList.add('avatar');
 
@@ -166,7 +170,21 @@ function navigateVFS(path) {
 
 // Initialize the chat
 window.onload = function() {
-    sendMessage();
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: "Hello, I'm ready to assist you with your project. How can I help you today?" }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        displayMessage('System', 'An error occurred while initializing the chat.');
+    });
 };
 
 function navigateVFS(path) {
