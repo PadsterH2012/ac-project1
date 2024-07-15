@@ -381,50 +381,60 @@ def delete_agent_from_settings(agent_id):
 @login_required
 def chat():
     message = request.json.get('message')
+    project_id = request.json.get('project_id')
     print(f"Received message: {message}")  # Log received message
     
-    # Get the current user's AI agents
+    # Get the current user's AI agent
     planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
-    writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
     
-    if not planner_agent or not writer_agent:
-        print(f"Missing AI agents for user {current_user.id}")  # Log error
-        return jsonify({"error": "Missing AI agents for the current user"}), 404
+    if not planner_agent:
+        print(f"Missing AI agent for user {current_user.id}")  # Log error
+        return jsonify({"error": "Missing AI agent for the current user"}), 404
     
-    # Get the providers for the agents
+    # Get the provider for the agent
     planner_provider = Provider.query.get(planner_agent.provider_id)
-    writer_provider = Provider.query.get(writer_agent.provider_id)
     
-    if not planner_provider or not writer_provider:
-        print(f"Missing providers for agents")  # Log error
-        return jsonify({"error": "Missing providers for the AI agents"}), 404
+    if not planner_provider:
+        print(f"Missing provider for agent")  # Log error
+        return jsonify({"error": "Missing provider for the AI agent"}), 404
     
-    # Prepare the prompts
+    # Prepare the prompt
     planner_prompt = f"{planner_agent.system_prompt}\n\nHuman: {message}\n\nAI:"
-    writer_prompt = f"{writer_agent.system_prompt}\n\nHuman: {message}\n\nAI:"
     
-    # Make requests to the AI providers
+    # Make request to the AI provider
     planner_response = get_ai_response(planner_provider, planner_prompt)
-    writer_response = get_ai_response(writer_provider, writer_prompt)
     
-    if planner_response and writer_response:
+    if planner_response:
         # Create a journal entry
-        journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}...\n\nWriter: {writer_response[:100]}..."
+        journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
+        
+        # Update the project journal
+        project = Project.query.get(project_id)
+        if project:
+            project.journal = (project.journal or "") + "\n\n" + journal_entry
+            db.session.commit()
         
         return jsonify({
             "planner_response": planner_response,
-            "writer_response": writer_response,
             "journal_entry": journal_entry,
             "planner_name": planner_agent.name,
             "planner_role": planner_agent.role,
-            "planner_avatar": get_avatar_url(planner_agent.avatar),
-            "writer_name": writer_agent.name,
-            "writer_role": writer_agent.role,
-            "writer_avatar": get_avatar_url(writer_agent.avatar)
+            "planner_avatar": get_avatar_url(planner_agent.avatar)
         })
     else:
-        print("Failed to get response from AI providers")  # Log error
-        return jsonify({"error": "Failed to get response from AI providers"}), 500
+        print("Failed to get response from AI provider")  # Log error
+        return jsonify({"error": "Failed to get response from AI provider"}), 500
+
+@routes.route("/clear_journal", methods=["POST"])
+@login_required
+def clear_journal():
+    project_id = request.json.get('project_id')
+    project = Project.query.get(project_id)
+    if project and project.user_id == current_user.id:
+        project.journal = ""
+        db.session.commit()
+        return jsonify({"success": True, "message": "Journal cleared successfully"})
+    return jsonify({"success": False, "message": "Failed to clear journal"}), 404
 
 def get_ai_response(provider, prompt):
     if provider.provider_type == 'ollama':

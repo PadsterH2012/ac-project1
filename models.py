@@ -106,6 +106,7 @@ class Project(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     agents = db.relationship('Agent', back_populates='project', lazy=True)
+    journal = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return f"Project('{self.title}')"

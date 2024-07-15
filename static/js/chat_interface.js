@@ -17,13 +17,16 @@ async function sendMessage() {
     messageInput.value = '';
 
     try {
-        // Send message to AI agents
+        // Send message to AI agent
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message: messageText }),
+            body: JSON.stringify({ 
+                message: messageText,
+                project_id: currentProjectId  // Assume this variable is set when loading the chat interface
+            }),
         });
 
         console.log('Response status:', response.status);  // Debug log
@@ -35,9 +38,8 @@ async function sendMessage() {
         const data = await response.json();
         console.log('Received data:', data);  // Debug log
 
-        // Display AI responses
+        // Display AI response
         displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
-        // displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
         
         // Update project journal
         updateProjectJournal(data.journal_entry);
@@ -47,6 +49,42 @@ async function sendMessage() {
         displayMessage('System', 'An error occurred while processing your message.');
     }
 }
+
+// Add this new function to handle clearing the journal
+async function clearJournal() {
+    try {
+        const response = await fetch('/clear_journal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                project_id: currentProjectId  // Assume this variable is set when loading the chat interface
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('projectJournal').innerHTML = '';
+            alert('Journal cleared successfully');
+        } else {
+            alert('Failed to clear journal');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while clearing the journal');
+    }
+}
+
+// Add this to your existing window.onload function or create one if it doesn't exist
+window.onload = function() {
+    console.log('Chat interface initialized');
+    document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
+};
 
 function updateProjectJournal(journalEntry) {
     const projectJournal = document.getElementById('projectJournal');
