@@ -1,198 +1,172 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #2c3e50;
+    --accent-color: #f39c12;
+    --text-color: #333;
+    --bg-color: #ecf0f1;
+    --sidebar-bg: #34495e;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-}
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-    transition: all 0.3s;
-}
-
-.sidebar.active {
-    margin-left: -250px;
-}
-
-.sidebar-sticky {
-    position: relative;
-    top: 0;
-    height: calc(100vh - 48px);
-    padding-top: .5rem;
+    font-family: 'Roboto', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
-    overflow-y: auto;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        margin-left: -250px;
-    }
-    .sidebar.active {
-        margin-left: 0;
-    }
-}
-
-.navbar-brand {
-    padding-top: .75rem;
-    padding-bottom: .75rem;
-    font-size: 1rem;
-    background-color: rgba(0, 0, 0, .25);
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-}
-
-.navbar .navbar-toggler {
-    top: .25rem;
-    right: 1rem;
-}
-
-.navbar .form-control {
-    padding: .75rem 1rem;
-    border-width: 0;
-    border-radius: 0;
-}
-
-.form-control-dark {
-    color: #fff;
-    background-color: rgba(255, 255, 255, .1);
-    border-color: rgba(255, 255, 255, .1);
-}
-
-.form-control-dark:focus {
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
-}
-
-.auth-form {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: 2rem auto;
-}
-
-.auth-form h3 {
-    margin-top: 0;
-}
-
-.auth-form p {
-    margin-top: 1rem;
-}
-
-form {
+    background-color: var(--bg-color);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-input[type="text"], input[type="password"] {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.site-content {
+    transition: margin-left .5s;
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-button {
-    background-color: #3b5998;
-    color: white;
-    padding: 0.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #2d4373;
-}
-
-.oauth-button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 4px;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.oauth-button.google {
-    background-color: #DB4437;
-}
-
-.oauth-button.facebook {
-    background-color: #3b5998;
-}
-
-.oauth-button:hover {
-    opacity: 0.9;
-}
-
-.flashed-messages {
-    margin-top: 1rem;
-}
-
-.alert {
+header {
+    background-color: var(--primary-color);
     padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
+header h1 {
+    margin: 0;
+    font-size: 2rem;
 }
 
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
+.menu-btn {
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: white;
+    transition: transform 0.3s ease;
 }
 
-.ml-4 {
-    margin-left: 1rem;
+.menu-btn:hover {
+    transform: scale(1.1);
 }
-.sidebar {
+
+.sidenav {
+    height: 100%;
+    width: 0;
     position: fixed;
+    z-index: 1000;
     top: 0;
+    left: 0;
+    background-color: var(--sidebar-bg);
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidenav-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidenav-links {
+    flex-grow: 1;
+}
+
+.sidenav a {
+    padding: 15px 8px 15px 32px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+    position: relative;
+}
+
+.sidenav a:before {
+    content: '';
+    position: absolute;
     bottom: 0;
     left: 0;
-    z-index: 100;
-    padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-    transition: all 0.3s;
-    width: 250px;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
 }
 
-@media (max-width: 767.98px) {
-    .sidebar {
-        margin-left: -250px;
-    }
-    .sidebar.active {
-        margin-left: 0;
-    }
-    main {
-        margin-left: 0;
-        transition: all 0.3s;
-    }
-    main.active {
-        margin-left: 250px;
-    }
+.sidenav a:hover {
+    color: #f1f1f1;
 }
 
-@media (min-width: 768px) {
-    main {
-        margin-left: 250px;
-    }
-    #sidebarToggle {
-        display: none;
-    }
+.sidenav a:hover:before {
+    width: 100%;
 }
 
-#sidebarToggle {
-    position: fixed;
-    top: 0.5rem;
-    left: 0.5rem;
-    z-index: 1031;
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+.auth-buttons {
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+}
+
+.auth-buttons a {
+    flex: 1;
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.auth-buttons a:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+main {
+    padding: 40px 0;
+    flex-grow: 1;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+footer {
+    background-color: var(--secondary-color);
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
 }

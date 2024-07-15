@@ -8,75 +8,39 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand" href="{{ url_for('routes.index') }}">Idea Incubator</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('routes.index') }}">Home</a>
-                    </li>
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('routes.index') }}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('routes.register') }}">Register</a>
-                        </li>
-                    {% endif %}
-                </ul>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="sidenav-content">
+            <div class="sidenav-links">
+                <a href="{{ url_for('routes.index') }}">Dashboard</a>
+                <a href="{{ url_for('routes.projects') }}">Projects</a>
+                <a href="{{ url_for('routes.settings') }}">Settings</a>
+                <a href="{{ url_for('routes.agent_settings') }}">Agent Settings</a>
+                <a href="{{ url_for('routes.provider_settings') }}">Provider Settings</a>
             </div>
-        </nav>
-    </header>
+            <div class="auth-buttons">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('routes.logout') }}" id="logoutBtn">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('routes.index') }}" id="loginBtn">Login</a>
+                    <a href="{{ url_for('routes.register') }}" id="registerBtn">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-    <div class="container-fluid flex-grow-1">
-        <div class="row h-100">
-            {% if current_user.is_authenticated %}
-                <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-                    <div class="position-sticky pt-3">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('routes.index') }}">
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('routes.projects') }}">
-                                    Projects
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('routes.settings') }}">
-                                    Settings
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('routes.agent_settings') }}">
-                                    Agent Settings
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('routes.provider_settings') }}">
-                                    Provider Settings
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-            {% endif %}
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <button id="sidebarToggle" class="btn btn-link d-md-none" type="button">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                {% block content %}{% endblock %}
-            </main>
+    <div class="site-content" id="main">
+        <header>
+            <button class="menu-btn" onclick="openNav()">&#9776;</button>
+            <h1>Idea Incubator</h1>
+        </header>
+        
+        <div class="container-fluid flex-grow-1">
+            <div class="row h-100">
+                <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
+                    {% block content %}{% endblock %}
+                </main>
+            </div>
         </div>
     </div>
 
@@ -89,30 +53,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
     {% block scripts %}{% endblock %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var sidebarToggle = document.getElementById('sidebarToggle');
-            var sidebar = document.getElementById('sidebar');
-            var content = document.querySelector('main');
-            
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    sidebar.classList.toggle('active');
-                    content.classList.toggle('active');
-                });
-            }
-
-            // Close sidebar when clicking outside of it on mobile
-            document.addEventListener('click', function(event) {
-                var isClickInside = sidebar.contains(event.target) || sidebarToggle.contains(event.target);
-                if (!isClickInside && window.innerWidth < 768 && sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    content.classList.remove('active');
-                }
-            });
-        });
-    </script>
 </body>
 </html>

@@ -8,12 +8,12 @@
 
     <div class="auth-form">
         <h3>Login</h3>
-        <form method="POST" action="{{ url_for('index') }}">
+        <form method="POST" action="{{ url_for('routes.index') }}">
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+        <p>Don't have an account? <a href="{{ url_for('routes.register') }}">Register here</a></p>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
