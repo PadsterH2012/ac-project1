@@ -91,7 +91,7 @@ function performAction(action) {
                 backup_projects: true,
                 backup_agents: true,
                 backup_providers: true
-            }),
+            })
         })
         .then(response => {
             console.log('Response received:', response);
