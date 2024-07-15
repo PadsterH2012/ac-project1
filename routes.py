@@ -418,6 +418,7 @@ def chat():
                 db.session.commit()
             else:
                 print(f"Project not found: {project_id}")  # Log if project is not found
+                return jsonify({"error": f"Project not found: {project_id}"}), 404
             
             return jsonify({
                 "planner_response": planner_response,

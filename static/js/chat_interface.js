@@ -49,8 +49,11 @@ async function sendMessage() {
         let errorMessage = 'An error occurred while processing your message.';
         if (error.response && error.response.data && error.response.data.error) {
             errorMessage = error.response.data.error;
+        } else if (error.message) {
+            errorMessage = error.message;
         }
         displayMessage('System', errorMessage);
+        alert(errorMessage); // Add an alert for immediate visibility
     }
 }
 
