@@ -95,7 +95,9 @@ function performAction(action) {
         .then(response => {
             console.log('Response received:', response);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json().then(errorData => {
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Unknown error'}`);
+                });
             }
             return response.blob();
         })
@@ -105,7 +107,11 @@ function performAction(action) {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
-            a.download = 'backup.json';
+            // Get the filename from the Content-Disposition header if available
+            const filename = response.headers.get('Content-Disposition')
+                ? response.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '')
+                : 'backup.json';
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -113,7 +119,7 @@ function performAction(action) {
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('An error occurred while creating the backup. Check the console for more details.');
+            alert(`An error occurred while creating the backup: ${error.message}`);
         });
     } else {
         alert(`Performing action: ${action}`);
