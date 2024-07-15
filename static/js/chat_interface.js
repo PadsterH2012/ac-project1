@@ -1,6 +1,7 @@
 
 async function sendMessage() {
     console.log('sendMessage function called');
+    console.log('Current project ID:', currentProjectId);
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
     let messageText = messageInput.value;
@@ -20,7 +21,13 @@ async function sendMessage() {
 
     try {
         console.log('Preparing to send POST request');
+        console.log('Message:', message);
+        console.log('Request body:', JSON.stringify({
+            message: message,
+            project_id: currentProjectId
+        }));
         // Send message to AI agent
+        console.log('Sending fetch request to /chat');
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {
@@ -33,6 +40,7 @@ async function sendMessage() {
         });
 
         console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -41,6 +49,7 @@ async function sendMessage() {
 
         const data = await response.json();
         console.log('Received data:', data);
+        console.log('AI response:', data.planner_response);
 
         // Display AI response
         displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
