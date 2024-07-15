@@ -408,7 +408,8 @@ def chat():
             return jsonify({
                 "response": ai_response,
                 "agent_name": agent.name,
-                "agent_role": agent.role
+                "agent_role": agent.role,
+                "agent_avatar": agent.avatar or 'default_agent.jpg'
             })
         else:
             return jsonify({"error": "Failed to get response from AI provider"}), 500

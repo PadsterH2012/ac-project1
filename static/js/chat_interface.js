@@ -67,7 +67,7 @@ function displayMessage(sender, text, agentName = '', agentRole = '') {
     if (sender === 'You') {
         avatarElement.src = 'https://websim.ai/avatar4.jpg';
     } else if (agentName) {
-        avatarElement.src = `/static/avatars/${agentName.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+        avatarElement.src = `/static/avatars/${data.agent_avatar || 'default_agent.jpg'}`;
     } else {
         avatarElement.src = '/static/avatars/default_agent.jpg';
     }
