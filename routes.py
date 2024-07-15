@@ -109,8 +109,8 @@ def settings():
 @routes.route("/agent_settings")
 @login_required
 def agent_settings():
-    # Placeholder for agent settings
-    return render_template("agent_settings.html")
+    providers = Provider.query.filter_by(user_id=current_user.id).all()
+    return render_template("agent_settings.html", providers=providers)
 
 @routes.route("/provider_settings")
 @login_required
