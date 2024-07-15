@@ -1,24 +1,3 @@
-const users = [
-    { name: 'Alice', avatar: 'https://websim.ai/avatar1.jpg' },
-    { name: 'Bob', avatar: 'https://websim.ai/avatar2.jpg' },
-    { name: 'Charlie', avatar: 'https://websim.ai/avatar3.jpg' },
-    { name: 'You', avatar: 'https://websim.ai/avatar4.jpg' }
-];
-
-const messages = [
-    { sender: 'Alice', text: 'Hey team! I\'ve adjusted the action buttons to make them more readable.' },
-    { sender: 'Bob', text: 'Nice work, Alice! The centered text and smaller font size look much better.' },
-    { sender: 'Charlie', text: 'I agree, it\'s easier to read now. The buttons also look more uniform.' },
-    { sender: 'You', text: 'This is great! The new layout is both functional and visually appealing.' },
-    { sender: 'Alice', text: 'Thanks! I adjusted the CSS to center the text and made the buttons a bit taller to accommodate longer names.' },
-    { sender: 'Bob', text: 'It\'s a smart design choice. Now all the buttons look consistent, even with varying text lengths.' },
-    { sender: 'Charlie', text: 'This small change really improves the overall user experience. Good job!' },
-    { sender: 'You', text: 'Absolutely! Let\'s keep refining our UI like this to make it as user-friendly as possible.' }
-];
-
-function getRandomUser() {
-    return users[Math.floor(Math.random() * users.length)];
-}
 
 async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
