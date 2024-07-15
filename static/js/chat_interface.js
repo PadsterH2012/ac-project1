@@ -66,7 +66,7 @@ async function clearJournal() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ 
-                project_id: currentProjectId  // Assume this variable is set when loading the chat interface
+                project_id: currentProjectId
             }),
         });
 
@@ -76,10 +76,15 @@ async function clearJournal() {
 
         const data = await response.json();
         if (data.success) {
-            document.getElementById('projectJournal').innerHTML = '';
-            alert('Journal cleared successfully');
+            const projectJournal = document.getElementById('projectJournal');
+            if (projectJournal) {
+                projectJournal.innerHTML = '';
+                console.log('Journal cleared successfully');
+            } else {
+                console.error('Project journal element not found');
+            }
         } else {
-            alert('Failed to clear journal');
+            console.error('Failed to clear journal:', data.message);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -101,19 +106,28 @@ function updateProjectJournal(journalEntry) {
     projectJournal.scrollTop = projectJournal.scrollHeight;
 }
 
-// Add event listener for the send button
+// Add event listeners when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.querySelector('.message-input button');
-    sendButton.addEventListener('click', sendMessage);
-
-    // Add event listener for the Enter key in the input field
     const messageInput = document.getElementById('messageInput');
-    messageInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            sendMessage();
-        }
-    });
+    const clearJournalBtn = document.getElementById('clearJournalBtn');
+
+    if (sendButton) {
+        sendButton.addEventListener('click', sendMessage);
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+
+    if (clearJournalBtn) {
+        clearJournalBtn.addEventListener('click', clearJournal);
+    }
 });
 
 function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
