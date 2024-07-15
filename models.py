@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from flask_login import UserMixin
+from werkzeug.security import check_password_hash
 from datetime import datetime
 
 db = SQLAlchemy()
@@ -11,7 +12,11 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=True)
     oauth_provider = db.Column(db.String(20), nullable=True)
-    oauth_id = db.Column(db.String(120), nullable=True)
+    oauth_id = db.Column(db.String(100))
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+    
     agent_settings = db.Column(db.JSON, nullable=True)
     projects = db.relationship('Project', backref='user', lazy=True)
     agents = db.relationship('Agent', backref='user', lazy=True)
