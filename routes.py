@@ -285,7 +285,3 @@ def init_oauth(app):
 def init_app(app):
     init_oauth(app)
     app.register_blueprint(routes)
-
-    # Import and register route handlers
-    import route_handlers
-    route_handlers.register_routes(routes)
