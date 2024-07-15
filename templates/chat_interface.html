@@ -1,3 +1,212 @@
+<!-- <html><head><base href="https://websim.ai/"><title>Enhanced Chat Interface with Project Management Tabs and Centered Action Buttons</title><style>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #2c3e50;
+        --accent-color: #f39c12;
+        --text-color: #333;
+        --bg-color: #ecf0f1;
+        --chat-bg: #fff;
+        --user-bubble: #dcf8c6;
+        --other-bubble: #f2f2f2;
+        --side-window-bg: #f9f9f9;
+        --tab-active-bg: #fff;
+        --tab-inactive-bg: #e0e0e0;
+        --button-bg: #3498db;
+        --button-hover-bg: #2980b9;
+    }
+    body {
+        font-family: 'Roboto', Arial, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .page-container {
+        display: flex;
+        width: 135%;
+        max-width: 2200px;
+        height: 80vh;
+        padding: 20px;
+        gap: 20px;
+    }
+    .chat-container {
+        flex: 2;
+        background-color: var(--chat-bg);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    .side-window {
+        flex: 1;
+        background-color: var(--side-window-bg);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+    }
+    .action-buttons {
+        flex: 0 0 auto;
+        width: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+        background-color: var(--tab-inactive-bg);
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .chat-messages {
+        flex-grow: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .message {
+        display: flex;
+        margin-bottom: 15px;
+        max-width: 70%;
+    }
+    .message.user {
+        align-self: flex-end;
+    }
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .message.user .avatar {
+        order: 2;
+        margin-right: 0;
+        margin-left: 10px;
+    }
+    .bubble {
+        padding: 12px 18px;
+        border-radius: 20px;
+        position: relative;
+    }
+    .message.other .bubble {
+        background-color: var(--other-bubble);
+        border-top-left-radius: 0;
+    }
+    .message.user .bubble {
+        background-color: var(--user-bubble);
+        border-top-right-radius: 0;
+    }
+    .sender-name {
+        font-size: 0.9em;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .message-input {
+        display: flex;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    .message-input input {
+        flex-grow: 1;
+        border: none;
+        padding: 12px;
+        border-radius: 20px;
+        margin-right: 10px;
+        font-size: 1em;
+    }
+    .message-input button {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    .side-window-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        background-color: var(--tab-inactive-bg);
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .tab {
+        padding: 10px 15px;
+        cursor: pointer;
+        border: none;
+        background-color: transparent;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+    }
+    .tab.active {
+        background-color: var(--tab-active-bg);
+        font-weight: bold;
+    }
+    .tab-content {
+        display: none;
+        padding: 20px;
+        background-color: var(--tab-active-bg);
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    .action-button {
+        background-color: var(--button-bg);
+        color: white;
+        border: none;
+        padding: 10px 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8em;
+        transition: background-color 0.3s;
+        text-align: center;
+        word-wrap: break-word;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .action-button:hover {
+        background-color: var(--button-hover-bg);
+    }
+    .vfs-container {
+        display: flex;
+        flex-direction: column;
+    }
+    .vfs-path {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .vfs-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+    .vfs-item:hover {
+        background-color: #f0f0f0;
+    }
+    .vfs-icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+    .folder::before {
+        content: "📁";
+    }
+    .file::before {
+        content: "📄";
+    }
+</style></head><body> -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -139,142 +348,25 @@
             <button class="action-button" onclick="performAction('Upload')">Upload</button>
         </div>
     </div>
-    <div class="page-container">
-        <div class="chat-container">
-            <div class="chat-messages" id="chatMessages">
-                <!-- Messages will be dynamically added here -->
-            </div>
-            <div class="message-input">
-                <input type="text" id="messageInput" placeholder="Type a message...">
-                <button onclick="sendMessage()">Send</button>
-            </div>
-        </div>
-        <div class="side-window">
-            <div class="side-window-tabs">
-                <button class="tab active" onclick="openTab(event, 'Journal')">Journal</button>
-                <button class="tab" onclick="openTab(event, 'Scope')">Scope</button>
-                <button class="tab" onclick="openTab(event, 'HLD')">HLD</button>
-                <button class="tab" onclick="openTab(event, 'LLD - DB')">LLD_DB</button>
-                <button class="tab" onclick="openTab(event, 'LLD - UX')">LLD_UX</button>
-                <button class="tab" onclick="openTab(event, 'LLD - Code')">LLD_Code</button>
-                <button class="tab" onclick="openTab(event, 'Coding Plan')">Coding_Plan</button>
-                <button class="tab" onclick="openTab(event, 'VFS')">VFS</button>
-            </div>
-            <div id="Journal" class="tab-content active">
-                <h3>Project Journal</h3>
-                <p>Keep track of your project's progress, decisions, and important milestones here.</p>
-                <ul>
-                    <li>Day 1: Project kickoff meeting</li>
-                    <li>Day 3: Finalized project scope</li>
-                    <li>Day 7: Completed High-Level Design</li>
-                    <li>Day 10: Started work on Low-Level Designs</li>
-                    <li>Day 15: Added Virtual File System (VFS) to the project</li>
-                    <li>Day 16: Implemented action buttons outside the side window for quick access</li>
-                    <li>Day 17: Adjusted action button layout for better readability</li>
-                </ul>
-            </div>
-            <div id="Scope" class="tab-content">
-                <h3>Project Scope</h3>
-                <p>Define and manage the project's scope here.</p>
-                <ul>
-                    <li>Project objectives</li>
-                    <li>Deliverables</li>
-                    <li>Timeline</li>
-                    <li>Resources required</li>
-                    <li>Implementation of Virtual File System</li>
-                    <li>External quick action buttons for improved user interaction</li>
-                    <li>Optimized button layout for better usability</li>
-                </ul>
-            </div>
-            <div id="HLD" class="tab-content">
-                <h3>High-Level Design</h3>
-                <p>Outline the overall system architecture and main components.</p>
-                <ul>
-                    <li>System overview</li>
-                    <li>Main modules</li>
-                    <li>Data flow</li>
-                    <li>Technology stack</li>
-                    <li>Virtual File System architecture</li>
-                    <li>External action button integration</li>
-                    <li>UI/UX considerations for action buttons</li>
-                </ul>
-            </div>
-            <div id="LLD - DB" class="tab-content">
-                <h3>Low-Level Design - Database</h3>
-                <p>Detailed database design and schema.</p>
-                <ul>
-                    <li>Entity-Relationship Diagram</li>
-                    <li>Table structures</li>
-                    <li>Indexes and constraints</li>
-                    <li>Data migration plan</li>
-                    <li>VFS metadata storage</li>
-                </ul>
-            </div>
-            <div id="LLD - UX" class="tab-content">
-                <h3>Low-Level Design - User Experience</h3>
-                <p>Detailed user interface and experience design.</p>
-                <ul>
-                    <li>Wireframes</li>
-                    <li>User flow diagrams</li>
-                    <li>Mockups</li>
-                    <li>Interaction design</li>
-                    <li>VFS user interface design</li>
-                    <li>External action button placement and functionality</li>
-                    <li>Button layout optimization for readability</li>
-                </ul>
-            </div>
-            <div id="LLD - Code" class="tab-content">
-                <h3>Low-Level Design - Code</h3>
-                <p>Detailed code structure and implementation plan.</p>
-                <ul>
-                    <li>Class diagrams</li>
-                    <li>Sequence diagrams</li>
-                    <li>API specifications</li>
-                    <li>Code organization</li>
-                    <li>VFS implementation details</li>
-                    <li>External action button event handlers</li>
-                    <li>CSS optimizations for button layout</li>
-                </ul>
-            </div>
-            <div id="Coding Plan" class="tab-content">
-                <h3>Coding Plan</h3>
-                <p>Outline the implementation strategy and coding tasks.</p>
-                <ul>
-                    <li>Task breakdown</li>
-                    <li>Coding standards</li>
-                    <li>Testing approach</li>
-                    <li>Code review process</li>
-                    <li>VFS integration plan</li>
-                    <li>External action button functionality implementation</li>
-                    <li>UI/UX refinements for action buttons</li>
-                </ul>
-            </div>
-            <div id="VFS" class="tab-content">
-                <h3>Virtual File System (VFS)</h3>
-                <div class="vfs-container">
-                    <div class="vfs-path">/</div>
-                    <div class="vfs-item folder" onclick="navigateVFS('projects')">
-                        <span class="vfs-icon"></span>projects
-                    </div>
-                    <div class="vfs-item folder" onclick="navigateVFS('documents')">
-                        <span class="vfs-icon"></span>documents
-                    </div>
-                    <div class="vfs-item file">
-                        <span class="vfs-icon"></span>readme.txt
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="action-buttons">
-            <button class="action-button" onclick="performAction('Scope')">Scope</button>
-            <button class="action-button" onclick="performAction('HLD')">HLD</button>
-            <button class="action-button" onclick="performAction('LLD-DB')">LLD DB</button>
-            <button class="action-button" onclick="performAction('LLD-UX')">LLD UX</button>
-            <button class="action-button" onclick="performAction('LLD-Code')">LLD Code</button>
-            <button class="action-button" onclick="performAction('Plan')">Plan</button>
-            <button class="action-button" onclick="performAction('Write')">Write</button>
-            <button class="action-button" onclick="performAction('Download')">Download</button>
-            <button class="action-button" onclick="performAction('Upload')">Upload</button>
-        </div>
-    </div>
-{% endblock %}
+    <script>
+        const users = [
+            { name: 'Alice', avatar: 'https://websim.ai/avatar1.jpg' },
+            { name: 'Bob', avatar: 'https://websim.ai/avatar2.jpg' },
+            { name: 'Charlie', avatar: 'https://websim.ai/avatar3.jpg' },
+            { name: 'You', avatar: 'https://websim.ai/avatar4.jpg' }
+        ];
+
+        const messages = [
+            { sender: 'Alice', text: 'Hey team! I\'ve adjusted the action buttons to make them more readable.' },
+            { sender: 'Bob', text: 'Nice work, Alice! The centered text and smaller font size look much better.' },
+            { sender: 'Charlie', text: 'I agree, it\'s easier to read now. The buttons also look more uniform.' },
+            { sender: 'You', text: 'This is great! The new layout is both functional and visually appealing.' },
+            { sender: 'Alice', text: 'Thanks! I adjusted the CSS to center the text and made the buttons a bit taller to accommodate longer names.' },
+            { sender: 'Bob', text: 'It\'s a smart design choice. Now all the buttons look consistent, even with varying text lengths.' },
+            { sender: 'Charlie', text: 'This small change really improves the overall user experience. Good job!' },
+            { sender: 'You', text: 'Absolutely! Let\'s keep refining our UI like this to make it as user-friendly as possible.' }
+        ];
+
+     </script>
+    {% endblock %}
+   
