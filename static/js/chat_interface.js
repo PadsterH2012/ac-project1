@@ -10,11 +10,6 @@ async function sendMessage() {
         return;
     }
 
-    if (chatMessages.children.length > 0) {
-        // Display user message
-        displayMessage('You', messageText);
-    }
-
     // Clear input
     messageInput.value = '';
 
@@ -38,6 +33,11 @@ async function sendMessage() {
             const data = await response.json();
             // Display AI response
             displayMessage('AI Agent', data.response, data.agent_name, data.agent_role);
+        }
+
+        if (chatMessages.children.length === 1) {
+            // Display user message after the initial AI message
+            displayMessage('You', messageText);
         }
     } catch (error) {
         console.error('Error:', error);

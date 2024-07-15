@@ -1,4 +1,5 @@
 import os
+import uuid
 from PIL import Image
 from werkzeug.utils import secure_filename
 from flask import current_app
@@ -9,7 +10,8 @@ def allowed_file(filename):
 
 def save_avatar(file):
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        # Generate a random filename
+        filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
         
         # Resize and save the image
