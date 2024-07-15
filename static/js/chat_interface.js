@@ -261,6 +261,47 @@ function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
 }
 
+async function createProjectScope() {
+    try {
+        const response = await fetch('/create_scope', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                project_id: currentProjectId
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            const scopeContent = document.getElementById('Scope');
+            if (scopeContent) {
+                scopeContent.innerHTML = `<h3>Project Scope</h3><p>${data.scope}</p>`;
+                console.log('Project scope created successfully');
+            } else {
+                console.error('Scope content element not found');
+            }
+        } else {
+            console.error('Failed to create project scope:', data.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while creating the project scope');
+    }
+}
+
+// Add this to your existing window.onload function or create one if it doesn't exist
+window.onload = function() {
+    console.log('Chat interface initialized');
+    document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
+    document.getElementById('createScopeBtn').addEventListener('click', createProjectScope);
+};
+
 let currentProjectId;
 
 // Initialize the chat

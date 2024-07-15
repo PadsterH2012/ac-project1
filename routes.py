@@ -446,6 +446,33 @@ def clear_journal():
         return jsonify({"success": True, "message": "Journal cleared successfully"})
     return jsonify({"success": False, "message": "Failed to clear journal"}), 404
 
+@routes.route("/create_scope", methods=["POST"])
+@login_required
+def create_scope():
+    project_id = request.json.get('project_id')
+    project = Project.query.get(project_id)
+    if project and project.user_id == current_user.id:
+        planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+        if not planner_agent:
+            return jsonify({"error": "Missing AI agent for the current user"}), 404
+        
+        planner_provider = Provider.query.get(planner_agent.provider_id)
+        if not planner_provider:
+            return jsonify({"error": "Missing provider for the AI agent"}), 404
+        
+        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+        planner_prompt = f"{system_prompt}\n\nHuman: Based on the following project journal, create a comprehensive project scope:\n\n{project.journal}\n\nAI:"
+        
+        scope_response = get_ai_response(planner_provider, planner_prompt)
+        
+        if scope_response:
+            project.scope = scope_response
+            db.session.commit()
+            return jsonify({"success": True, "scope": scope_response})
+        else:
+            return jsonify({"error": "Failed to generate project scope"}), 500
+    return jsonify({"error": "Project not found or unauthorized"}), 404
+
 def get_ai_response(provider, prompt):
     if provider.provider_type == 'ollama':
         print(f"Connecting to Ollama at {provider.url}")  # Log connection attempt
