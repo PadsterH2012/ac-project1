@@ -10,25 +10,25 @@
 <body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Idea Incubator</a>
+            <a class="navbar-brand" href="{{ url_for('routes.index') }}">Idea Incubator</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('routes.index') }}">Home</a>
                     </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                            <a class="nav-link" href="{{ url_for('routes.logout') }}">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('index') }}">Login</a>
+                            <a class="nav-link" href="{{ url_for('routes.index') }}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                            <a class="nav-link" href="{{ url_for('routes.register') }}">Register</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -43,27 +43,27 @@
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('index') }}">
+                                <a class="nav-link" href="{{ url_for('routes.index') }}">
                                     Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('projects') }}">
+                                <a class="nav-link" href="{{ url_for('routes.projects') }}">
                                     Projects
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('settings') }}">
+                                <a class="nav-link" href="{{ url_for('routes.settings') }}">
                                     Settings
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('provider_settings') }}">
+                                <a class="nav-link" href="{{ url_for('routes.provider_settings') }}">
                                     Provider Settings
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('agent_settings') }}">
+                                <a class="nav-link" href="{{ url_for('routes.agent_settings') }}">
                                     Agent Settings
                                 </a>
                             </li>
