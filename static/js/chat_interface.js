@@ -1,14 +1,16 @@
 
 async function sendMessage() {
+    console.log('sendMessage function called');
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
     let messageText = messageInput.value;
 
     if (messageText.trim() === '') {
+        console.log('Message is empty, not sending');
         return;
     }
 
-    console.log('Sending message:', messageText);  // Debug log
+    console.log('Sending message:', messageText);
 
     // Display user message
     displayMessage('You', messageText);
@@ -17,6 +19,7 @@ async function sendMessage() {
     messageInput.value = '';
 
     try {
+        console.log('Preparing to send POST request');
         // Send message to AI agent
         const response = await fetch('/chat', {
             method: 'POST',
@@ -25,11 +28,11 @@ async function sendMessage() {
             },
             body: JSON.stringify({ 
                 message: messageText,
-                project_id: currentProjectId  // Assume this variable is set when loading the chat interface
+                project_id: currentProjectId
             }),
         });
 
-        console.log('Response status:', response.status);  // Debug log
+        console.log('Response status:', response.status);
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -37,7 +40,7 @@ async function sendMessage() {
         }
 
         const data = await response.json();
-        console.log('Received data:', data);  // Debug log
+        console.log('Received data:', data);
 
         // Display AI response
         displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
@@ -57,7 +60,7 @@ async function sendMessage() {
             errorMessage = error.message;
         }
         displayMessage('System', errorMessage);
-        alert(errorMessage); // Add an alert for immediate visibility
+        alert(errorMessage);
     }
 }
 
@@ -112,22 +115,33 @@ function updateProjectJournal(journalEntry) {
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
     const sendButton = document.querySelector('.message-input button');
     const messageInput = document.getElementById('messageInput');
     const clearJournalBtn = document.getElementById('clearJournalBtn');
     const projectJournal = document.getElementById('projectJournal');
 
     if (sendButton) {
-        sendButton.addEventListener('click', sendMessage);
+        console.log('Send button found, adding event listener');
+        sendButton.addEventListener('click', function(event) {
+            console.log('Send button clicked');
+            sendMessage();
+        });
+    } else {
+        console.error('Send button not found');
     }
 
     if (messageInput) {
+        console.log('Message input found, adding event listener');
         messageInput.addEventListener('keypress', function(event) {
             if (event.key === 'Enter') {
+                console.log('Enter key pressed in message input');
                 event.preventDefault();
                 sendMessage();
             }
         });
+    } else {
+        console.error('Message input not found');
     }
 
     if (clearJournalBtn) {
