@@ -8,6 +8,7 @@ import tempfile
 from datetime import datetime
 import json
 import requests
+from ollama_connection import connect_to_ollama
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
