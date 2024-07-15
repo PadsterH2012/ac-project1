@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.querySelector('.message-input button');
     const messageInput = document.getElementById('messageInput');
     const clearJournalBtn = document.getElementById('clearJournalBtn');
+    const projectJournal = document.getElementById('projectJournal');
 
     if (sendButton) {
         sendButton.addEventListener('click', sendMessage);
@@ -127,6 +128,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (clearJournalBtn) {
         clearJournalBtn.addEventListener('click', clearJournal);
+    }
+
+    // Load journal entries
+    if (projectJournal) {
+        const journalEntries = projectJournal.dataset.entries;
+        if (journalEntries) {
+            const entries = journalEntries.split('\n\n');
+            entries.forEach(entry => {
+                const entryElement = document.createElement('p');
+                entryElement.textContent = entry;
+                projectJournal.appendChild(entryElement);
+            });
+        }
     }
 });
 
