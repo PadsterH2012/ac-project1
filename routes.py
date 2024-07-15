@@ -7,6 +7,7 @@ from backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
 import json
+import requests
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -366,3 +367,42 @@ def delete_agent_from_settings(agent_id):
     db.session.commit()
     flash('Agent deleted successfully!', 'success')
     return redirect(url_for('routes.agent_settings'))
+
+@routes.route("/chat", methods=["POST"])
+@login_required
+def chat():
+    message = request.json.get('message')
+    
+    # Get the current user's AI agent (assuming one agent per user for simplicity)
+    agent = Agent.query.filter_by(user_id=current_user.id).first()
+    
+    if not agent:
+        return jsonify({"error": "No AI agent found for the current user"}), 404
+    
+    # Get the provider for the agent
+    provider = Provider.query.get(agent.provider_id)
+    
+    if not provider:
+        return jsonify({"error": "No provider found for the AI agent"}), 404
+    
+    # Prepare the prompt
+    prompt = f"{agent.system_prompt}\n\nHuman: {message}\n\nAI:"
+    
+    # Make a request to the AI provider (e.g., Ollama)
+    if provider.provider_type == 'ollama':
+        response = requests.post(
+            provider.url,
+            json={
+                "model": provider.model,
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+        
+        if response.status_code == 200:
+            ai_response = response.json().get('response', '')
+            return jsonify({"response": ai_response})
+        else:
+            return jsonify({"error": "Failed to get response from AI provider"}), 500
+    else:
+        return jsonify({"error": "Unsupported AI provider"}), 400

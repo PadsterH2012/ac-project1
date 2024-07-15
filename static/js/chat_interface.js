@@ -20,20 +20,51 @@ function getRandomUser() {
     return users[Math.floor(Math.random() * users.length)];
 }
 
-function sendMessage() {
+async function sendMessage() {
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
     const messageText = messageInput.value;
 
     if (messageText.trim() === '') return;
 
-    const user = getRandomUser();
+    // Display user message
+    displayMessage('You', messageText);
+
+    // Clear input
+    messageInput.value = '';
+
+    try {
+        // Send message to AI agent
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: messageText }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        // Display AI response
+        displayMessage('AI Agent', data.response);
+    } catch (error) {
+        console.error('Error:', error);
+        displayMessage('System', 'An error occurred while processing your message.');
+    }
+}
+
+function displayMessage(sender, text) {
+    const chatMessages = document.getElementById('chatMessages');
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message', user.name === 'You' ? 'user' : 'other');
+    messageElement.classList.add('message', sender === 'You' ? 'user' : 'other');
 
     const avatarElement = document.createElement('img');
-    avatarElement.src = user.avatar;
-    avatarElement.alt = user.name;
+    avatarElement.src = sender === 'You' ? 'https://websim.ai/avatar4.jpg' : 'https://websim.ai/ai_avatar.jpg';
+    avatarElement.alt = sender;
     avatarElement.classList.add('avatar');
 
     const bubbleElement = document.createElement('div');
@@ -41,10 +72,10 @@ function sendMessage() {
     
     const senderNameElement = document.createElement('span');
     senderNameElement.classList.add('sender-name');
-    senderNameElement.textContent = user.name;
+    senderNameElement.textContent = sender;
 
     const messageTextElement = document.createElement('p');
-    messageTextElement.textContent = messageText;
+    messageTextElement.textContent = text;
 
     const timestampElement = document.createElement('span');
     timestampElement.classList.add('timestamp');
@@ -59,7 +90,6 @@ function sendMessage() {
     chatMessages.appendChild(messageElement);
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    messageInput.value = '';
 }
 
 function openTab(event, tabName) {
