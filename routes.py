@@ -115,3 +115,9 @@ def agent_settings():
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')
+
+@routes.route("/create_project", methods=["GET", "POST"])
+@login_required
+def create_project():
+    # Add your create project logic here
+    return render_template("create_project.html")
