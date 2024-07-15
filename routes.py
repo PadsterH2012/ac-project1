@@ -143,8 +143,9 @@ def backup():
     print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
     backup_data_json = backup_data(current_user.id, backup_type)
     
-    if backup_data_json == '{}':
-        return jsonify({"message": "No data found for backup"}), 404
+    backup_data_dict = json.loads(backup_data_json)
+    if 'error' in backup_data_dict:
+        return jsonify({"error": backup_data_dict['error']}), 404
     
     # Create a temporary file
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
