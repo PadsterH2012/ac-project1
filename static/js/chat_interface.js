@@ -66,11 +66,14 @@ function displayMessage(sender, text, agentName = '', agentRole = '') {
     const avatarElement = document.createElement('img');
     if (sender === 'You') {
         avatarElement.src = 'https://websim.ai/avatar4.jpg';
-    } else if (agentName) {
+    } else if (agentName && data && data.agent_avatar) {
         avatarElement.src = `/static/avatars/${data.agent_avatar}`;
     } else {
         avatarElement.src = '/static/avatars/default_agent.jpg';
     }
+    avatarElement.onerror = function() {
+        this.src = '/static/avatars/default_agent.jpg';
+    };
     avatarElement.alt = sender;
     avatarElement.classList.add('avatar');
 
