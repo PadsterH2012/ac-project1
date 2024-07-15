@@ -10,6 +10,7 @@ import json
 import requests
 from ollama_connection import connect_to_ollama
 from utils import save_avatar, get_avatar_url
+from prompt_config import DEFAULT_PROMPTS
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -400,7 +401,8 @@ def chat():
             return jsonify({"error": "Missing provider for the AI agent"}), 404
         
         # Prepare the prompt
-        planner_prompt = f"{planner_agent.system_prompt}\n\nHuman: {message}\n\nAI:"
+        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+        planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
         print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
         
         # Make request to the AI provider
