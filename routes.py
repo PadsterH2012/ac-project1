@@ -118,6 +118,28 @@ def provider_settings():
     providers = Provider.query.filter_by(user_id=current_user.id).all()
     return render_template("provider_settings.html", providers=providers)
 
+@routes.route("/add_provider", methods=["POST"])
+@login_required
+def add_provider():
+    provider_type = request.form.get('provider_type')
+    api_key = request.form.get('api_key')
+    model = request.form.get('model')
+    url = request.form.get('url')
+
+    new_provider = Provider(
+        user_id=current_user.id,
+        provider_type=provider_type,
+        api_key=api_key,
+        model=model,
+        url=url if provider_type == 'ollama' else None
+    )
+
+    db.session.add(new_provider)
+    db.session.commit()
+
+    flash('Provider added successfully!', 'success')
+    return redirect(url_for('routes.provider_settings'))
+
 # Add all other route handlers here
 # Make sure to update all url_for calls to include 'routes.' prefix
 # For example: url_for('index') should become url_for('routes.index')

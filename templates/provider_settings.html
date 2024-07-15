@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Provider Settings</h1>
-<form method="POST" action="{{ url_for('add_provider') }}">
+<form method="POST" action="{{ url_for('routes.add_provider') }}">
     <div class="form-group">
         <label for="provider_type">Provider Type:</label>
         <select class="form-control" id="provider_type" name="provider_type" required>
