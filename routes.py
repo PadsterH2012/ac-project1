@@ -118,17 +118,20 @@ def settings():
 @routes.route("/backup", methods=['POST'])
 @login_required
 def backup():
+    print("Backup route called")  # Debug print
     backup_options = []
-    if request.form.get('backup_projects'):
+    data = request.get_json()
+    if data.get('backup_projects'):
         backup_options.append('projects')
-    if request.form.get('backup_agents'):
+    if data.get('backup_agents'):
         backup_options.append('agents')
-    if request.form.get('backup_providers'):
+    if data.get('backup_providers'):
         backup_options.append('providers')
     
     backup_type = ','.join(backup_options) if backup_options else 'all'
     
     try:
+        print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
         backup_data_json = backup_data(current_user.id, backup_type)
         
         # Create a temporary file
@@ -140,11 +143,13 @@ def backup():
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"incubator_backup_{timestamp}.json"
         
+        print(f"Sending file: {filename}")  # Debug print
+        
         # Send the file
         return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
     except ValueError as e:
-        flash(str(e), 'error')
-        return redirect(url_for('routes.settings'))
+        print(f"ValueError occurred: {str(e)}")  # Debug print
+        return jsonify({"error": str(e)}), 400
 
 @routes.route("/restore", methods=['POST'])
 @login_required
