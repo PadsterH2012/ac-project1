@@ -79,6 +79,7 @@ function openTab(event, tabName) {
 
 function performAction(action) {
     if (action === 'Download') {
+        console.log('Initiating backup process...');
         // Trigger the backup process
         fetch('/backup', {
             method: 'POST',
@@ -91,8 +92,15 @@ function performAction(action) {
                 backup_providers: true
             }),
         })
-        .then(response => response.blob())
+        .then(response => {
+            console.log('Response received:', response);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.blob();
+        })
         .then(blob => {
+            console.log('Blob received:', blob);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -101,10 +109,11 @@ function performAction(action) {
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
+            console.log('Download initiated');
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('An error occurred while creating the backup.');
+            alert('An error occurred while creating the backup. Check the console for more details.');
         });
     } else {
         alert(`Performing action: ${action}`);
