@@ -411,6 +411,12 @@ def chat():
         if not project_id:
             logger.warning("Project ID is empty or None")
         
+        # Log the entire request object
+        logger.debug(f"Full request object: {request}")
+        logger.debug(f"Request headers: {request.headers}")
+        logger.debug(f"Request form data: {request.form}")
+        logger.debug(f"Request args: {request.args}")
+        
         if not message or not project_id:
             logger.warning("Missing message or project ID")
             return jsonify({"error": "Missing message or project ID"}), 400
