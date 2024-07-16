@@ -402,6 +402,15 @@ def chat():
         logger.info(f"Received message: {message}")
         logger.info(f"Received project_id: {project_id}")
         
+        # Additional logging to ensure message is being sent
+        logger.debug(f"Message variable content: {message}")
+        logger.debug(f"Project ID variable content: {project_id}")
+        
+        if not message:
+            logger.warning("Message is empty or None")
+        if not project_id:
+            logger.warning("Project ID is empty or None")
+        
         if not message or not project_id:
             logger.warning("Missing message or project ID")
             return jsonify({"error": "Missing message or project ID"}), 400
