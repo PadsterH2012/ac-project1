@@ -386,112 +386,65 @@ def check_login():
 @routes.route("/chat", methods=["POST"])
 @login_required
 def chat():
-    try:
-        logger.info("Chat route called")
-        logger.debug(f"Request Content-Type: {request.content_type}")
-        logger.debug(f"Request data: {request.data}")
-        logger.debug(f"Current user: {current_user}")
+    data = request.get_json()
+    message = data.get('message')
+    project_id = data.get('project_id')
+
+    if not message or not project_id:
+        return jsonify({"error": "Missing message or project ID"}), 400
+
+    # Get the current user's AI agent
+    planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+    
+    if not planner_agent:
+        return jsonify({"error": "Missing AI agent for the current user"}), 404
+
+    # Get the provider for the agent
+    planner_provider = Provider.query.get(planner_agent.provider_id)
+    
+    if not planner_provider:
+        return jsonify({"error": "Missing provider for the AI agent"}), 404
+
+    # Prepare the prompt
+    system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+    planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
+
+    # Make request to the AI provider
+    planner_response = get_ai_response(planner_provider, planner_prompt)
+    
+    if planner_response:
+        # Create a journal entry
+        journal_entry = f"User: {message}\n\nPlanner: {planner_response}"
         
-        if not request.is_json:
-            logger.warning("Request is not JSON")
-            return jsonify({"error": "Request must be JSON"}), 400
-        
-        data = request.get_json()
-        message = data.get('message')
-        project_id = data.get('project_id')
-        logger.info(f"Received message: {message}")
-        logger.info(f"Received project_id: {project_id}")
-        
-        # Additional logging to ensure message is being sent
-        logger.debug(f"Message variable content: {message}")
-        logger.debug(f"Project ID variable content: {project_id}")
-        
-        if not message:
-            logger.warning("Message is empty or None")
-        if not project_id:
-            logger.warning("Project ID is empty or None")
-        
-        # Log the entire request object
-        logger.debug(f"Full request object: {request}")
-        logger.debug(f"Request headers: {request.headers}")
-        logger.debug(f"Request form data: {request.form}")
-        logger.debug(f"Request args: {request.args}")
-        
-        if not message or not project_id:
-            logger.warning("Missing message or project ID")
-            return jsonify({"error": "Missing message or project ID"}), 400
-        
-        # Get the current user's AI agent
-        planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
-        
-        if not planner_agent:
-            logger.error(f"Missing AI agent for user {current_user.id}")
-            return jsonify({"error": "Missing AI agent for the current user"}), 404
-        
-        # Get the provider for the agent
-        planner_provider = Provider.query.get(planner_agent.provider_id)
-        
-        if not planner_provider:
-            logger.error(f"Missing provider for agent {planner_agent.id}")
-            return jsonify({"error": "Missing provider for the AI agent"}), 404
-        
-        # Prepare the prompt
-        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-        planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
-        logger.debug(f"Prepared prompt: {planner_prompt[:100]}...")
-        
-        # Make request to the AI provider
-        planner_response = get_ai_response(planner_provider, planner_prompt)
-        
-        if planner_response:
-            logger.info(f"Received AI response: {planner_response[:100]}...")
-            # Create a journal entry
-            journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
+        # Update the project journal
+        project = Project.query.get(project_id)
+        if project:
+            if project.user_id != current_user.id:
+                return jsonify({"error": "You do not have permission to access this project"}), 403
             
-            # Update the project journal
-            project = Project.query.get(project_id)
-            if project:
-                if project.user_id != current_user.id:
-                    logger.warning(f"User {current_user.id} attempted to access project {project_id} belonging to user {project.user_id}")
-                    return jsonify({"error": "You do not have permission to access this project"}), 403
-                
-                project.journal = (project.journal or "") + "\n\n" + journal_entry
-                
-                # Generate new scope
-                scope_prompt = f"{system_prompt}\n\nHuman: Based on the following project journal, create a comprehensive project scope:\n\n{project.journal}\n\nAI:"
-                scope_response = get_ai_response(planner_provider, scope_prompt)
-                
-                if scope_response:
-                    project.scope = scope_response
-                else:
-                    logger.warning("Failed to generate new project scope")
-                
-                try:
-                    db.session.commit()
-                except SQLAlchemyError as e:
-                    logger.error(f"Database error: {str(e)}")
-                    db.session.rollback()
-                    return jsonify({"error": "A database error occurred"}), 500
-            else:
-                logger.error(f"Project not found: {project_id}")
-                return jsonify({"error": f"Project not found: {project_id}"}), 404
+            project.journal = (project.journal or "") + "\n\n" + journal_entry
             
-            response_data = {
-                "planner_response": planner_response,
-                "journal_entry": journal_entry,
-                "planner_name": planner_agent.name,
-                "planner_role": planner_agent.role,
-                "planner_avatar": get_avatar_url(planner_agent.avatar),
-                "scope": project.scope
-            }
-            logger.debug(f"Sending response: {response_data}")
-            return jsonify(response_data)
+            # Generate new scope
+            scope_prompt = f"{system_prompt}\n\nHuman: Based on the following project journal, create a comprehensive project scope:\n\n{project.journal}\n\nAI:"
+            scope_response = get_ai_response(planner_provider, scope_prompt)
+            
+            if scope_response:
+                project.scope = scope_response
+            
+            db.session.commit()
         else:
-            logger.error("Failed to get response from AI provider")
-            return jsonify({"error": "Failed to get response from AI provider"}), 500
-    except Exception as e:
-        logger.exception(f"An unexpected error occurred: {str(e)}")
-        return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
+            return jsonify({"error": f"Project not found: {project_id}"}), 404
+        
+        return jsonify({
+            "planner_response": planner_response,
+            "journal_entry": journal_entry,
+            "planner_name": planner_agent.name,
+            "planner_role": planner_agent.role,
+            "planner_avatar": get_avatar_url(planner_agent.avatar),
+            "scope": project.scope
+        })
+    else:
+        return jsonify({"error": "Failed to get response from AI provider"}), 500
 
 @routes.route("/clear_journal", methods=["POST"])
 @login_required
