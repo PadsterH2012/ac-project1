@@ -68,26 +68,55 @@ async function sendMessage() {
         console.log('AI response:', data.planner_response);
 
         // Display AI response
+        console.log('Calling displayMessage with:', {
+            sender: 'AI Agent Project Planner',
+            message: data.planner_response,
+            plannerName: data.planner_name,
+            plannerRole: data.planner_role,
+            plannerAvatar: data.planner_avatar
+        });
         displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
         
         // Update project journal
+        console.log('Calling updateProjectJournal with:', data.journal_entry);
         updateProjectJournal(data.journal_entry);
 
         // Update project scope
         if (data.scope) {
+            console.log('Calling updateScopeContent with:', data.scope);
             updateScopeContent(data.scope);
         }
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error in sendMessage:', error);
         let errorMessage = 'An error occurred while processing your message.';
         if (error.message) {
             errorMessage = error.message;
         }
+        console.log('Displaying error message:', errorMessage);
         displayMessage('System', errorMessage);
         alert(errorMessage);
     }
 }
+
+// Log when the sendMessage function is defined
+console.log('sendMessage function defined');
+
+// Add event listener for the send button
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded, adding event listeners');
+    const sendButton = document.querySelector('.message-input button');
+    if (sendButton) {
+        console.log('Send button found, adding click event listener');
+        sendButton.addEventListener('click', function(event) {
+            console.log('Send button clicked');
+            event.preventDefault();
+            sendMessage();
+        });
+    } else {
+        console.error('Send button not found');
+    }
+});
 
 // Log when the sendMessage function is defined
 console.log('sendMessage function defined');
