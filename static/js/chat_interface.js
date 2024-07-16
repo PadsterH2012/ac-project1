@@ -85,6 +85,44 @@ async function sendMessage() {
     }
 }
 
+// Add event listeners when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    const sendButton = document.querySelector('.message-input button');
+    const messageInput = document.getElementById('messageInput');
+
+    if (sendButton) {
+        console.log('Send button found, adding event listener');
+        sendButton.addEventListener('click', function(event) {
+            console.log('Send button clicked');
+            event.preventDefault();
+            sendMessage();
+        });
+    } else {
+        console.error('Send button not found');
+    }
+
+    if (messageInput) {
+        console.log('Message input found, adding event listener');
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                console.log('Enter key pressed in message input');
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    } else {
+        console.error('Message input not found');
+    }
+});
+
+// Ensure currentProjectId is set
+window.onload = function() {
+    console.log('Window loaded');
+    currentProjectId = document.getElementById('projectId').value;
+    console.log('Current project ID:', currentProjectId);
+};
+
 // Add this function to check if the user is logged in
 function checkLoginStatus() {
     fetch('/check_login')
