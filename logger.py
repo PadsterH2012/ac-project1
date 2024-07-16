@@ -7,16 +7,15 @@ def setup_logger():
     if not os.path.exists('logs'):
         os.makedirs('logs')
 
-    # Clear existing log file
-    log_file = 'logs/app.log'
-    if os.path.exists(log_file):
-        os.remove(log_file)
-
     # Set up logger
     logger = logging.getLogger('app_logger')
     logger.setLevel(logging.DEBUG)
 
+    # Clear existing handlers
+    logger.handlers.clear()
+
     # Create file handler
+    log_file = 'logs/app.log'
     file_handler = RotatingFileHandler(log_file, maxBytes=10485760, backupCount=5)
     file_handler.setLevel(logging.DEBUG)
 
@@ -37,3 +36,6 @@ def setup_logger():
 
 # Create and configure logger
 logger = setup_logger()
+
+# Ensure that the root logger doesn't propagate messages to avoid duplication
+logging.getLogger().propagate = False
