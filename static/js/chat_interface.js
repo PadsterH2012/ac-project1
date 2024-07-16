@@ -310,8 +310,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Remove any other window.onload functions in the file
-    console.log('Current project ID:', currentProjectId);
-};
 
 function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
     console.log('Displaying message:', { sender, text, agentName, agentRole, agentAvatar });  // Debug log
