@@ -49,10 +49,15 @@ def init_app(app):
 @routes.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
-        return render_template("dashboard.html")
+        return redirect(url_for('routes.dashboard'))
     if request.method == "POST":
         return login()
     return render_template("index.html")
+
+@routes.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")
 
 @routes.route("/register", methods=["GET", "POST"])
 def register():
