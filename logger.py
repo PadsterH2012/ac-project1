@@ -32,10 +32,15 @@ def setup_logger():
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
+    # Ensure that the logger captures all messages
+    logger.propagate = False
+
     return logger
 
 # Create and configure logger
 logger = setup_logger()
 
-# Ensure that the root logger doesn't propagate messages to avoid duplication
-logging.getLogger().propagate = False
+# Configure the root logger to use our custom logger
+logging.getLogger().handlers = []
+logging.getLogger().addHandler(logging.StreamHandler())
+logging.getLogger().setLevel(logging.DEBUG)
