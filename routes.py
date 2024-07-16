@@ -12,6 +12,7 @@ from ollama_connection import connect_to_ollama
 from utils import save_avatar, get_avatar_url
 from prompt_config import DEFAULT_PROMPTS
 from logger import logger
+from sqlalchemy.exc import SQLAlchemyError
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
