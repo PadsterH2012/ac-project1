@@ -385,8 +385,13 @@ def chat():
         print(f"Request Content-Type: {request.content_type}")  # Debug print
         print(f"Request data: {request.data}")  # Debug print
         
-        message = request.json.get('message')
-        project_id = request.json.get('project_id')
+        if not request.is_json:
+            print("Request is not JSON")  # Debug print
+            return jsonify({"error": "Request must be JSON"}), 400
+        
+        data = request.get_json()
+        message = data.get('message')
+        project_id = data.get('project_id')
         print(f"Received message: {message}")  # Log received message
         print(f"Received project_id: {project_id}")  # Log received project_id
         

@@ -48,8 +48,19 @@ async function sendMessage() {
             throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
         }
 
-        const data = JSON.parse(responseText);
-        console.log('Parsed data:', data);
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log('Parsed data:', data);
+        } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            throw new Error('Invalid JSON response from server');
+        }
+
+        if (!data || !data.planner_response) {
+            throw new Error('Invalid response format from server');
+        }
+
         console.log('AI response:', data.planner_response);
 
         // Display AI response
@@ -135,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Send button found, adding event listener');
         sendButton.addEventListener('click', function(event) {
             console.log('Send button clicked');
+            event.preventDefault();
             sendMessage();
         });
     } else {
@@ -171,6 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Ensure currentProjectId is set
+window.onload = function() {
+    console.log('Window loaded');
+    currentProjectId = document.getElementById('projectId').value;
+    console.log('Current project ID:', currentProjectId);
+};
 
 function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
     console.log('Displaying message:', { sender, text, agentName, agentRole, agentAvatar });  // Debug log
