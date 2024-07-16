@@ -247,6 +247,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.querySelector('.message-input button');
     const messageInput = document.getElementById('messageInput');
     const clearJournalBtn = document.getElementById('clearJournalBtn');
+    const createScopeBtn = document.getElementById('createScopeBtn');
     const projectJournal = document.getElementById('projectJournal');
 
     if (sendButton) {
@@ -274,7 +275,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (clearJournalBtn) {
-        clearJournalBtn.addEventListener('click', clearJournal);
+        clearJournalBtn.addEventListener('click', function() {
+            console.log('Clear journal button clicked');
+            clearJournal();
+        });
+    }
+
+    if (createScopeBtn) {
+        createScopeBtn.addEventListener('click', function() {
+            console.log('Create scope button clicked');
+            createProjectScope();
+        });
     }
 
     // Load journal entries
@@ -289,12 +300,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    // Ensure currentProjectId is set
+    currentProjectId = document.getElementById('projectId').value;
+    console.log('Current project ID:', currentProjectId);
+
+    // Check login status
+    checkLoginStatus();
 });
 
-// Ensure currentProjectId is set
-window.onload = function() {
-    console.log('Window loaded');
-    currentProjectId = document.getElementById('projectId').value;
+// Remove any other window.onload functions in the file
     console.log('Current project ID:', currentProjectId);
 };
 
