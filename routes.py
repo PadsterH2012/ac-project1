@@ -377,6 +377,10 @@ def delete_agent_from_settings(agent_id):
     flash('Agent deleted successfully!', 'success')
     return redirect(url_for('routes.agent_settings'))
 
+@routes.route("/check_login")
+def check_login():
+    return jsonify({"logged_in": current_user.is_authenticated})
+
 @routes.route("/chat", methods=["POST"])
 @login_required
 def chat():
@@ -384,6 +388,7 @@ def chat():
         print("Chat route called")  # Debug print
         print(f"Request Content-Type: {request.content_type}")  # Debug print
         print(f"Request data: {request.data}")  # Debug print
+        print(f"Current user: {current_user}")  # Debug print
         
         if not request.is_json:
             print("Request is not JSON")  # Debug print

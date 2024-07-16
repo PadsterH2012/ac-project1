@@ -85,6 +85,26 @@ async function sendMessage() {
     }
 }
 
+// Add this function to check if the user is logged in
+function checkLoginStatus() {
+    fetch('/check_login')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.logged_in) {
+                console.log('User is not logged in');
+                alert('You must be logged in to use the chat. Please log in and try again.');
+            } else {
+                console.log('User is logged in');
+            }
+        })
+        .catch(error => {
+            console.error('Error checking login status:', error);
+        });
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', checkLoginStatus);
+
 // Add this new function to handle clearing the journal
 async function clearJournal() {
     try {
