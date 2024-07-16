@@ -435,6 +435,10 @@ def chat():
             # Update the project journal
             project = Project.query.get(project_id)
             if project:
+                if project.user_id != current_user.id:
+                    logger.warning(f"User {current_user.id} attempted to access project {project_id} belonging to user {project.user_id}")
+                    return jsonify({"error": "You do not have permission to access this project"}), 403
+                
                 project.journal = (project.journal or "") + "\n\n" + journal_entry
                 
                 # Generate new scope
@@ -446,7 +450,12 @@ def chat():
                 else:
                     logger.warning("Failed to generate new project scope")
                 
-                db.session.commit()
+                try:
+                    db.session.commit()
+                except SQLAlchemyError as e:
+                    logger.error(f"Database error: {str(e)}")
+                    db.session.rollback()
+                    return jsonify({"error": "A database error occurred"}), 500
             else:
                 logger.error(f"Project not found: {project_id}")
                 return jsonify({"error": f"Project not found: {project_id}"}), 404
@@ -465,8 +474,8 @@ def chat():
             logger.error("Failed to get response from AI provider")
             return jsonify({"error": "Failed to get response from AI provider"}), 500
     except Exception as e:
-        logger.exception(f"An error occurred: {str(e)}")
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        logger.exception(f"An unexpected error occurred: {str(e)}")
+        return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
 
 @routes.route("/clear_journal", methods=["POST"])
 @login_required
