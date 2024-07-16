@@ -6,6 +6,10 @@ async function sendMessage() {
     const chatMessages = document.getElementById('chatMessages');
     let messageText = messageInput.value;
 
+    console.log('Message input element:', messageInput);
+    console.log('Chat messages element:', chatMessages);
+    console.log('Message text:', messageText);
+
     if (messageText.trim() === '') {
         console.log('Message is empty, not sending');
         return;
@@ -84,6 +88,9 @@ async function sendMessage() {
         alert(errorMessage);
     }
 }
+
+// Log when the sendMessage function is defined
+console.log('sendMessage function defined');
 
 // Add this line to check if the function is being called
 console.log('sendMessage function defined');
