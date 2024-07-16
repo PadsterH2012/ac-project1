@@ -3,11 +3,13 @@ from models import db
 from routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from logger import logger
 
 login_manager = LoginManager()
 migrate = Migrate()
 
 def create_app():
+    logger.info("Creating Flask application")
     app = Flask(__name__)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

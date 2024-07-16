@@ -11,6 +11,7 @@ import requests
 from ollama_connection import connect_to_ollama
 from utils import save_avatar, get_avatar_url
 from prompt_config import DEFAULT_PROMPTS
+from logger import logger
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -385,49 +386,49 @@ def check_login():
 @login_required
 def chat():
     try:
-        print("Chat route called")  # Debug print
-        print(f"Request Content-Type: {request.content_type}")  # Debug print
-        print(f"Request data: {request.data}")  # Debug print
-        print(f"Current user: {current_user}")  # Debug print
+        logger.info("Chat route called")
+        logger.debug(f"Request Content-Type: {request.content_type}")
+        logger.debug(f"Request data: {request.data}")
+        logger.debug(f"Current user: {current_user}")
         
         if not request.is_json:
-            print("Request is not JSON")  # Debug print
+            logger.warning("Request is not JSON")
             return jsonify({"error": "Request must be JSON"}), 400
         
         data = request.get_json()
         message = data.get('message')
         project_id = data.get('project_id')
-        print(f"Received message: {message}")  # Log received message
-        print(f"Received project_id: {project_id}")  # Log received project_id
+        logger.info(f"Received message: {message}")
+        logger.info(f"Received project_id: {project_id}")
         
         if not message or not project_id:
-            print("Missing message or project ID")  # Debug print
+            logger.warning("Missing message or project ID")
             return jsonify({"error": "Missing message or project ID"}), 400
         
         # Get the current user's AI agent
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         
         if not planner_agent:
-            print(f"Missing AI agent for user {current_user.id}")  # Log error
+            logger.error(f"Missing AI agent for user {current_user.id}")
             return jsonify({"error": "Missing AI agent for the current user"}), 404
         
         # Get the provider for the agent
         planner_provider = Provider.query.get(planner_agent.provider_id)
         
         if not planner_provider:
-            print(f"Missing provider for agent {planner_agent.id}")  # Log error
+            logger.error(f"Missing provider for agent {planner_agent.id}")
             return jsonify({"error": "Missing provider for the AI agent"}), 404
         
         # Prepare the prompt
         system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
         planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
-        print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
+        logger.debug(f"Prepared prompt: {planner_prompt[:100]}...")
         
         # Make request to the AI provider
         planner_response = get_ai_response(planner_provider, planner_prompt)
         
         if planner_response:
-            print(f"Received AI response: {planner_response[:100]}...")  # Log AI response (truncated)
+            logger.info(f"Received AI response: {planner_response[:100]}...")
             # Create a journal entry
             journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
             
@@ -443,11 +444,11 @@ def chat():
                 if scope_response:
                     project.scope = scope_response
                 else:
-                    print("Failed to generate new project scope")
+                    logger.warning("Failed to generate new project scope")
                 
                 db.session.commit()
             else:
-                print(f"Project not found: {project_id}")  # Log if project is not found
+                logger.error(f"Project not found: {project_id}")
                 return jsonify({"error": f"Project not found: {project_id}"}), 404
             
             response_data = {
@@ -458,13 +459,13 @@ def chat():
                 "planner_avatar": get_avatar_url(planner_agent.avatar),
                 "scope": project.scope
             }
-            print(f"Sending response: {response_data}")  # Debug print
+            logger.debug(f"Sending response: {response_data}")
             return jsonify(response_data)
         else:
-            print("Failed to get response from AI provider")  # Log error
+            logger.error("Failed to get response from AI provider")
             return jsonify({"error": "Failed to get response from AI provider"}), 500
     except Exception as e:
-        print(f"An error occurred: {str(e)}")  # Log the specific error
+        logger.exception(f"An error occurred: {str(e)}")
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 @routes.route("/clear_journal", methods=["POST"])
@@ -507,22 +508,22 @@ def create_scope():
 
 def get_ai_response(provider, prompt):
     if provider.provider_type == 'ollama':
-        print(f"Connecting to Ollama at {provider.url}")  # Log connection attempt
-        print(f"Using model: {provider.model}")  # Log model being used
+        logger.info(f"Connecting to Ollama at {provider.url}")
+        logger.info(f"Using model: {provider.model}")
         response_data = connect_to_ollama(provider.url, provider.model, prompt)
         
-        print(f"Response data: {response_data}")  # Log full response data
+        logger.debug(f"Response data: {response_data}")
         
         if response_data:
             ai_response = response_data.get('response', '')
             if not ai_response and response_data.get('done_reason') == 'load':
-                print("AI model is still loading")  # Log loading status
+                logger.warning("AI model is still loading")
                 return "The AI model is still loading. Please try again in a moment."
-            print(f"Received AI response: {ai_response[:100]}...")  # Log (truncated) AI response
+            logger.info(f"Received AI response: {ai_response[:100]}...")
             return ai_response
         else:
-            print("Failed to get response from AI provider")  # Log error
+            logger.error("Failed to get response from AI provider")
             return None
     else:
-        print(f"Unsupported AI provider: {provider.provider_type}")  # Log error
+        logger.error(f"Unsupported AI provider: {provider.provider_type}")
         return None
