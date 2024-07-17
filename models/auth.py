@@ -14,6 +14,10 @@ class User(UserMixin, db.Model):
 
     agent_settings = db.Column(db.JSON, nullable=True)
 
+    projects = db.relationship('Project', backref='user', lazy=True)
+    agents = db.relationship('Agent', backref='user', lazy=True)
+    providers = db.relationship('Provider', backref='user', lazy=True)
+
     def check_password(self, password):
         return check_password_hash(self.password, password)
 

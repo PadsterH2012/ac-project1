@@ -1,5 +1,5 @@
 from flask import Flask
-from models import db, setup_relationships
+from models import db
 from routes import init_app as init_routes
 from flask_migrate import Migrate
 
@@ -24,7 +24,6 @@ def create_app():
 
     with app.app_context():
         db.create_all()  # This line creates the database tables
-        setup_relationships()  # Set up relationships after all models are loaded
 
     return app
 
