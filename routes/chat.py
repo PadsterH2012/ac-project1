@@ -19,13 +19,18 @@ def chat():
             print(f"Project not found: {project_id}")  # Log if project is not found
             return jsonify({"error": f"Project not found: {project_id}"}), 404
         
-        # Get the current user's AI agents
+        # Get or create the current user's AI agents
         writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         
+        if not writer_agent:
+            writer_agent = create_default_agent(current_user.id, "AI Agent Project Writer")
+        if not planner_agent:
+            planner_agent = create_default_agent(current_user.id, "AI Agent Project Planner")
+        
         if not writer_agent or not planner_agent:
-            print(f"Missing AI agent for user {current_user.id}")  # Log error
-            return jsonify({"error": "Missing AI agent for the current user"}), 404
+            print(f"Failed to create default AI agents for user {current_user.id}")  # Log error
+            return jsonify({"error": "Failed to create default AI agents for the current user"}), 500
         
         # Get the providers for the agents
         writer_provider = Provider.query.get(writer_agent.provider_id)
@@ -106,3 +111,28 @@ def get_ai_response(provider, prompt):
     else:
         print(f"Unsupported AI provider: {provider.provider_type}")  # Log error
         return None
+
+def create_default_agent(user_id, role):
+    default_provider = Provider.query.filter_by(user_id=user_id).first()
+    if not default_provider:
+        default_provider = Provider(
+            user_id=user_id,
+            provider_type='ollama',
+            api_key='',
+            model='llama2',
+            url='http://localhost:11434/api/generate'
+        )
+        db.session.add(default_provider)
+        db.session.commit()
+
+    new_agent = Agent(
+        name=role,
+        role=role,
+        user_id=user_id,
+        provider_id=default_provider.id,
+        temperature=0.7,
+        system_prompt=DEFAULT_PROMPTS.get(role, "")
+    )
+    db.session.add(new_agent)
+    db.session.commit()
+    return new_agent
