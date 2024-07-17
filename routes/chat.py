@@ -41,7 +41,7 @@ def chat():
             return jsonify({"error": "Missing provider for the AI agents"}), 404
         
         # Generate or update project scope with the writer
-        writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project scope:\n{project.description or 'No scope defined yet.'}\n\nUser message: {message}\n\nBased on this information, please generate or update the project scope.\n\nAI:"
+        writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project journal:\n{project.journal or 'No journal entries yet.'}\n\nBased on this information, please generate or update the project scope.\n\nAI:"
         scope_response = get_ai_response(writer_provider, writer_prompt)
         
         if scope_response:
@@ -50,7 +50,7 @@ def chat():
         
         # Prepare the planner prompt with the updated scope
         system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-        planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.description}\n\nHuman: {message}\n\nAI:"
+        planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nHuman: {message}\n\nAI:"
         print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
         
         # Make request to the AI provider for the planner
@@ -59,7 +59,7 @@ def chat():
         if planner_response:
             print(f"Received AI response: {planner_response[:100]}...")  # Log AI response (truncated)
             # Create a journal entry
-            journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
+            journal_entry = f"User: {message}\n\nPlanner: {planner_response}"
             
             # Update the project journal
             project.journal = (project.journal or "") + "\n\n" + journal_entry
