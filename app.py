@@ -1,9 +1,13 @@
+import os
 from flask import Flask
 from models import db
 from routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import Config
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 login_manager = LoginManager()
 migrate = Migrate()
@@ -29,6 +33,10 @@ def create_app(config_class=Config):
         db.create_all()  # This line creates the database tables
 
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
 
 @create_app().cli.command("db_migrate")
 def db_migrate():
