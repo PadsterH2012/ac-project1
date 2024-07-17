@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, request, render_template
-from flask_login import LoginManager, current_user, login_required
-from flask_migrate import Migrate
-from models import db, User, Agent
+from flask import Flask
+from models import db
 from routes import init_app as init_routes
+from flask_login import LoginManager
+from flask_migrate import Migrate
 
 login_manager = LoginManager()
 migrate = Migrate()
@@ -28,106 +28,15 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
+        from models import User
         return User.query.get(int(user_id))
 
     with app.app_context():
         db.create_all()  # This line creates the database tables
 
-    @app.cli.command("db_migrate")
-    def db_migrate():
-        from migrations import add_provider_id_to_agent
-        add_provider_id_to_agent.upgrade()
-
-    @app.route('/chat', methods=['GET', 'POST'])
-    @login_required
-    def chat():
-        if request.method == 'POST':
-            user_id = current_user.id
-            message = request.json.get('message')
-
-            # Ensure default agents exist
-            create_default_agents(user_id)
-
-            # Get AI agents for the user
-            planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
-            writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
-
-            if not planner_agent or not writer_agent:
-                app.logger.error(f"Missing AI agents for user {user_id}")
-                return jsonify({
-                    'error': 'Missing AI agents for the user. Please try refreshing the page or contact support.'
-                }), 400
-
-            try:
-                # Process the message with AI agents and generate responses
-                planner_response = process_with_ai(planner_agent, message)
-                writer_response = process_with_ai(writer_agent, message)
-
-                # Create a journal entry
-                journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
-
-                return jsonify({
-                    'planner_response': planner_response,
-                    'writer_response': writer_response,
-                    'journal_entry': journal_entry,
-                    'planner_name': planner_agent.name,
-                    'planner_role': planner_agent.role,
-                    'planner_avatar': planner_agent.avatar_url,
-                    'writer_name': writer_agent.name,
-                    'writer_role': writer_agent.role,
-                    'writer_avatar': writer_agent.avatar_url
-                })
-            except Exception as e:
-                app.logger.error(f"Error processing chat message: {str(e)}")
-                return jsonify({'error': 'An error occurred while processing your message. Please try again.'}), 500
-        else:
-            # Handle GET request
-            return render_template('chat_interface.html')
-
     return app
 
-def process_with_ai(agent, message):
-    # Implement your AI processing logic here
-    # This is a placeholder implementation
-    return f"AI {agent.role} response to: {message}"
-
-def create_default_agents(user_id):
-    default_agents = [
-        {
-            'name': 'Default Project Planner',
-            'role': 'Project Planner',
-            'system_prompt': 'You are an AI assistant specialized in project planning.',
-            'avatar_url': '/static/avatars/default_agent.jpg'
-        },
-        {
-            'name': 'Default Project Writer',
-            'role': 'Project Writer',
-            'system_prompt': 'You are an AI assistant specialized in project documentation and writing.',
-            'avatar_url': '/static/avatars/default_agent.jpg'
-        }
-    ]
-
-    for agent_data in default_agents:
-        agent = Agent.query.filter_by(user_id=user_id, role=agent_data['role']).first()
-        if not agent:
-            new_agent = Agent(user_id=user_id, **agent_data)
-            db.session.add(new_agent)
-    
-    try:
-        db.session.commit()
-        app.logger.info(f"Default agents created for user {user_id}")
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(f"Error creating default agents for user {user_id}: {str(e)}")
-        raise
-
-    # Verify agents were created
-    planner = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
-    writer = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
-    if not planner or not writer:
-        app.logger.error(f"Failed to create all default agents for user {user_id}")
-        raise Exception("Failed to create all default agents")
-
-if __name__ == '__main__':
-    app = create_app()
-    app.run(debug=True)
+@create_app().cli.command("db_migrate")
+def db_migrate():
+    from migrations import add_provider_id_to_agent
+    add_provider_id_to_agent.upgrade()

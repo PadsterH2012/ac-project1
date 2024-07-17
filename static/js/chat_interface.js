@@ -17,47 +17,86 @@ async function sendMessage() {
     messageInput.value = '';
 
     try {
-        // Send message to AI agents
+        // Send message to AI agent
         const response = await fetch('/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message: messageText }),
+            body: JSON.stringify({ 
+                message: messageText,
+                project_id: currentProjectId  // Assume this variable is set when loading the chat interface
+            }),
         });
 
         console.log('Response status:', response.status);  // Debug log
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'An error occurred while processing your message');
+            throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
         console.log('Received data:', data);  // Debug log
 
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        // Display AI responses
-        if (data.planner_response) {
-            displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
-        }
-        if (data.writer_response) {
-            displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
-        }
+        // Display AI response
+        displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
         
         // Update project journal
-        if (data.journal_entry) {
-            updateProjectJournal(data.journal_entry);
-        }
+        updateProjectJournal(data.journal_entry);
 
     } catch (error) {
         console.error('Error:', error);
-        displayMessage('System', `An error occurred: ${error.message}`);
+        let errorMessage = 'An error occurred while processing your message.';
+        if (error.response && error.response.data && error.response.data.error) {
+            errorMessage = error.response.data.error;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        displayMessage('System', errorMessage);
+        alert(errorMessage); // Add an alert for immediate visibility
     }
 }
+
+// Add this new function to handle clearing the journal
+async function clearJournal() {
+    try {
+        const response = await fetch('/clear_journal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                project_id: currentProjectId
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            const projectJournal = document.getElementById('projectJournal');
+            if (projectJournal) {
+                projectJournal.innerHTML = '';
+                console.log('Journal cleared successfully');
+            } else {
+                console.error('Project journal element not found');
+            }
+        } else {
+            console.error('Failed to clear journal:', data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while clearing the journal');
+    }
+}
+
+// Add this to your existing window.onload function or create one if it doesn't exist
+window.onload = function() {
+    console.log('Chat interface initialized');
+    document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
+};
 
 function updateProjectJournal(journalEntry) {
     const projectJournal = document.getElementById('projectJournal');
@@ -67,19 +106,42 @@ function updateProjectJournal(journalEntry) {
     projectJournal.scrollTop = projectJournal.scrollHeight;
 }
 
-// Add event listener for the send button
+// Add event listeners when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.querySelector('.message-input button');
-    sendButton.addEventListener('click', sendMessage);
-
-    // Add event listener for the Enter key in the input field
     const messageInput = document.getElementById('messageInput');
-    messageInput.addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            sendMessage();
+    const clearJournalBtn = document.getElementById('clearJournalBtn');
+    const projectJournal = document.getElementById('projectJournal');
+
+    if (sendButton) {
+        sendButton.addEventListener('click', sendMessage);
+    }
+
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+
+    if (clearJournalBtn) {
+        clearJournalBtn.addEventListener('click', clearJournal);
+    }
+
+    // Load journal entries
+    if (projectJournal) {
+        const journalEntries = projectJournal.dataset.entries;
+        if (journalEntries) {
+            const entries = journalEntries.split('\n\n');
+            entries.forEach(entry => {
+                const entryElement = document.createElement('p');
+                entryElement.textContent = entry;
+                projectJournal.appendChild(entryElement);
+            });
         }
-    });
+    }
 });
 
 function displayMessage(sender, text, agentName = '', agentRole = '', agentAvatar = '') {
@@ -199,13 +261,14 @@ function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
 }
 
+let currentProjectId;
+
 // Initialize the chat
 window.onload = function() {
     console.log('Chat interface initialized');
+    currentProjectId = document.getElementById('projectId').value;
+    console.log('Current project ID:', currentProjectId);
 };
-
-// Curl command to test the /chat endpoint:
-// curl -X POST http://localhost:5000/chat -H "Content-Type: application/json" -d '{"message":"Hello, AI!"}'
 
 function navigateVFS(path) {
     alert(`Navigating to: ${path}`);

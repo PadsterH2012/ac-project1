@@ -1,8 +1,16 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, Project, Agent, Provider, db
 from flask_oauthlib.client import OAuth
+from backup_restore import backup_data, restore_data
+import tempfile
+from datetime import datetime
+import json
+import requests
+from ollama_connection import connect_to_ollama
+from utils import save_avatar, get_avatar_url
+from prompt_config import DEFAULT_PROMPTS
 
 routes = Blueprint('routes', __name__)
 oauth = OAuth()
@@ -49,15 +57,10 @@ def init_app(app):
 @routes.route("/", methods=["GET", "POST"])
 def index():
     if current_user.is_authenticated:
-        return redirect(url_for('routes.dashboard'))
+        return render_template("dashboard.html")
     if request.method == "POST":
         return login()
     return render_template("index.html")
-
-@routes.route("/dashboard")
-@login_required
-def dashboard():
-    return render_template("dashboard.html")
 
 @routes.route("/register", methods=["GET", "POST"])
 def register():
@@ -117,6 +120,78 @@ def settings():
         return redirect(url_for('routes.settings'))
     return render_template("settings.html")
 
+@routes.route("/backup", methods=['POST'])
+@login_required
+def backup():
+    print("Backup route called")  # Debug print
+    print(f"Request Content-Type: {request.content_type}")  # Debug print
+    print(f"Request data: {request.data}")  # Debug print
+    
+    backup_options = []
+    
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+    
+    print(f"Parsed data: {data}")  # Debug print
+    
+    if data.get('backup_projects'):
+        backup_options.append('projects')
+    if data.get('backup_agents'):
+        backup_options.append('agents')
+    if data.get('backup_providers'):
+        backup_options.append('providers')
+    
+    backup_type = ','.join(backup_options) if backup_options else 'all'
+    
+    print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
+    backup_data_json = backup_data(current_user.id, backup_type)
+    
+    backup_data_dict = json.loads(backup_data_json)
+    if 'error' in backup_data_dict:
+        return jsonify({"error": backup_data_dict['error']}), 404
+    
+    # Create a temporary file
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
+        temp_file.write(backup_data_json)
+        temp_file_path = temp_file.name
+    
+    # Generate a filename for the download
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"incubator_backup_{timestamp}.json"
+    
+    print(f"Sending file: {filename}")  # Debug print
+    
+    # Send the file
+    return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
+
+@routes.route("/restore", methods=['POST'])
+@login_required
+def restore():
+    if 'restore_file' not in request.files:
+        flash('No file part', 'error')
+        return redirect(url_for('routes.settings'))
+    
+    file = request.files['restore_file']
+    
+    if file.filename == '':
+        flash('No selected file', 'error')
+        return redirect(url_for('routes.settings'))
+    
+    if file:
+        # Read the file content
+        backup_data_json = file.read().decode('utf-8')
+        
+        try:
+            # Restore the data
+            restore_data(current_user.id, backup_data_json)
+            flash('Data restored successfully', 'success')
+        except Exception as e:
+            flash(f'Error restoring data: {str(e)}', 'error')
+        
+        return redirect(url_for('routes.settings'))
+
 @routes.route("/agent_settings", methods=["GET", "POST"])
 @login_required
 def agent_settings():
@@ -136,6 +211,13 @@ def agent_settings():
             system_prompt=system_prompt,
             user_id=current_user.id
         )
+
+        # Handle avatar upload
+        if 'avatar' in request.files:
+            avatar_file = request.files['avatar']
+            avatar_filename = save_avatar(avatar_file)
+            if avatar_filename:
+                new_agent.avatar = avatar_filename
 
         db.session.add(new_agent)
         db.session.commit()
@@ -158,12 +240,14 @@ def add_provider():
     provider_type = request.form.get('provider_type')
     api_key = request.form.get('api_key')
     model = request.form.get('model')
+    url = request.form.get('url')
 
     new_provider = Provider(
         user_id=current_user.id,
         provider_type=provider_type,
         api_key=api_key,
-        model=model
+        model=model,
+        url=url if provider_type == 'ollama' else None
     )
 
     db.session.add(new_provider)
@@ -184,6 +268,7 @@ def edit_provider(provider_id):
         provider.provider_type = request.form.get('provider_type')
         provider.api_key = request.form.get('api_key')
         provider.model = request.form.get('model')
+        provider.url = request.form.get('url') if provider.provider_type == 'ollama' else None
         db.session.commit()
         flash('Provider updated successfully!', 'success')
         return redirect(url_for('routes.provider_settings'))
@@ -213,7 +298,7 @@ def continue_project(project_id):
     if project.user_id != current_user.id:
         flash('You do not have permission to access this project.', 'error')
         return redirect(url_for('routes.projects'))
-    return render_template("chat_interface.html", project=project)
+    return render_template("chat_interface.html", project=project, journal_entries=project.journal)
 
 @routes.route("/create_project", methods=["GET", "POST"])
 @login_required
@@ -292,48 +377,93 @@ def delete_agent_from_settings(agent_id):
     flash('Agent deleted successfully!', 'success')
     return redirect(url_for('routes.agent_settings'))
 
-@routes.route("/check_login")
-def check_login():
-    return jsonify({"logged_in": current_user.is_authenticated})
-
 @routes.route("/chat", methods=["POST"])
 @login_required
 def chat():
-    data = request.get_json()
-    message = data.get('message')
-    project_id = data.get('project_id')
-
-    if not message or not project_id:
-        return jsonify({"error": "Missing message or project ID"}), 400
-
-    # Get the current user's AI agent
-    agent = Agent.query.filter_by(user_id=current_user.id).first()
-    
-    if not agent:
-        return jsonify({"error": "Missing AI agent for the current user"}), 404
-
-    # Get the provider for the agent
-    provider = Provider.query.get(agent.provider_id)
-    
-    if not provider:
-        return jsonify({"error": "Missing provider for the AI agent"}), 404
-
-    # Prepare the prompt
-    prompt = f"{agent.system_prompt}\n\nHuman: {message}\n\nAI:"
-
-    # Make request to the AI provider
-    # This is a placeholder. You need to implement the actual API call.
-    ai_response = "This is a placeholder response from the AI."
-
-    # Update the project journal
-    project = Project.query.get(project_id)
-    if project:
-        if project.user_id != current_user.id:
-            return jsonify({"error": "You do not have permission to access this project"}), 403
+    try:
+        message = request.json.get('message')
+        project_id = request.json.get('project_id')
+        print(f"Received message: {message}")  # Log received message
         
-        project.journal = (project.journal or "") + f"\nUser: {message}\nAI: {ai_response}"
-        db.session.commit()
-    else:
-        return jsonify({"error": f"Project not found: {project_id}"}), 404
+        # Get the current user's AI agent
+        planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+        
+        if not planner_agent:
+            print(f"Missing AI agent for user {current_user.id}")  # Log error
+            return jsonify({"error": "Missing AI agent for the current user"}), 404
+        
+        # Get the provider for the agent
+        planner_provider = Provider.query.get(planner_agent.provider_id)
+        
+        if not planner_provider:
+            print(f"Missing provider for agent {planner_agent.id}")  # Log error
+            return jsonify({"error": "Missing provider for the AI agent"}), 404
+        
+        # Prepare the prompt
+        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+        planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
+        print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
+        
+        # Make request to the AI provider
+        planner_response = get_ai_response(planner_provider, planner_prompt)
+        
+        if planner_response:
+            print(f"Received AI response: {planner_response[:100]}...")  # Log AI response (truncated)
+            # Create a journal entry
+            journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
+            
+            # Update the project journal
+            project = Project.query.get(project_id)
+            if project:
+                project.journal = (project.journal or "") + "\n\n" + journal_entry
+                db.session.commit()
+            else:
+                print(f"Project not found: {project_id}")  # Log if project is not found
+                return jsonify({"error": f"Project not found: {project_id}"}), 404
+            
+            return jsonify({
+                "planner_response": planner_response,
+                "journal_entry": journal_entry,
+                "planner_name": planner_agent.name,
+                "planner_role": planner_agent.role,
+                "planner_avatar": get_avatar_url(planner_agent.avatar)
+            })
+        else:
+            print("Failed to get response from AI provider")  # Log error
+            return jsonify({"error": "Failed to get response from AI provider"}), 500
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")  # Log the specific error
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-    return jsonify({"response": ai_response})
+@routes.route("/clear_journal", methods=["POST"])
+@login_required
+def clear_journal():
+    project_id = request.json.get('project_id')
+    project = Project.query.get(project_id)
+    if project and project.user_id == current_user.id:
+        project.journal = ""
+        db.session.commit()
+        return jsonify({"success": True, "message": "Journal cleared successfully"})
+    return jsonify({"success": False, "message": "Failed to clear journal"}), 404
+
+def get_ai_response(provider, prompt):
+    if provider.provider_type == 'ollama':
+        print(f"Connecting to Ollama at {provider.url}")  # Log connection attempt
+        print(f"Using model: {provider.model}")  # Log model being used
+        response_data = connect_to_ollama(provider.url, provider.model, prompt)
+        
+        print(f"Response data: {response_data}")  # Log full response data
+        
+        if response_data:
+            ai_response = response_data.get('response', '')
+            if not ai_response and response_data.get('done_reason') == 'load':
+                print("AI model is still loading")  # Log loading status
+                return "The AI model is still loading. Please try again in a moment."
+            print(f"Received AI response: {ai_response[:100]}...")  # Log (truncated) AI response
+            return ai_response
+        else:
+            print("Failed to get response from AI provider")  # Log error
+            return None
+    else:
+        print(f"Unsupported AI provider: {provider.provider_type}")  # Log error
+        return None
