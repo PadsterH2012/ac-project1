@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from flask_login import UserMixin
+from .project import Project  # Import the Project model
 
 db = SQLAlchemy()
 
