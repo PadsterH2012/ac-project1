@@ -1,9 +1,6 @@
 import json
 from models import db
-from models.auth import User
-from models.project import Project
-from models.agent import Agent
-from models.provider import Provider
+from models.models import User, Project, Agent, Provider
 
 def backup_data(user_id, backup_type='all'):
     user = User.query.get(user_id)
