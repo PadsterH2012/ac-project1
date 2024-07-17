@@ -81,8 +81,10 @@ def restore():
             
             # Render a template with the backup contents for selection
             return render_template('restore_selection.html', backup_data=backup_data)
-        except Exception as e:
+        except json.JSONDecodeError as e:
             flash(f'Error parsing backup file: {str(e)}', 'error')
+        except Exception as e:
+            flash(f'Error processing backup file: {str(e)}', 'error')
         
         return redirect(url_for('routes.settings'))
 
