@@ -150,17 +150,26 @@ def perform_restore():
             item_id = int(item_id)
             
             if item_type == 'project':
-                project = next((p for p in backup_data['projects'] if p['id'] == item_id), None)
-                if project:
-                    data_to_restore['projects'].append(project)
+                if 'projects' in backup_data:
+                    project = next((p for p in backup_data['projects'] if p['id'] == item_id), None)
+                    if project:
+                        data_to_restore['projects'].append(project)
+                else:
+                    print("'projects' key not found in backup data")
             elif item_type == 'agent':
-                agent = next((a for a in backup_data['agents'] if a['id'] == item_id), None)
-                if agent:
-                    data_to_restore['agents'].append(agent)
+                if 'agents' in backup_data:
+                    agent = next((a for a in backup_data['agents'] if a['id'] == item_id), None)
+                    if agent:
+                        data_to_restore['agents'].append(agent)
+                else:
+                    print("'agents' key not found in backup data")
             elif item_type == 'provider':
-                provider = next((p for p in backup_data['providers'] if p['id'] == item_id), None)
-                if provider:
-                    data_to_restore['providers'].append(provider)
+                if 'providers' in backup_data:
+                    provider = next((p for p in backup_data['providers'] if p['id'] == item_id), None)
+                    if provider:
+                        data_to_restore['providers'].append(provider)
+                else:
+                    print("'providers' key not found in backup data")
         
         # Restore the selected data
         restore_data(current_user.id, json.dumps(data_to_restore))
