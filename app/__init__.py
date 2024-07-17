@@ -2,7 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from app.config import Config
 from app.error_handlers import register_error_handlers
 from app.logging_config import configure_logging
 
@@ -10,7 +9,8 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
 
-def create_app(config_class=Config):
+def create_app():
+    from app.config import Config
     app = Flask(__name__)
     app.config.from_object(config_class)
     
