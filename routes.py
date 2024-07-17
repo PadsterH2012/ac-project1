@@ -1,14 +1,14 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file
 from flask_login import login_required, current_user
-from models import User, Project, Agent, Provider, db
-from auth import register_user, login_user_auth, logout_user_auth
-from backup_restore import backup_data, restore_data
+from .models import User, Project, Agent, Provider, db
+from .auth import register_user, login_user_auth, logout_user_auth
+from .backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
 import json
-from ollama_connection import connect_to_ollama
-from utils import save_avatar, get_avatar_url, handle_error, log_info, log_debug
-from prompt_config import DEFAULT_PROMPTS
+from .ollama_connection import connect_to_ollama
+from .utils import save_avatar, get_avatar_url, handle_error, log_info, log_debug
+from .prompt_config import DEFAULT_PROMPTS
 
 routes = Blueprint('routes', __name__)
 # oauth = OAuth()
