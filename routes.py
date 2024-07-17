@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, Project, Agent, Provider, db
-from flask_oauthlib.client import OAuth
+# from flask_oauthlib.client import OAuth
 from backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
@@ -13,45 +13,45 @@ from utils import save_avatar, get_avatar_url
 from prompt_config import DEFAULT_PROMPTS
 
 routes = Blueprint('routes', __name__)
-oauth = OAuth()
+# oauth = OAuth()
 
-google = None
-facebook = None
+# google = None
+# facebook = None
 
-def init_oauth(app):
-    global google, facebook
-    if not hasattr(oauth, 'app'):
-        oauth.init_app(app)
+# def init_oauth(app):
+#     global google, facebook
+#     if not hasattr(oauth, 'app'):
+#         oauth.init_app(app)
 
-    if google is None:
-        google = oauth.remote_app(
-            'google',
-            consumer_key=app.config['GOOGLE_CONSUMER_KEY'],
-            consumer_secret=app.config['GOOGLE_CONSUMER_SECRET'],
-            request_token_params={
-                'scope': 'email'
-            },
-            base_url='https://www.googleapis.com/oauth2/v1/',
-            request_token_url=None,
-            access_token_method='POST',
-            access_token_url='https://accounts.google.com/o/oauth2/token',
-            authorize_url='https://accounts.google.com/o/oauth2/auth',
-        )
+#     if google is None:
+#         google = oauth.remote_app(
+#             'google',
+#             consumer_key=app.config['GOOGLE_CONSUMER_KEY'],
+#             consumer_secret=app.config['GOOGLE_CONSUMER_SECRET'],
+#             request_token_params={
+#                 'scope': 'email'
+#             },
+#             base_url='https://www.googleapis.com/oauth2/v1/',
+#             request_token_url=None,
+#             access_token_method='POST',
+#             access_token_url='https://accounts.google.com/o/oauth2/token',
+#             authorize_url='https://accounts.google.com/o/oauth2/auth',
+#         )
 
-    if facebook is None:
-        facebook = oauth.remote_app(
-            'facebook',
-            consumer_key=app.config['FACEBOOK_APP_ID'],
-            consumer_secret=app.config['FACEBOOK_APP_SECRET'],
-            request_token_params={'scope': 'email'},
-            base_url='https://graph.facebook.com',
-            request_token_url=None,
-            access_token_url='/oauth/access_token',
-            authorize_url='https://www.facebook.com/dialog/oauth'
-        )
+#     if facebook is None:
+#         facebook = oauth.remote_app(
+#             'facebook',
+#             consumer_key=app.config['FACEBOOK_APP_ID'],
+#             consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+#             request_token_params={'scope': 'email'},
+#             base_url='https://graph.facebook.com',
+#             request_token_url=None,
+#             access_token_url='/oauth/access_token',
+#             authorize_url='https://www.facebook.com/dialog/oauth'
+#         )
 
 def init_app(app):
-    init_oauth(app)
+    # init_oauth(app)
     app.register_blueprint(routes)
 
 @routes.route("/", methods=["GET", "POST"])
