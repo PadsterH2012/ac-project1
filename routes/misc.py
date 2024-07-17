@@ -1,6 +1,6 @@
 from flask import jsonify, send_file, request, flash, redirect, url_for, render_template
 from flask_login import login_required, current_user
-from models.models import User
+from models.models import User, Project, Agent, Provider
 from services.backup.backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
@@ -100,3 +100,16 @@ def perform_restore():
         flash(f'Error restoring data: {str(e)}', 'error')
     
     return redirect(url_for('routes.settings'))
+
+@routes.route("/list_items", methods=['GET'])
+@login_required
+def list_items():
+    projects = Project.query.filter_by(user_id=current_user.id).all()
+    agents = Agent.query.filter_by(user_id=current_user.id).all()
+    providers = Provider.query.filter_by(user_id=current_user.id).all()
+
+    return jsonify({
+        'projects': [{'id': p.id, 'title': p.title} for p in projects],
+        'agents': [{'id': a.id, 'name': a.name, 'role': a.role} for a in agents],
+        'providers': [{'id': p.id, 'provider_type': p.provider_type, 'model': p.model} for p in providers]
+    })
