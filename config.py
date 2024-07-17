@@ -8,4 +8,4 @@ class Config:
     GOOGLE_CONSUMER_SECRET = os.environ.get('GOOGLE_CONSUMER_SECRET')
     FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
     FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
-    UPLOAD_FOLDER = 'app/static/avatars'
+    UPLOAD_FOLDER = 'app/app/static/avatars'
