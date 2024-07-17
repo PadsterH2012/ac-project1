@@ -121,3 +121,13 @@ class Provider(db.Model):
 
     def __repr__(self):
         return f"Provider('{self.provider_type}', '{self.model}')"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'provider_type': self.provider_type,
+            'api_key': self.api_key,
+            'model': self.model,
+            'url': self.url
+        }
