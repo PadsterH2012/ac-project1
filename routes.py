@@ -1,7 +1,7 @@
 from flask import Blueprint
-from .auth_routes import auth_routes
-from .chat_routes import chat_routes
-from .project_routes import project_routes
+from app.auth_routes import auth_routes
+from app.chat_routes import chat_routes
+from app.project_routes import project_routes
 
 routes = Blueprint('routes', __name__)
 
