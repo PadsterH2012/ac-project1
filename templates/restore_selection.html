@@ -12,22 +12,37 @@
     
     {% if 'projects' in backup_data %}
     <div>
-        <input type="checkbox" id="projects" name="restore_items" value="projects">
-        <label for="projects">Projects ({{ backup_data['projects'] | length }})</label>
+        <h3>Projects</h3>
+        {% for project in backup_data['projects'] %}
+        <div>
+            <input type="checkbox" id="project_{{ project.id }}" name="restore_items" value="project_{{ project.id }}">
+            <label for="project_{{ project.id }}">{{ project.title }}</label>
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
     
     {% if 'agents' in backup_data %}
     <div>
-        <input type="checkbox" id="agents" name="restore_items" value="agents">
-        <label for="agents">Agents ({{ backup_data['agents'] | length }})</label>
+        <h3>Agents</h3>
+        {% for agent in backup_data['agents'] %}
+        <div>
+            <input type="checkbox" id="agent_{{ agent.id }}" name="restore_items" value="agent_{{ agent.id }}">
+            <label for="agent_{{ agent.id }}">{{ agent.name }} ({{ agent.role }})</label>
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
     
     {% if 'providers' in backup_data %}
     <div>
-        <input type="checkbox" id="providers" name="restore_items" value="providers">
-        <label for="providers">Providers ({{ backup_data['providers'] | length }})</label>
+        <h3>Providers</h3>
+        {% for provider in backup_data['providers'] %}
+        <div>
+            <input type="checkbox" id="provider_{{ provider.id }}" name="restore_items" value="provider_{{ provider.id }}">
+            <label for="provider_{{ provider.id }}">{{ provider.provider_type }} ({{ provider.model }})</label>
+        </div>
+        {% endfor %}
     </div>
     {% endif %}
     
