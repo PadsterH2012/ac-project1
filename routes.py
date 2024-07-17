@@ -47,6 +47,7 @@ def add_provider():
 @login_required
 def edit_provider(provider_id):
     # ... (keep the existing edit_provider route implementation)
+    pass
 
 @routes.route("/delete_provider/<int:provider_id>", methods=["POST"])
 @login_required
