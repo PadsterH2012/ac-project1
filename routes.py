@@ -35,6 +35,7 @@ def agent_settings():
 @login_required
 def provider_settings():
     # ... (keep the existing provider_settings route implementation)
+    pass
 
 @routes.route("/add_provider", methods=["POST"])
 @login_required
