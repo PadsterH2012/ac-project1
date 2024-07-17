@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_login import login_required, current_user
 from models import Agent, Provider, Project, db
-from prompt_config import DEFAULT_PROMPTS
+from services.prompt_config.prompt_config import DEFAULT_PROMPTS
 from utils import get_avatar_url
 from . import routes
 from services.provider_connections.ollama_connection import connect_to_ollama
