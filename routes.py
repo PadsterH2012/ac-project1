@@ -16,6 +16,7 @@ def init_app(app):
 @login_required
 def backup():
     # ... (keep the existing backup route implementation)
+    pass
 
 @routes.route("/restore", methods=['POST'])
 @login_required
