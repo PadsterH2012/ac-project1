@@ -2,6 +2,7 @@ from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, db
+from models.auth import User
 from . import routes
 
 @routes.route("/", methods=["GET", "POST"])
