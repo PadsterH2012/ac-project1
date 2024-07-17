@@ -5,6 +5,7 @@ from services.backup.backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
 import json
+import re
 from . import routes
 
 @routes.route("/users", methods=["GET"])
@@ -98,19 +99,31 @@ def perform_restore():
         print(f"Full backup_data: {backup_data_str}")  # Print the full backup data for debugging
         
         try:
-            # Remove any leading/trailing whitespace and ensure it starts with a curly brace
+            # Remove any leading/trailing whitespace
             backup_data_str = backup_data_str.strip()
-            if not backup_data_str.startswith('{'):
-                backup_data_str = '{' + backup_data_str
-
+            
+            # Check if the string starts and ends with curly braces
+            if not (backup_data_str.startswith('{') and backup_data_str.endswith('}')):
+                backup_data_str = '{' + backup_data_str + '}'
+            
+            # Attempt to parse the JSON
             backup_data = json.loads(backup_data_str)
         except json.JSONDecodeError as json_error:
             print(f"JSON Decode Error: {str(json_error)}")
             print(f"Error at position: {json_error.pos}")
             print(f"Line number: {json_error.lineno}, Column: {json_error.colno}")
             print(f"Problematic part: {backup_data_str[max(0, json_error.pos-20):json_error.pos+20]}")
-            flash(f'Error parsing backup data: {str(json_error)}', 'error')
-            return redirect(url_for('routes.settings'))
+            
+            # Attempt to sanitize and parse the JSON
+            try:
+                # Replace single quotes with double quotes
+                sanitized_data = backup_data_str.replace("'", '"')
+                # Ensure property names are in double quotes
+                sanitized_data = re.sub(r'(\w+)(?=\s*:)', r'"\1"', sanitized_data)
+                backup_data = json.loads(sanitized_data)
+            except Exception as e:
+                flash(f'Error parsing backup data: {str(e)}', 'error')
+                return redirect(url_for('routes.settings'))
         
         # Prepare the data to restore
         data_to_restore = {
