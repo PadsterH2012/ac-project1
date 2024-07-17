@@ -3,7 +3,8 @@ from flask_login import LoginManager
 
 routes = Blueprint('routes', __name__)
 
-from . import auth, projects, agents, providers, chat, misc
+from . import auth, projects, agents, providers, chat
+from .misc import perform_restore
 
 def init_app(app):
     login_manager = LoginManager()
