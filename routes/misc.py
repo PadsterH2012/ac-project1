@@ -91,10 +91,13 @@ def restore():
 @routes.route("/perform_restore", methods=['POST'])
 @login_required
 def perform_restore():
-    selected_items = request.form.getlist('restore_items')
-    backup_data = json.loads(request.form.get('backup_data'))
-    
     try:
+        selected_items = request.form.getlist('restore_items')
+        backup_data_str = request.form.get('backup_data')
+        print(f"Received backup_data: {backup_data_str[:100]}...")  # Print first 100 chars for debugging
+        
+        backup_data = json.loads(backup_data_str)
+        
         # Prepare the data to restore
         data_to_restore = {
             'projects': [],
@@ -122,8 +125,12 @@ def perform_restore():
         # Restore the selected data
         restore_data(current_user.id, json.dumps(data_to_restore))
         flash('Data restored successfully', 'success')
+    except json.JSONDecodeError as e:
+        flash(f'Error parsing backup data: {str(e)}', 'error')
+        print(f"JSON Decode Error: {str(e)}")  # Print the specific JSON error
     except Exception as e:
         flash(f'Error restoring data: {str(e)}', 'error')
+        print(f"General Error: {str(e)}")  # Print any other error
     
     return redirect(url_for('routes.settings'))
 
