@@ -1,4 +1,4 @@
-from app.__init__ import create_app
+from __init__ import create_app
 import os
 
 app = create_app()
