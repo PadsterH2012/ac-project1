@@ -98,12 +98,19 @@ def perform_restore():
         print(f"Full backup_data: {backup_data_str}")  # Print the full backup data for debugging
         
         try:
+            # Remove any leading/trailing whitespace and ensure it starts with a curly brace
+            backup_data_str = backup_data_str.strip()
+            if not backup_data_str.startswith('{'):
+                backup_data_str = '{' + backup_data_str
+
             backup_data = json.loads(backup_data_str)
         except json.JSONDecodeError as json_error:
             print(f"JSON Decode Error: {str(json_error)}")
             print(f"Error at position: {json_error.pos}")
             print(f"Line number: {json_error.lineno}, Column: {json_error.colno}")
-            raise
+            print(f"Problematic part: {backup_data_str[max(0, json_error.pos-20):json_error.pos+20]}")
+            flash(f'Error parsing backup data: {str(json_error)}', 'error')
+            return redirect(url_for('routes.settings'))
         
         # Prepare the data to restore
         data_to_restore = {
