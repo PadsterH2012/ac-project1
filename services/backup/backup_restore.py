@@ -20,26 +20,26 @@ def backup_data(user_id, backup_type='all'):
 
     return json.dumps(backup_data)
 
-def restore_data(user_id, backup_data_json):
+def restore_data(user_id, backup_data_json, selected_items):
     backup_data = json.loads(backup_data_json)
     user = User.query.get(user_id)
 
     if not user:
         raise ValueError("User not found")
 
-    if "projects" in backup_data:
+    if "projects" in backup_data and "projects" in selected_items:
         for project_data in backup_data["projects"]:
             project = Project.from_dict(project_data)
             project.user_id = user.id
             db.session.add(project)
 
-    if "agents" in backup_data:
+    if "agents" in backup_data and "agents" in selected_items:
         for agent_data in backup_data["agents"]:
             agent = Agent.from_dict(agent_data)
             agent.user_id = user.id
             db.session.add(agent)
 
-    if "providers" in backup_data:
+    if "providers" in backup_data and "providers" in selected_items:
         for provider_data in backup_data["providers"]:
             provider = Provider(**provider_data)
             provider.user_id = user.id

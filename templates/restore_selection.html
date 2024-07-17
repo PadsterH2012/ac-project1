@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Select Items to Restore</h2>
+<form action="{{ url_for('routes.perform_restore') }}" method="post">
+    <input type="hidden" name="backup_data" value="{{ backup_data | tojson | safe }}">
+    
+    <div>
+        <input type="checkbox" id="select_all" onchange="toggleAll(this)">
+        <label for="select_all">Select All / Deselect All</label>
+    </div>
+    
+    {% if 'projects' in backup_data %}
+    <div>
+        <input type="checkbox" id="projects" name="restore_items" value="projects">
+        <label for="projects">Projects ({{ backup_data['projects'] | length }})</label>
+    </div>
+    {% endif %}
+    
+    {% if 'agents' in backup_data %}
+    <div>
+        <input type="checkbox" id="agents" name="restore_items" value="agents">
+        <label for="agents">Agents ({{ backup_data['agents'] | length }})</label>
+    </div>
+    {% endif %}
+    
+    {% if 'providers' in backup_data %}
+    <div>
+        <input type="checkbox" id="providers" name="restore_items" value="providers">
+        <label for="providers">Providers ({{ backup_data['providers'] | length }})</label>
+    </div>
+    {% endif %}
+    
+    <button type="submit">Restore Selected Items</button>
+</form>
+
+<script>
+function toggleAll(source) {
+    var checkboxes = document.getElementsByName('restore_items');
+    for(var i=0, n=checkboxes.length; i<n; i++) {
+        checkboxes[i].checked = source.checked;
+    }
+}
+</script>
+{% endblock %}
