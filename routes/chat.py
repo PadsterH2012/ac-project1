@@ -14,26 +14,41 @@ def chat():
         project_id = request.json.get('project_id')
         print(f"Received message: {message}")  # Log received message
         
-        # Get the current user's AI agent
+        project = Project.query.get(project_id)
+        if not project:
+            print(f"Project not found: {project_id}")  # Log if project is not found
+            return jsonify({"error": f"Project not found: {project_id}"}), 404
+        
+        # Get the current user's AI agents
+        writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         
-        if not planner_agent:
+        if not writer_agent or not planner_agent:
             print(f"Missing AI agent for user {current_user.id}")  # Log error
             return jsonify({"error": "Missing AI agent for the current user"}), 404
         
-        # Get the provider for the agent
+        # Get the providers for the agents
+        writer_provider = Provider.query.get(writer_agent.provider_id)
         planner_provider = Provider.query.get(planner_agent.provider_id)
         
-        if not planner_provider:
-            print(f"Missing provider for agent {planner_agent.id}")  # Log error
-            return jsonify({"error": "Missing provider for the AI agent"}), 404
+        if not writer_provider or not planner_provider:
+            print(f"Missing provider for agents")  # Log error
+            return jsonify({"error": "Missing provider for the AI agents"}), 404
         
-        # Prepare the prompt
+        # Generate or update project scope with the writer
+        writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project scope:\n{project.description or 'No scope defined yet.'}\n\nUser message: {message}\n\nBased on this information, please generate or update the project scope.\n\nAI:"
+        scope_response = get_ai_response(writer_provider, writer_prompt)
+        
+        if scope_response:
+            project.description = scope_response
+            db.session.commit()
+        
+        # Prepare the planner prompt with the updated scope
         system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-        planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
+        planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.description}\n\nHuman: {message}\n\nAI:"
         print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
         
-        # Make request to the AI provider
+        # Make request to the AI provider for the planner
         planner_response = get_ai_response(planner_provider, planner_prompt)
         
         if planner_response:
@@ -42,13 +57,8 @@ def chat():
             journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
             
             # Update the project journal
-            project = Project.query.get(project_id)
-            if project:
-                project.journal = (project.journal or "") + "\n\n" + journal_entry
-                db.session.commit()
-            else:
-                print(f"Project not found: {project_id}")  # Log if project is not found
-                return jsonify({"error": f"Project not found: {project_id}"}), 404
+            project.journal = (project.journal or "") + "\n\n" + journal_entry
+            db.session.commit()
             
             return jsonify({
                 "planner_response": planner_response,
