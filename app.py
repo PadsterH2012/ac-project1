@@ -1,8 +1,8 @@
-from flask import Flask
-from models import db
-from routes import init_app as init_routes
-from flask_login import LoginManager
+from flask import Flask, jsonify, request
+from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
+from models import db, User, Agent
+from routes import init_app as init_routes
 
 login_manager = LoginManager()
 migrate = Migrate()
@@ -28,58 +28,60 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(user_id):
-        from models import User
         return User.query.get(int(user_id))
 
     with app.app_context():
         db.create_all()  # This line creates the database tables
 
-    return app
+    @app.cli.command("db_migrate")
+    def db_migrate():
+        from migrations import add_provider_id_to_agent
+        add_provider_id_to_agent.upgrade()
 
-@create_app().cli.command("db_migrate")
-def db_migrate():
-    from migrations import add_provider_id_to_agent
-    add_provider_id_to_agent.upgrade()
-from flask import jsonify
+    @app.route('/chat', methods=['POST'])
+    def chat():
+        user_id = current_user.id if current_user.is_authenticated else None
+        if not user_id:
+            return jsonify({'error': 'User not authenticated'}), 401
 
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_id = current_user.id if current_user.is_authenticated else None
-    message = request.json.get('message')
+        create_default_agents(user_id)  # Ensure default agents exist
 
-    # Get AI agents for the user
-    planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
-    writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
+        message = request.json.get('message')
 
-    if not planner_agent or not writer_agent:
+        # Get AI agents for the user
+        planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
+        writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
+
+        if not planner_agent or not writer_agent:
+            return jsonify({
+                'error': 'Missing AI agents for the user. Please create the required agents.'
+            }), 400
+
+        # Process the message with AI agents and generate responses
+        planner_response = process_with_ai(planner_agent, message)
+        writer_response = process_with_ai(writer_agent, message)
+
+        # Create a journal entry
+        journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
+
         return jsonify({
-            'error': 'Missing AI agents for the user. Please create the required agents.'
-        }), 400
+            'planner_response': planner_response,
+            'writer_response': writer_response,
+            'journal_entry': journal_entry,
+            'planner_name': planner_agent.name,
+            'planner_role': planner_agent.role,
+            'planner_avatar': planner_agent.avatar_url,
+            'writer_name': writer_agent.name,
+            'writer_role': writer_agent.role,
+            'writer_avatar': writer_agent.avatar_url
+        })
 
-    # Process the message with AI agents and generate responses
-    planner_response = process_with_ai(planner_agent, message)
-    writer_response = process_with_ai(writer_agent, message)
-
-    # Create a journal entry
-    journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
-
-    return jsonify({
-        'planner_response': planner_response,
-        'writer_response': writer_response,
-        'journal_entry': journal_entry,
-        'planner_name': planner_agent.name,
-        'planner_role': planner_agent.role,
-        'planner_avatar': planner_agent.avatar_url,
-        'writer_name': writer_agent.name,
-        'writer_role': writer_agent.role,
-        'writer_avatar': writer_agent.avatar_url
-    })
+    return app
 
 def process_with_ai(agent, message):
     # Implement your AI processing logic here
     # This is a placeholder implementation
     return f"AI {agent.role} response to: {message}"
-from models import Agent, db
 
 def create_default_agents(user_id):
     default_agents = [
@@ -104,13 +106,3 @@ def create_default_agents(user_id):
             db.session.add(new_agent)
     
     db.session.commit()
-
-@app.route('/chat', methods=['POST'])
-def chat():
-    user_id = current_user.id if current_user.is_authenticated else None
-    if not user_id:
-        return jsonify({'error': 'User not authenticated'}), 401
-
-    create_default_agents(user_id)  # Ensure default agents exist
-
-    # ... rest of the chat function ...
