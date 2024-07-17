@@ -76,10 +76,27 @@ def restore():
         backup_data_json = file.read().decode('utf-8')
         
         try:
-            # Restore the data
-            restore_data(current_user.id, backup_data_json)
-            flash('Data restored successfully', 'success')
+            # Parse the backup data
+            backup_data = json.loads(backup_data_json)
+            
+            # Render a template with the backup contents for selection
+            return render_template('restore_selection.html', backup_data=backup_data)
         except Exception as e:
-            flash(f'Error restoring data: {str(e)}', 'error')
+            flash(f'Error parsing backup file: {str(e)}', 'error')
         
         return redirect(url_for('routes.settings'))
+
+@routes.route("/perform_restore", methods=['POST'])
+@login_required
+def perform_restore():
+    selected_items = request.form.getlist('restore_items')
+    backup_data = request.form.get('backup_data')
+    
+    try:
+        # Restore the selected data
+        restore_data(current_user.id, backup_data, selected_items)
+        flash('Data restored successfully', 'success')
+    except Exception as e:
+        flash(f'Error restoring data: {str(e)}', 'error')
+    
+    return redirect(url_for('routes.settings'))
