@@ -46,11 +46,7 @@ def create_app():
             message = request.json.get('message')
 
             # Ensure default agents exist
-            try:
-                create_default_agents(user_id)
-            except Exception as e:
-                app.logger.error(f"Failed to create default agents: {str(e)}")
-                return jsonify({'error': 'An error occurred while setting up the chat. Please try again.'}), 500
+            create_default_agents(user_id)
 
             # Get AI agents for the user
             planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
