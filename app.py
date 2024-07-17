@@ -44,7 +44,10 @@ def create_app():
         if not user_id:
             return jsonify({'error': 'User not authenticated'}), 401
 
-        create_default_agents(user_id)  # Ensure default agents exist
+        try:
+            create_default_agents(user_id)  # Ensure default agents exist
+        except Exception as e:
+            return jsonify({'error': f'Failed to create default agents: {str(e)}'}), 500
 
         message = request.json.get('message')
 
@@ -54,7 +57,7 @@ def create_app():
 
         if not planner_agent or not writer_agent:
             return jsonify({
-                'error': 'Missing AI agents for the user. Please create the required agents.'
+                'error': 'Missing AI agents for the user. Please try refreshing the page or contact support.'
             }), 400
 
         # Process the message with AI agents and generate responses
@@ -84,25 +87,31 @@ def process_with_ai(agent, message):
     return f"AI {agent.role} response to: {message}"
 
 def create_default_agents(user_id):
-    default_agents = [
-        {
-            'name': 'Default Project Planner',
-            'role': 'Project Planner',
-            'system_prompt': 'You are an AI assistant specialized in project planning.',
-            'avatar_url': '/static/avatars/default_agent.jpg'
-        },
-        {
-            'name': 'Default Project Writer',
-            'role': 'Project Writer',
-            'system_prompt': 'You are an AI assistant specialized in project documentation and writing.',
-            'avatar_url': '/static/avatars/default_agent.jpg'
-        }
-    ]
+    try:
+        default_agents = [
+            {
+                'name': 'Default Project Planner',
+                'role': 'Project Planner',
+                'system_prompt': 'You are an AI assistant specialized in project planning.',
+                'avatar_url': '/static/avatars/default_agent.jpg'
+            },
+            {
+                'name': 'Default Project Writer',
+                'role': 'Project Writer',
+                'system_prompt': 'You are an AI assistant specialized in project documentation and writing.',
+                'avatar_url': '/static/avatars/default_agent.jpg'
+            }
+        ]
 
-    for agent_data in default_agents:
-        agent = Agent.query.filter_by(user_id=user_id, role=agent_data['role']).first()
-        if not agent:
-            new_agent = Agent(user_id=user_id, **agent_data)
-            db.session.add(new_agent)
-    
-    db.session.commit()
+        for agent_data in default_agents:
+            agent = Agent.query.filter_by(user_id=user_id, role=agent_data['role']).first()
+            if not agent:
+                new_agent = Agent(user_id=user_id, **agent_data)
+                db.session.add(new_agent)
+        
+        db.session.commit()
+        print(f"Default agents created for user {user_id}")
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating default agents for user {user_id}: {str(e)}")
+        raise
