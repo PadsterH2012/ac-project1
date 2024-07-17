@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
 from models import db, User, Agent
@@ -38,44 +38,48 @@ def create_app():
         from migrations import add_provider_id_to_agent
         add_provider_id_to_agent.upgrade()
 
-    @app.route('/chat', methods=['POST'])
+    @app.route('/chat', methods=['GET', 'POST'])
     @login_required
     def chat():
-        user_id = current_user.id
-        message = request.json.get('message')
+        if request.method == 'POST':
+            user_id = current_user.id
+            message = request.json.get('message')
 
-        try:
-            create_default_agents(user_id)  # Ensure default agents exist
-        except Exception as e:
-            return jsonify({'error': f'Failed to create default agents: {str(e)}'}), 500
+            try:
+                create_default_agents(user_id)  # Ensure default agents exist
+            except Exception as e:
+                return jsonify({'error': f'Failed to create default agents: {str(e)}'}), 500
 
-        # Get AI agents for the user
-        planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
-        writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
+            # Get AI agents for the user
+            planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
+            writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
 
-        if not planner_agent or not writer_agent:
+            if not planner_agent or not writer_agent:
+                return jsonify({
+                    'error': 'Missing AI agents for the user. Please try refreshing the page or contact support.'
+                }), 400
+
+            # Process the message with AI agents and generate responses
+            planner_response = process_with_ai(planner_agent, message)
+            writer_response = process_with_ai(writer_agent, message)
+
+            # Create a journal entry
+            journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
+
             return jsonify({
-                'error': 'Missing AI agents for the user. Please try refreshing the page or contact support.'
-            }), 400
-
-        # Process the message with AI agents and generate responses
-        planner_response = process_with_ai(planner_agent, message)
-        writer_response = process_with_ai(writer_agent, message)
-
-        # Create a journal entry
-        journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
-
-        return jsonify({
-            'planner_response': planner_response,
-            'writer_response': writer_response,
-            'journal_entry': journal_entry,
-            'planner_name': planner_agent.name,
-            'planner_role': planner_agent.role,
-            'planner_avatar': planner_agent.avatar_url,
-            'writer_name': writer_agent.name,
-            'writer_role': writer_agent.role,
-            'writer_avatar': writer_agent.avatar_url
-        })
+                'planner_response': planner_response,
+                'writer_response': writer_response,
+                'journal_entry': journal_entry,
+                'planner_name': planner_agent.name,
+                'planner_role': planner_agent.role,
+                'planner_avatar': planner_agent.avatar_url,
+                'writer_name': writer_agent.name,
+                'writer_role': writer_agent.role,
+                'writer_avatar': writer_agent.avatar_url
+            })
+        else:
+            # Handle GET request
+            return render_template('chat_interface.html')
 
     return app
 
