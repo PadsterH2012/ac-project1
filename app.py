@@ -1,11 +1,13 @@
 import os
 from flask import Flask
-from models import db
+from database_models import db
 from routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from config import Config
 from dotenv import load_dotenv
+from error_handlers import register_error_handlers
+from logging_config import configure_logging
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -24,9 +26,15 @@ def create_app(config_class=Config):
     # Register routes
     init_routes(app)
 
+    # Register error handlers
+    register_error_handlers(app)
+
+    # Configure logging
+    configure_logging(app)
+
     @login_manager.user_loader
     def load_user(user_id):
-        from models import User
+        from database_models import User
         return User.query.get(int(user_id))
 
     with app.app_context():
