@@ -1,7 +1,6 @@
 from flask import render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import db
-from models.project import Project
+from models.models import db, Project
 from . import routes
 
 @routes.route("/projects")

@@ -1,9 +1,6 @@
 from flask import request, jsonify
 from flask_login import login_required, current_user
-from models import db
-from models.agent import Agent
-from models.provider import Provider
-from models.project import Project
+from models.models import db, Agent, Provider, Project
 from services.prompt_config.prompt_config import DEFAULT_PROMPTS
 from utils import get_avatar_url
 from . import routes
