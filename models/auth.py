@@ -4,9 +4,6 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-# Import Project model to avoid circular import
-from .project import Project
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -17,7 +14,7 @@ class User(UserMixin, db.Model):
 
     agent_settings = db.Column(db.JSON, nullable=True)
 
-    projects = db.relationship('Project', backref='user', lazy=True)
+    projects = db.relationship('Project', backref='user', lazy=True, foreign_keys='Project.user_id')
     agents = db.relationship('Agent', backref='user', lazy=True)
     providers = db.relationship('Provider', backref='user', lazy=True)
 
