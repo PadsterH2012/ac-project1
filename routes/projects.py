@@ -6,8 +6,20 @@ from . import routes
 @routes.route("/projects")
 @login_required
 def projects():
+    # Ensure default agents exist
+    writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
+    planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+    
+    if not writer_agent:
+        create_default_agent(current_user.id, "AI Agent Project Writer")
+    if not planner_agent:
+        create_default_agent(current_user.id, "AI Agent Project Planner")
+    
     user_projects = Project.query.filter_by(user_id=current_user.id).all()
     return render_template("projects.html", projects=user_projects)
+
+# Add this import at the top of the file
+from routes.chat import create_default_agent
 
 @routes.route("/continue_project/<int:project_id>")
 @login_required
