@@ -204,6 +204,9 @@ window.onload = function() {
     console.log('Chat interface initialized');
 };
 
+// Curl command to test the /chat endpoint:
+// curl -X POST http://localhost:5000/chat -H "Content-Type: application/json" -d '{"message":"Hello, AI!"}'
+
 function navigateVFS(path) {
     alert(`Navigating to: ${path}`);
 }
