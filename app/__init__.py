@@ -1,5 +1,5 @@
 from flask import Flask
-from .database_models import db
+from database_models import db
 from .routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
