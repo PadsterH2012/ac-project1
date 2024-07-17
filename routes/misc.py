@@ -95,8 +95,15 @@ def perform_restore():
         selected_items = request.form.getlist('restore_items')
         backup_data_str = request.form.get('backup_data')
         print(f"Received backup_data: {backup_data_str[:100]}...")  # Print first 100 chars for debugging
+        print(f"Full backup_data: {backup_data_str}")  # Print the full backup data for debugging
         
-        backup_data = json.loads(backup_data_str)
+        try:
+            backup_data = json.loads(backup_data_str)
+        except json.JSONDecodeError as json_error:
+            print(f"JSON Decode Error: {str(json_error)}")
+            print(f"Error at position: {json_error.pos}")
+            print(f"Line number: {json_error.lineno}, Column: {json_error.colno}")
+            raise
         
         # Prepare the data to restore
         data_to_restore = {
@@ -127,10 +134,12 @@ def perform_restore():
         flash('Data restored successfully', 'success')
     except json.JSONDecodeError as e:
         flash(f'Error parsing backup data: {str(e)}', 'error')
-        print(f"JSON Decode Error: {str(e)}")  # Print the specific JSON error
+        print(f"JSON Decode Error: {str(e)}")
+        print(f"Error at position: {e.pos}")
+        print(f"Line number: {e.lineno}, Column: {e.colno}")
     except Exception as e:
         flash(f'Error restoring data: {str(e)}', 'error')
-        print(f"General Error: {str(e)}")  # Print any other error
+        print(f"General Error: {str(e)}")
     
     return redirect(url_for('routes.settings'))
 
