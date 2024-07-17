@@ -171,6 +171,11 @@ def perform_restore():
                 else:
                     print("'providers' key not found in backup data")
         
+        # Check if any data was selected for restoration
+        if not any(data_to_restore.values()):
+            flash('No data selected for restoration or no matching data found in the backup', 'warning')
+            return redirect(url_for('routes.settings'))
+        
         # Restore the selected data
         restore_data(current_user.id, json.dumps(data_to_restore))
         flash('Data restored successfully', 'success')
