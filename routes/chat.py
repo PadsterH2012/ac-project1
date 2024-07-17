@@ -45,7 +45,7 @@ def chat():
         scope_response = get_ai_response(writer_provider, writer_prompt)
         
         if scope_response:
-            project.description = scope_response
+            project.scope = scope_response
             db.session.commit()
         
         # Prepare the planner prompt with the updated scope
