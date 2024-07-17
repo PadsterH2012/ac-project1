@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
 from models import db, User, Agent
 from routes import init_app as init_routes
@@ -39,17 +39,15 @@ def create_app():
         add_provider_id_to_agent.upgrade()
 
     @app.route('/chat', methods=['POST'])
+    @login_required
     def chat():
-        user_id = current_user.id if current_user.is_authenticated else None
-        if not user_id:
-            return jsonify({'error': 'User not authenticated'}), 401
+        user_id = current_user.id
+        message = request.json.get('message')
 
         try:
             create_default_agents(user_id)  # Ensure default agents exist
         except Exception as e:
             return jsonify({'error': f'Failed to create default agents: {str(e)}'}), 500
-
-        message = request.json.get('message')
 
         # Get AI agents for the user
         planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
@@ -115,3 +113,7 @@ def create_default_agents(user_id):
         db.session.rollback()
         print(f"Error creating default agents for user {user_id}: {str(e)}")
         raise
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(debug=True)
