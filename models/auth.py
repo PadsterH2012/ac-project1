@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
 
     agent_settings = db.Column(db.JSON, nullable=True)
 
-    projects = db.relationship('Project', backref='user', lazy=True, foreign_keys='Project.user_id')
+    projects = db.relationship('Project', backref='user', lazy=True)
     agents = db.relationship('Agent', backref='user', lazy=True)
     providers = db.relationship('Provider', backref='user', lazy=True)
 
