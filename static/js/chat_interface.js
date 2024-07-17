@@ -43,6 +43,9 @@ async function sendMessage() {
         
         // Update project journal
         updateProjectJournal(data.journal_entry);
+        if (data.project_scope) {
+            updateProjectScope(data.project_scope);
+        }
 
     } catch (error) {
         console.error('Error:', error);
@@ -104,6 +107,11 @@ function updateProjectJournal(journalEntry) {
     entryElement.textContent = journalEntry;
     projectJournal.appendChild(entryElement);
     projectJournal.scrollTop = projectJournal.scrollHeight;
+}
+
+function updateProjectScope(scope) {
+    const projectScope = document.getElementById('projectScope');
+    projectScope.innerHTML = scope;
 }
 
 // Add event listeners when the DOM is fully loaded
