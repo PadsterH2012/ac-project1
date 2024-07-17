@@ -137,3 +137,44 @@ def list_items():
         'agents': [{'id': a.id, 'name': a.name, 'role': a.role} for a in agents],
         'providers': [{'id': p.id, 'provider_type': p.provider_type, 'model': p.model} for p in providers]
     })
+
+@routes.route("/perform_restore", methods=['POST'])
+@login_required
+def perform_restore():
+    try:
+        selected_items = request.form.getlist('restore_items')
+        backup_data = json.loads(request.form.get('backup_data'))
+        
+        # Prepare the data to restore
+        data_to_restore = {
+            'projects': [],
+            'agents': [],
+            'providers': []
+        }
+        
+        for item in selected_items:
+            item_type, item_id = item.split('_')
+            item_id = int(item_id)
+            
+            if item_type == 'project':
+                project = next((p for p in backup_data['projects'] if p['id'] == item_id), None)
+                if project:
+                    data_to_restore['projects'].append(project)
+            elif item_type == 'agent':
+                agent = next((a for a in backup_data['agents'] if a['id'] == item_id), None)
+                if agent:
+                    data_to_restore['agents'].append(agent)
+            elif item_type == 'provider':
+                provider = next((p for p in backup_data['providers'] if p['id'] == item_id), None)
+                if provider:
+                    data_to_restore['providers'].append(provider)
+        
+        # Restore the selected data
+        restore_data(current_user.id, json.dumps(data_to_restore))
+        flash('Data restored successfully', 'success')
+    except json.JSONDecodeError as e:
+        flash(f'Error parsing backup data: {str(e)}', 'error')
+    except Exception as e:
+        flash(f'Error restoring data: {str(e)}', 'error')
+    
+    return redirect(url_for('routes.settings'))
