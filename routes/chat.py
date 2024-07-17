@@ -4,7 +4,7 @@ from models import Agent, Provider, Project, db
 from prompt_config import DEFAULT_PROMPTS
 from utils import get_avatar_url
 from . import routes
-from ollama_connection import connect_to_ollama
+from services.provider_connections.ollama_connection import connect_to_ollama
 
 @routes.route("/chat", methods=["POST"])
 @login_required
