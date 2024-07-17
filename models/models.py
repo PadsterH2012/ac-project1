@@ -81,6 +81,7 @@ class Agent(db.Model):
     avatar = db.Column(db.String(255), nullable=True)
 
     project = db.relationship('Project', back_populates='agents')
+    provider = db.relationship('Provider', backref='agents')
 
     @staticmethod
     def get_default_system_prompt(role):
