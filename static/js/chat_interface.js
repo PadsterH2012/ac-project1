@@ -43,9 +43,9 @@ async function sendMessage() {
         
         // Update project journal
         updateProjectJournal(data.journal_entry);
-        if (data.project_scope) {
-            updateProjectScope(data.project_scope);
-        }
+        
+        // Always update project scope
+        updateProjectScope(data.project_scope);
 
     } catch (error) {
         console.error('Error:', error);

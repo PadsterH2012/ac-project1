@@ -65,12 +65,21 @@ def chat():
             project.journal = (project.journal or "") + "\n\n" + journal_entry
             db.session.commit()
             
+            # Update the scope after the planner's response
+            writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project journal:\n{project.journal}\n\nBased on this information, please generate or update the project scope.\n\nAI:"
+            updated_scope_response = get_ai_response(writer_provider, writer_prompt)
+            
+            if updated_scope_response:
+                project.scope = updated_scope_response
+                db.session.commit()
+            
             return jsonify({
                 "planner_response": planner_response,
                 "journal_entry": journal_entry,
                 "planner_name": planner_agent.name,
                 "planner_role": planner_agent.role,
-                "planner_avatar": get_avatar_url(planner_agent.avatar)
+                "planner_avatar": get_avatar_url(planner_agent.avatar),
+                "project_scope": project.scope
             })
         else:
             print("Failed to get response from AI provider")  # Log error
