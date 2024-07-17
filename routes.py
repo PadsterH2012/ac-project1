@@ -22,6 +22,7 @@ def backup():
 @login_required
 def restore():
     # ... (keep the existing restore route implementation)
+    pass
 
 # Keep the agent and provider settings routes here
 @routes.route("/agent_settings", methods=["GET", "POST"])
