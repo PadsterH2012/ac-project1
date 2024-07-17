@@ -2,14 +2,12 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 from models import User, Project, Agent, Provider, db
 from auth import register_user, login_user_auth, logout_user_auth
-# from flask_oauthlib.client import OAuth
 from backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
 import json
-import requests
 from ollama_connection import connect_to_ollama
-from utils import save_avatar, get_avatar_url
+from utils import save_avatar, get_avatar_url, handle_error, log_info, log_debug
 from prompt_config import DEFAULT_PROMPTS
 
 routes = Blueprint('routes', __name__)
@@ -109,9 +107,9 @@ def settings():
 @routes.route("/backup", methods=['POST'])
 @login_required
 def backup():
-    print("Backup route called")  # Debug print
-    print(f"Request Content-Type: {request.content_type}")  # Debug print
-    print(f"Request data: {request.data}")  # Debug print
+    log_info("Backup route called")
+    log_debug(f"Request Content-Type: {request.content_type}")
+    log_debug(f"Request data: {request.data}")
     
     backup_options = []
     
@@ -120,7 +118,7 @@ def backup():
     else:
         data = request.form
     
-    print(f"Parsed data: {data}")  # Debug print
+    log_debug(f"Parsed data: {data}")
     
     if data.get('backup_projects'):
         backup_options.append('projects')
@@ -131,12 +129,12 @@ def backup():
     
     backup_type = ','.join(backup_options) if backup_options else 'all'
     
-    print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
+    log_info(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")
     backup_data_json = backup_data(current_user.id, backup_type)
     
     backup_data_dict = json.loads(backup_data_json)
     if 'error' in backup_data_dict:
-        return jsonify({"error": backup_data_dict['error']}), 404
+        return handle_error(backup_data_dict['error'], 404)
     
     # Create a temporary file
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
@@ -147,7 +145,7 @@ def backup():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"incubator_backup_{timestamp}.json"
     
-    print(f"Sending file: {filename}")  # Debug print
+    log_info(f"Sending file: {filename}")
     
     # Send the file
     return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
@@ -369,32 +367,30 @@ def chat():
     try:
         message = request.json.get('message')
         project_id = request.json.get('project_id')
-        print(f"Received message: {message}")  # Log received message
+        log_info(f"Received message: {message}")
         
         # Get the current user's AI agent
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         
         if not planner_agent:
-            print(f"Missing AI agent for user {current_user.id}")  # Log error
-            return jsonify({"error": "Missing AI agent for the current user"}), 404
+            return handle_error(f"Missing AI agent for user {current_user.id}", 404)
         
         # Get the provider for the agent
         planner_provider = Provider.query.get(planner_agent.provider_id)
         
         if not planner_provider:
-            print(f"Missing provider for agent {planner_agent.id}")  # Log error
-            return jsonify({"error": "Missing provider for the AI agent"}), 404
+            return handle_error(f"Missing provider for agent {planner_agent.id}", 404)
         
         # Prepare the prompt
         system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
         planner_prompt = f"{system_prompt}\n\nHuman: {message}\n\nAI:"
-        print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
+        log_debug(f"Prepared prompt: {planner_prompt[:100]}...")
         
         # Make request to the AI provider
         planner_response = get_ai_response(planner_provider, planner_prompt)
         
         if planner_response:
-            print(f"Received AI response: {planner_response[:100]}...")  # Log AI response (truncated)
+            log_info(f"Received AI response: {planner_response[:100]}...")
             # Create a journal entry
             journal_entry = f"User: {message}\n\nPlanner: {planner_response[:100]}..."
             
@@ -404,8 +400,7 @@ def chat():
                 project.journal = (project.journal or "") + "\n\n" + journal_entry
                 db.session.commit()
             else:
-                print(f"Project not found: {project_id}")  # Log if project is not found
-                return jsonify({"error": f"Project not found: {project_id}"}), 404
+                return handle_error(f"Project not found: {project_id}", 404)
             
             return jsonify({
                 "planner_response": planner_response,
@@ -415,11 +410,9 @@ def chat():
                 "planner_avatar": get_avatar_url(planner_agent.avatar)
             })
         else:
-            print("Failed to get response from AI provider")  # Log error
-            return jsonify({"error": "Failed to get response from AI provider"}), 500
+            return handle_error("Failed to get response from AI provider", 500)
     except Exception as e:
-        print(f"An error occurred: {str(e)}")  # Log the specific error
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return handle_error(f"An error occurred: {str(e)}", 500)
 
 @routes.route("/clear_journal", methods=["POST"])
 @login_required

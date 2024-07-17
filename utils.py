@@ -25,3 +25,34 @@ def get_avatar_url(filename):
     if filename:
         return url_for('static', filename=f'avatars/{filename}')
     return url_for('static', filename='avatars/default_agent.jpg')
+import os
+from flask import current_app, jsonify
+import logging
+
+logger = logging.getLogger(__name__)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+def save_avatar(file):
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+        return filename
+    return None
+
+def get_avatar_url(filename):
+    if filename:
+        return url_for('static', filename=f'avatars/{filename}')
+    return url_for('static', filename='avatars/default_agent.jpg')
+
+def handle_error(error_message, status_code=400):
+    logger.error(error_message)
+    return jsonify({"error": error_message}), status_code
+
+def log_info(message):
+    logger.info(message)
+
+def log_debug(message):
+    logger.debug(message)
