@@ -12,7 +12,7 @@ class Project(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     journal = db.Column(db.Text, nullable=True)
 
-    user = db.relationship('User', back_populates='projects', foreign_keys=[user_id])
+    user = db.relationship('User', back_populates='projects')
 
     def __repr__(self):
         return f"Project('{self.title}')"
