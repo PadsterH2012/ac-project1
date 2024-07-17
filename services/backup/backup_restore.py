@@ -53,6 +53,8 @@ def backup_data(user_id, backup_type='all'):
     return json.dumps(backup_data, indent=2)
 
 def restore_data(user_id, backup_data_json, selected_items):
+    from datetime import datetime  # Explicitly import datetime here
+    
     backup_data = json.loads(backup_data_json)
     user = User.query.get(user_id)
 
