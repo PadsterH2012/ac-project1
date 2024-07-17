@@ -1,6 +1,6 @@
 import json
 from models import db, User, Project, Agent, Provider
-from ollama_connection import connect_to_ollama
+from services.provider_connections.ollama_connection import connect_to_ollama
 
 def backup_data(user_id, backup_type='all'):
     data = {}
