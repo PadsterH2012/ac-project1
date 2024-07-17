@@ -1,3 +1,13 @@
 
 # 2024-07-17 20:21:28.466133
 +/model openrouter/anthropic/claude-3.5-sonnet
+
+# 2024-07-17 21:04:04.162987
++could we put all routes in a route folder
+
+# 2024-07-17 21:40:36.276864
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++ImportError: cannot import name 'init_app' from 'routes' (/mnt/local_repos/ac-project1/routes/__init__.py)
