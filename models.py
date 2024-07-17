@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from werkzeug.security import check_password_hash
 from datetime import datetime
 import json
-from prompt_config import DEFAULT_PROMPTS
+from services.prompt_config.prompt_config import DEFAULT_PROMPTS
 
 db = SQLAlchemy()
 
