@@ -3,20 +3,14 @@ from models import db
 from routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from config import Config
 
 login_manager = LoginManager()
 migrate = Migrate()
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = "your_secret_key_here"  # Replace with a real secret key
-    app.config["GOOGLE_CONSUMER_KEY"] = "your_google_client_id"
-    app.config["GOOGLE_CONSUMER_SECRET"] = "your_google_client_secret"
-    app.config["FACEBOOK_APP_ID"] = "your_facebook_app_id"
-    app.config["FACEBOOK_APP_SECRET"] = "your_facebook_app_secret"
-    app.config['UPLOAD_FOLDER'] = 'static/avatars'
+    app.config.from_object(config_class)
     
     db.init_app(app)
     login_manager.init_app(app)
