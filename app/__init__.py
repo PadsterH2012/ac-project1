@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from database_models import db
 from .routes import init_app as init_routes
 from flask_login import LoginManager
