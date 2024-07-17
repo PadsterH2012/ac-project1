@@ -1,13 +1,13 @@
 import os
 from flask import Flask
-from database_models import db
-from routes import init_app as init_routes
+from app.database_models import db
+from app.routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from config import Config
+from app.config import Config
 from dotenv import load_dotenv
-from error_handlers import register_error_handlers
-from logging_config import configure_logging
+from app.error_handlers import register_error_handlers
+from app.logging_config import configure_logging
 
 load_dotenv()  # Load environment variables from .env file
 
