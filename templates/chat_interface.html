@@ -42,16 +42,13 @@
         </div>
         <div id="Scope" class="tab-content">
             <h3>Project Scope</h3>
-            <p>Define and manage the project's scope here.</p>
-            <ul>
-                <li>Project objectives</li>
-                <li>Deliverables</li>
-                <li>Timeline</li>
-                <li>Resources required</li>
-                <li>Implementation of Virtual File System</li>
-                <li>External quick action buttons for improved user interaction</li>
-                <li>Optimized button layout for better usability</li>
-            </ul>
+            <div id="projectScope">
+                {% if project_scope %}
+                    {{ project_scope | safe }}
+                {% else %}
+                    <p>No project scope defined yet.</p>
+                {% endif %}
+            </div>
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
