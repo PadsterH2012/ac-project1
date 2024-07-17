@@ -1,8 +1,4 @@
-.aider*
-venv*
-users.db
-__pycache__*
-pandoc-3.2.1-1-amd64/
-node_modules/
-static/js/bundle.js
-static/avatars*
+__pycache__
+venv
+*.pyc
+.DS_Store
