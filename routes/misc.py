@@ -116,6 +116,14 @@ def perform_restore():
             
             # Attempt to parse the JSON
             backup_data = json.loads(backup_data_str)
+            
+            # Check if the required keys exist in the backup data
+            required_keys = ['projects', 'agents', 'providers']
+            for key in required_keys:
+                if key not in backup_data:
+                    print(f"'{key}' key not found in backup data")
+                    backup_data[key] = []  # Initialize with an empty list if the key is missing
+            
         except json.JSONDecodeError as json_error:
             print(f"JSON Decode Error: {str(json_error)}")
             print(f"Error at position: {json_error.pos}")
@@ -133,6 +141,13 @@ def perform_restore():
                 sanitized_data = re.sub(r',\s*]', ']', sanitized_data)
                 print(f"Sanitized data: {sanitized_data[:100]}...")  # Log sanitized data
                 backup_data = json.loads(sanitized_data)
+                
+                # Check if the required keys exist in the sanitized backup data
+                for key in required_keys:
+                    if key not in backup_data:
+                        print(f"'{key}' key not found in sanitized backup data")
+                        backup_data[key] = []  # Initialize with an empty list if the key is missing
+                
             except Exception as e:
                 print(f"Error after sanitization: {str(e)}")  # Log error after sanitization
                 flash(f'Error parsing backup data: {str(e)}', 'error')
@@ -149,27 +164,13 @@ def perform_restore():
             item_type, item_id = item.split('_')
             item_id = int(item_id)
             
-            if item_type == 'project':
-                if 'projects' in backup_data:
-                    project = next((p for p in backup_data['projects'] if p['id'] == item_id), None)
-                    if project:
-                        data_to_restore['projects'].append(project)
+            if item_type in ['project', 'agent', 'provider']:
+                items = backup_data.get(item_type + 's', [])
+                item_data = next((i for i in items if i['id'] == item_id), None)
+                if item_data:
+                    data_to_restore[item_type + 's'].append(item_data)
                 else:
-                    print("'projects' key not found in backup data")
-            elif item_type == 'agent':
-                if 'agents' in backup_data:
-                    agent = next((a for a in backup_data['agents'] if a['id'] == item_id), None)
-                    if agent:
-                        data_to_restore['agents'].append(agent)
-                else:
-                    print("'agents' key not found in backup data")
-            elif item_type == 'provider':
-                if 'providers' in backup_data:
-                    provider = next((p for p in backup_data['providers'] if p['id'] == item_id), None)
-                    if provider:
-                        data_to_restore['providers'].append(provider)
-                else:
-                    print("'providers' key not found in backup data")
+                    print(f"Item {item_type} with id {item_id} not found in backup data")
         
         # Check if any data was selected for restoration
         if not any(data_to_restore.values()):
