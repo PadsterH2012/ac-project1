@@ -1,11 +1,11 @@
 from flask import Flask, render_template
-from database_models import db
-from .routes import init_app as init_routes
+from app.database_models import db
+from app.routes import init_app as init_routes
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from .config import Config
-from .error_handlers import register_error_handlers
-from .logging_config import configure_logging
+from app.config import Config
+from app.error_handlers import register_error_handlers
+from app.logging_config import configure_logging
 
 login_manager = LoginManager()
 migrate = Migrate()
@@ -30,7 +30,7 @@ def create_app(config_class=Config):
 
     @login_manager.user_loader
     def load_user(user_id):
-        from .database_models import User
+        from app.database_models import User
         return User.query.get(int(user_id))
 
     with app.app_context():
