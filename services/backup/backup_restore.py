@@ -79,7 +79,7 @@ def restore_data(user_id, backup_data_json, selected_items):
                     name=agent_data['name'],
                     role=agent_data['role'],
                     user_id=user.id,
-                    provider_id=agent_data['provider_id'],
+                    provider_id=None,  # We'll update this after restoring providers
                     temperature=agent_data['temperature'],
                     system_prompt=agent_data['system_prompt'],
                     avatar=agent_data['avatar']
@@ -97,5 +97,18 @@ def restore_data(user_id, backup_data_json, selected_items):
                     url=provider_data['url']
                 )
                 db.session.add(provider)
+
+    db.session.commit()
+
+    # Update agent provider_id after restoring providers
+    if "agents" in backup_data and "agents" in selected_items:
+        for agent_data in backup_data["agents"]:
+            if f"agent_{agent_data['id']}" in selected_items:
+                agent = Agent.query.filter_by(user_id=user.id, name=agent_data['name']).first()
+                if agent:
+                    provider = Provider.query.filter_by(user_id=user.id, provider_type=agent_data['provider_type']).first()
+                    if provider:
+                        agent.provider_id = provider.id
+                        db.session.add(agent)
 
     db.session.commit()
