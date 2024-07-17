@@ -29,6 +29,7 @@ def restore():
 @login_required
 def agent_settings():
     # ... (keep the existing agent_settings route implementation)
+    pass
 
 @routes.route("/provider_settings")
 @login_required
