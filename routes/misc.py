@@ -102,9 +102,17 @@ def perform_restore():
             # Remove any leading/trailing whitespace
             backup_data_str = backup_data_str.strip()
             
+            print(f"Raw backup data: {backup_data_str[:100]}...")  # Log raw data
+            
             # Check if the string starts and ends with curly braces
             if not (backup_data_str.startswith('{') and backup_data_str.endswith('}')):
                 backup_data_str = '{' + backup_data_str + '}'
+            
+            # Remove any extra curly braces at the beginning or end
+            backup_data_str = backup_data_str.strip('{}')
+            backup_data_str = '{' + backup_data_str + '}'
+            
+            print(f"Processed backup data: {backup_data_str[:100]}...")  # Log processed data
             
             # Attempt to parse the JSON
             backup_data = json.loads(backup_data_str)
@@ -120,8 +128,13 @@ def perform_restore():
                 sanitized_data = backup_data_str.replace("'", '"')
                 # Ensure property names are in double quotes
                 sanitized_data = re.sub(r'(\w+)(?=\s*:)', r'"\1"', sanitized_data)
+                # Remove any extra commas
+                sanitized_data = re.sub(r',\s*}', '}', sanitized_data)
+                sanitized_data = re.sub(r',\s*]', ']', sanitized_data)
+                print(f"Sanitized data: {sanitized_data[:100]}...")  # Log sanitized data
                 backup_data = json.loads(sanitized_data)
             except Exception as e:
+                print(f"Error after sanitization: {str(e)}")  # Log error after sanitization
                 flash(f'Error parsing backup data: {str(e)}', 'error')
                 return redirect(url_for('routes.settings'))
         
