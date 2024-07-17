@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=True)
     oauth_provider = db.Column(db.String(20), nullable=True)
-    oauth_id = db.Column(db.String(100))
+    oauth_id = db.Column(db.String(100), nullable=True)
     agent_settings = db.Column(db.JSON, nullable=True)
     projects = db.relationship('Project', back_populates='user', lazy=True)
     agents = db.relationship('Agent', backref='user', lazy=True)
