@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session, send_file
-from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash
+from flask_login import login_required, current_user
 from models import User, Project, Agent, Provider, db
+from auth import register_user, login_user_auth, logout_user_auth
 # from flask_oauthlib.client import OAuth
 from backup_restore import backup_data, restore_data
 import tempfile
@@ -68,14 +68,7 @@ def register():
         username = request.form.get('username')
         email = request.form.get('email')
         password = request.form.get('password')
-        existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-        if existing_user:
-            flash('Username or email already exists.', 'error')
-        else:
-            new_user = User(username=username, email=email, password=generate_password_hash(password))
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Registered successfully. Please log in.', 'success')
+        if register_user(username, email, password):
             return redirect(url_for('routes.index'))
     return render_template("register.html")
 
@@ -87,21 +80,14 @@ def get_users():
 def login():
     username = request.form.get('username')
     password = request.form.get('password')
-    user = User.query.filter_by(username=username).first()
-    if user and user.check_password(password):
-        login_user(user)
-        flash('Logged in successfully.', 'success')
+    if login_user_auth(username, password):
         return redirect(url_for('routes.index'))
-    else:
-        flash('Invalid username or password.', 'error')
-        return redirect(url_for('routes.index'))
+    return redirect(url_for('routes.index'))
 
 @routes.route("/logout")
 @login_required
 def logout():
-    logout_user()
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('routes.index'))
+    return logout_user_auth()
 
 @routes.route("/projects")
 @login_required
