@@ -1,9 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash
 from flask_login import UserMixin
+from . import db
 from .project import Project  # Import the Project model
-
-db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
