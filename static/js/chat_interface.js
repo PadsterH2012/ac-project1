@@ -29,22 +29,33 @@ async function sendMessage() {
         console.log('Response status:', response.status);  // Debug log
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'An error occurred while processing your message');
         }
 
         const data = await response.json();
         console.log('Received data:', data);  // Debug log
 
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
         // Display AI responses
-        displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
-        // displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
+        if (data.planner_response) {
+            displayMessage('AI Agent Project Planner', data.planner_response, data.planner_name, data.planner_role, data.planner_avatar);
+        }
+        if (data.writer_response) {
+            displayMessage('AI Agent Project Writer', data.writer_response, data.writer_name, data.writer_role, data.writer_avatar);
+        }
         
         // Update project journal
-        updateProjectJournal(data.journal_entry);
+        if (data.journal_entry) {
+            updateProjectJournal(data.journal_entry);
+        }
 
     } catch (error) {
         console.error('Error:', error);
-        displayMessage('System', 'An error occurred while processing your message.');
+        displayMessage('System', `An error occurred: ${error.message}`);
     }
 }
 
