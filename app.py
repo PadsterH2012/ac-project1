@@ -45,38 +45,45 @@ def create_app():
             user_id = current_user.id
             message = request.json.get('message')
 
+            # Ensure default agents exist
             try:
-                create_default_agents(user_id)  # Ensure default agents exist
+                create_default_agents(user_id)
             except Exception as e:
-                return jsonify({'error': f'Failed to create default agents: {str(e)}'}), 500
+                app.logger.error(f"Failed to create default agents: {str(e)}")
+                return jsonify({'error': 'An error occurred while setting up the chat. Please try again.'}), 500
 
             # Get AI agents for the user
             planner_agent = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
             writer_agent = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
 
             if not planner_agent or not writer_agent:
+                app.logger.error(f"Missing AI agents for user {user_id}")
                 return jsonify({
                     'error': 'Missing AI agents for the user. Please try refreshing the page or contact support.'
                 }), 400
 
-            # Process the message with AI agents and generate responses
-            planner_response = process_with_ai(planner_agent, message)
-            writer_response = process_with_ai(writer_agent, message)
+            try:
+                # Process the message with AI agents and generate responses
+                planner_response = process_with_ai(planner_agent, message)
+                writer_response = process_with_ai(writer_agent, message)
 
-            # Create a journal entry
-            journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
+                # Create a journal entry
+                journal_entry = f"User: {message}\nPlanner: {planner_response}\nWriter: {writer_response}"
 
-            return jsonify({
-                'planner_response': planner_response,
-                'writer_response': writer_response,
-                'journal_entry': journal_entry,
-                'planner_name': planner_agent.name,
-                'planner_role': planner_agent.role,
-                'planner_avatar': planner_agent.avatar_url,
-                'writer_name': writer_agent.name,
-                'writer_role': writer_agent.role,
-                'writer_avatar': writer_agent.avatar_url
-            })
+                return jsonify({
+                    'planner_response': planner_response,
+                    'writer_response': writer_response,
+                    'journal_entry': journal_entry,
+                    'planner_name': planner_agent.name,
+                    'planner_role': planner_agent.role,
+                    'planner_avatar': planner_agent.avatar_url,
+                    'writer_name': writer_agent.name,
+                    'writer_role': writer_agent.role,
+                    'writer_avatar': writer_agent.avatar_url
+                })
+            except Exception as e:
+                app.logger.error(f"Error processing chat message: {str(e)}")
+                return jsonify({'error': 'An error occurred while processing your message. Please try again.'}), 500
         else:
             # Handle GET request
             return render_template('chat_interface.html')
@@ -89,34 +96,41 @@ def process_with_ai(agent, message):
     return f"AI {agent.role} response to: {message}"
 
 def create_default_agents(user_id):
-    try:
-        default_agents = [
-            {
-                'name': 'Default Project Planner',
-                'role': 'Project Planner',
-                'system_prompt': 'You are an AI assistant specialized in project planning.',
-                'avatar_url': '/static/avatars/default_agent.jpg'
-            },
-            {
-                'name': 'Default Project Writer',
-                'role': 'Project Writer',
-                'system_prompt': 'You are an AI assistant specialized in project documentation and writing.',
-                'avatar_url': '/static/avatars/default_agent.jpg'
-            }
-        ]
+    default_agents = [
+        {
+            'name': 'Default Project Planner',
+            'role': 'Project Planner',
+            'system_prompt': 'You are an AI assistant specialized in project planning.',
+            'avatar_url': '/static/avatars/default_agent.jpg'
+        },
+        {
+            'name': 'Default Project Writer',
+            'role': 'Project Writer',
+            'system_prompt': 'You are an AI assistant specialized in project documentation and writing.',
+            'avatar_url': '/static/avatars/default_agent.jpg'
+        }
+    ]
 
-        for agent_data in default_agents:
-            agent = Agent.query.filter_by(user_id=user_id, role=agent_data['role']).first()
-            if not agent:
-                new_agent = Agent(user_id=user_id, **agent_data)
-                db.session.add(new_agent)
-        
+    for agent_data in default_agents:
+        agent = Agent.query.filter_by(user_id=user_id, role=agent_data['role']).first()
+        if not agent:
+            new_agent = Agent(user_id=user_id, **agent_data)
+            db.session.add(new_agent)
+    
+    try:
         db.session.commit()
-        print(f"Default agents created for user {user_id}")
+        app.logger.info(f"Default agents created for user {user_id}")
     except Exception as e:
         db.session.rollback()
-        print(f"Error creating default agents for user {user_id}: {str(e)}")
+        app.logger.error(f"Error creating default agents for user {user_id}: {str(e)}")
         raise
+
+    # Verify agents were created
+    planner = Agent.query.filter_by(user_id=user_id, role='Project Planner').first()
+    writer = Agent.query.filter_by(user_id=user_id, role='Project Writer').first()
+    if not planner or not writer:
+        app.logger.error(f"Failed to create all default agents for user {user_id}")
+        raise Exception("Failed to create all default agents")
 
 if __name__ == '__main__':
     app = create_app()
