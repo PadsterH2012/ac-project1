@@ -205,6 +205,12 @@ window.onload = function() {
     console.log('Project Scope content:', projectScopeContent); // Debug log
     renderMarkdownContent('projectScope', projectScopeContent);
     renderMarkdownContent('hldContent', initialHld);
+
+    // Ensure project scope is visible
+    const scopeTab = document.getElementById('Scope');
+    if (scopeTab) {
+        scopeTab.style.display = 'block';
+    }
     renderMarkdownContent('lldDbContent', initialLldDb);
     renderMarkdownContent('lldUxContent', initialLldUx);
     renderMarkdownContent('lldCodeContent', initialLldCode);
