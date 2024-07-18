@@ -105,27 +105,36 @@ def structure_project_scope(scope_text):
     current_section = ""
     unanswered_items = []
 
-    for line in scope_text.split('\n'):
+    lines = scope_text.split('\n')
+    for i, line in enumerate(lines):
         line = line.strip()
         if line == "":
             continue
         if line.lower() == "unanswered items:":
             break
         if line.endswith(':'):
-            current_section = line
+            current_section = line.rstrip(':')
             structured_scope += f"## {current_section}\n\n"
         elif line.startswith('*') or line.startswith('-'):
             structured_scope += f"{line}\n"
+        elif line[0].isdigit() and line[1] == '.':
+            # This is a numbered item, treat it as a subsection
+            subsection = line[2:].strip()
+            structured_scope += f"### {subsection}\n\n"
         else:
-            structured_scope += f"{line}\n\n"
+            # Check if the next line is a list item
+            if i + 1 < len(lines) and (lines[i+1].strip().startswith('*') or lines[i+1].strip().startswith('-')):
+                structured_scope += f"### {line}\n\n"
+            else:
+                structured_scope += f"{line}\n\n"
 
     if "Unanswered items:" in scope_text:
         unanswered = scope_text.split("Unanswered items:")[-1].strip().split('\n')
-        structured_scope += "## Unanswered items:\n\n"
+        structured_scope += "## Unanswered items\n\n"
         for item in unanswered:
             structured_scope += f"- {item.strip()}\n"
 
-    return structured_scope
+    return structured_scope.strip()
 
 @routes.route("/clear_journal", methods=["POST"])
 @login_required
