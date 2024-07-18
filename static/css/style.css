@@ -178,7 +178,7 @@ body {
     overflow-y: auto;
 }
 
-#projectScope {
+#projectScope, #hldContent {
     background-color: #f8f9fa;
     border: 1px solid #e9ecef;
     border-radius: 5px;
@@ -186,25 +186,25 @@ body {
     margin-top: 10px;
 }
 
-#projectScope h4 {
+#projectScope h4, #hldContent h4 {
     color: #495057;
     margin-bottom: 10px;
     border-bottom: 2px solid #ced4da;
     padding-bottom: 5px;
 }
 
-#projectScope ul {
+#projectScope ul, #hldContent ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-#projectScope li {
+#projectScope li, #hldContent li {
     margin-bottom: 8px;
     padding-left: 20px;
     position: relative;
 }
 
-#projectScope li::before {
+#projectScope li::before, #hldContent li::before {
     content: "•";
     color: #6c757d;
     font-weight: bold;
@@ -212,13 +212,13 @@ body {
     left: 0;
 }
 
-#projectScope .unanswered-items {
+#projectScope .unanswered-items, #hldContent .unanswered-items {
     margin-top: 15px;
     padding-top: 10px;
     border-top: 1px dashed #ced4da;
 }
 
-#projectScope .unanswered-items h5 {
+#projectScope .unanswered-items h5, #hldContent .unanswered-items h5 {
     color: #dc3545;
     margin-bottom: 10px;
 }
