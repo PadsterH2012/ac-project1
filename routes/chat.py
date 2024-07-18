@@ -53,14 +53,14 @@ def chat():
         if "Unanswered items:" in scope_response:
             unanswered_items = scope_response.split("Unanswered items:")[-1].strip().split("\n")
         
+        # Prepare the planner prompt with the updated scope and journal
+        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+        planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nProject journal:\n{project.journal or 'No journal entries yet.'}\n\n"
+
         if unanswered_items:
-            # Prepare the planner prompt to ask about unanswered items
-            system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-            planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nThere are some unanswered items in the project scope. Please ask the user about these items one by one:\n\n" + "\n".join(unanswered_items) + "\n\nAI:"
-        else:
-            # Prepare the regular planner prompt with the updated scope
-            system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-            planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nHuman: {message}\n\nAI:"
+            planner_prompt += f"There are some unanswered items in the project scope. Please ask the user about these items one by one, but only if they haven't been addressed in the journal:\n\n" + "\n".join(unanswered_items) + "\n\n"
+
+        planner_prompt += f"Human: {message}\n\nAI:"
         
         print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
         
