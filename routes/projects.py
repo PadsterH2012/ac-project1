@@ -28,7 +28,14 @@ def continue_project(project_id):
     if project.user_id != current_user.id:
         flash('You do not have permission to access this project.', 'error')
         return redirect(url_for('routes.projects'))
-    return render_template("chat_interface.html", project=project, journal_entries=project.journal, project_scope=project.scope, project_hld=project.hld)
+    return render_template("chat_interface.html", 
+                           project=project, 
+                           journal_entries=project.journal, 
+                           project_scope=project.scope, 
+                           project_hld=project.hld,
+                           project_lld_db=project.lld_db,
+                           project_lld_ux=project.lld_ux,
+                           project_lld_code=project.lld_code)
 
 @routes.route("/create_project", methods=["GET", "POST"])
 @login_required
