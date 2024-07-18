@@ -52,11 +52,11 @@
         </div>
         <div id="Scope" class="tab-content">
             <h3>Project Scope</h3>
-            <div id="projectScope"></div>
+            <div id="projectScope">{{ project_scope | safe }}</div>
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
-            <div id="hldContent"></div>
+            <div id="hldContent">{{ project_hld | safe }}</div>
         </div>
         <div id="LLD - DB" class="tab-content">
             <h3>Low-Level Design - Database</h3>
