@@ -201,7 +201,7 @@ window.onload = function() {
     updateButtonColors(initialScope, initialHld, initialLldDb, initialLldUx, initialLldCode);
 
     // Render initial content for all tabs
-    renderMarkdownContent('projectScope', initialScope);
+    renderMarkdownContent('projectScope', document.getElementById('projectScope').dataset.content);
     renderMarkdownContent('hldContent', initialHld);
     renderMarkdownContent('lldDbContent', initialLldDb);
     renderMarkdownContent('lldUxContent', initialLldUx);

@@ -52,7 +52,7 @@
         </div>
         <div id="Scope" class="tab-content">
             <h3>Project Scope</h3>
-            <div id="projectScope">{{ project_scope | safe }}</div>
+            <div id="projectScope" data-content="{{ project_scope | escape }}"></div>
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
