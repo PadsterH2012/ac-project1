@@ -161,6 +161,15 @@ window.onload = function() {
     renderMarkdownContent('lldCodeContent', document.getElementById('lldCodeContent').innerHTML);
     renderMarkdownContent('codingPlanContent', document.getElementById('codingPlanContent').innerHTML);
     renderMarkdownContent('vfsContent', document.getElementById('vfsContent').innerHTML);
+
+    // Update the HLD button color if HLD content is present
+    const hldContent = document.getElementById('hldContent').innerHTML;
+    if (hldContent.trim() !== '') {
+        const hldButton = document.querySelector('.action-button[onclick="performAction(\'HLD\')"]');
+        if (hldButton) {
+            hldButton.classList.add('complete');
+        }
+    }
 };
 
 // Add event listeners when the DOM is fully loaded
