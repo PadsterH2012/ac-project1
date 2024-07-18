@@ -211,9 +211,8 @@ window.onload = function() {
 
     // Ensure HLD content is rendered
     const hldContent = document.getElementById('hldContent').dataset.content;
-    if (hldContent) {
-        renderMarkdownContent('hldContent', hldContent);
-    }
+    console.log('HLD content:', hldContent); // Debug log
+    renderMarkdownContent('hldContent', hldContent);
 };
 
 // Add event listeners when the DOM is fully loaded

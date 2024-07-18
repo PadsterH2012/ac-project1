@@ -37,7 +37,7 @@ def continue_project(project_id):
                            project_lld_ux=project.lld_ux,
                            project_lld_code=project.lld_code,
                            project_coding_plan=project.coding_plan,
-                           project_hld_content=project.hld)
+                           project_hld_content=project.hld or '')
 
 @routes.route("/create_project", methods=["GET", "POST"])
 @login_required
