@@ -160,7 +160,7 @@
         display: block;
     }
     .action-button {
-        background-color: var(--button-bg);
+        background-color: #808080; /* Default grey color */
         color: white;
         border: none;
         padding: 10px 5px;
@@ -176,7 +176,13 @@
         justify-content: center;
     }
     .action-button:hover {
-        background-color: var(--button-hover-bg);
+        background-color: #606060; /* Darker grey on hover */
+    }
+    .action-button.complete {
+        background-color: #28a745; /* Green color for completed state */
+    }
+    .action-button.complete:hover {
+        background-color: #218838; /* Darker green on hover */
     }
     .vfs-container {
         display: flex;
