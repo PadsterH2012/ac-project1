@@ -135,10 +135,12 @@ function updateScopeButtonColor(scope) {
 
 function renderMarkdownContent(elementId, content) {
     const element = document.getElementById(elementId);
-    if (element && content) {
-        element.innerHTML = marked.parse(content);
-    } else if (element) {
-        element.innerHTML = '<p>No content available yet.</p>';
+    if (element) {
+        if (content && content.trim() !== '') {
+            element.innerHTML = marked.parse(content);
+        } else {
+            element.innerHTML = '<p>No content available yet.</p>';
+        }
     }
 }
 
@@ -154,11 +156,11 @@ window.onload = function() {
     // Render initial content for all tabs
     renderMarkdownContent('projectScope', initialScope);
     renderMarkdownContent('hldContent', document.getElementById('hldContent').innerHTML);
-    renderMarkdownContent('lldDbContent', '# Low-Level Design - Database\n\n- Entity-Relationship Diagram\n- Table structures\n- Indexes and constraints\n- Data migration plan\n- VFS metadata storage');
-    renderMarkdownContent('lldUxContent', '# Low-Level Design - User Experience\n\n- Wireframes\n- User flow diagrams\n- Mockups\n- Interaction design\n- VFS user interface design\n- External action button placement and functionality\n- Button layout optimization for readability');
-    renderMarkdownContent('lldCodeContent', '# Low-Level Design - Code\n\n- Class diagrams\n- Sequence diagrams\n- API specifications\n- Code organization\n- VFS implementation details\n- External action button event handlers\n- CSS optimizations for button layout');
-    renderMarkdownContent('codingPlanContent', '# Coding Plan\n\n- Task breakdown\n- Coding standards\n- Testing approach\n- Code review process\n- VFS integration plan\n- External action button functionality implementation\n- UI/UX refinements for action buttons');
-    renderMarkdownContent('vfsContent', '# Virtual File System (VFS)\n\n- Root (/)\n  - Projects\n  - Documents\n  - readme.txt');
+    renderMarkdownContent('lldDbContent', document.getElementById('lldDbContent').innerHTML);
+    renderMarkdownContent('lldUxContent', document.getElementById('lldUxContent').innerHTML);
+    renderMarkdownContent('lldCodeContent', document.getElementById('lldCodeContent').innerHTML);
+    renderMarkdownContent('codingPlanContent', document.getElementById('codingPlanContent').innerHTML);
+    renderMarkdownContent('vfsContent', document.getElementById('vfsContent').innerHTML);
 };
 
 // Add event listeners when the DOM is fully loaded
