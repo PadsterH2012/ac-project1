@@ -208,6 +208,12 @@ window.onload = function() {
     renderMarkdownContent('lldCodeContent', initialLldCode);
     renderMarkdownContent('codingPlanContent', document.getElementById('codingPlanContent').innerHTML);
     renderMarkdownContent('vfsContent', document.getElementById('vfsContent').innerHTML);
+
+    // Ensure HLD content is rendered
+    const hldContent = document.getElementById('hldContent').dataset.content;
+    if (hldContent) {
+        renderMarkdownContent('hldContent', hldContent);
+    }
 };
 
 // Add event listeners when the DOM is fully loaded
