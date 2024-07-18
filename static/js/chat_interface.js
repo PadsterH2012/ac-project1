@@ -112,7 +112,34 @@ function updateProjectScope(scope) {
     const projectScope = document.getElementById('projectScope');
     projectScope.innerHTML = marked.parse(scope);
     
-    updateScopeButtonColor(scope);
+    updateButtonColors(scope);
+}
+
+function updateButtonColors(scope, hld, lld_db, lld_ux, lld_code) {
+    const scopeButton = document.querySelector('.action-button[onclick="performAction(\'Scope\')"]');
+    const hldButton = document.querySelector('.action-button[onclick="performAction(\'HLD\')"]');
+    const lldDbButton = document.querySelector('.action-button[onclick="performAction(\'LLD-DB\')"]');
+    const lldUxButton = document.querySelector('.action-button[onclick="performAction(\'LLD-UX\')"]');
+    const lldCodeButton = document.querySelector('.action-button[onclick="performAction(\'LLD-Code\')"]');
+
+    if (scopeButton && !scope.includes("Unanswered items:")) {
+        scopeButton.classList.add('complete');
+        hldButton.classList.add('amber');
+    } else if (scopeButton) {
+        scopeButton.classList.remove('complete');
+        hldButton.classList.remove('amber');
+    }
+
+    if (hldButton && hld) {
+        hldButton.classList.add('complete');
+        lldDbButton.classList.add('amber');
+        lldUxButton.classList.add('amber');
+        lldCodeButton.classList.add('amber');
+    }
+
+    if (lldDbButton && lld_db) lldDbButton.classList.add('complete');
+    if (lldUxButton && lld_ux) lldUxButton.classList.add('complete');
+    if (lldCodeButton && lld_code) lldCodeButton.classList.add('complete');
 }
 
 function updateButtonColors(scope, hld, lld_db, lld_ux, lld_code) {
@@ -158,27 +185,24 @@ window.onload = function() {
     console.log('Chat interface initialized');
     document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
     
-    // Check the initial state of the scope
+    // Get initial content for all tabs
     const initialScope = document.getElementById('projectScope').innerHTML;
-    updateScopeButtonColor(initialScope);
+    const initialHld = document.getElementById('hldContent').innerHTML;
+    const initialLldDb = document.getElementById('lldDbContent').innerHTML;
+    const initialLldUx = document.getElementById('lldUxContent').innerHTML;
+    const initialLldCode = document.getElementById('lldCodeContent').innerHTML;
+
+    // Update button colors based on initial content
+    updateButtonColors(initialScope, initialHld, initialLldDb, initialLldUx, initialLldCode);
 
     // Render initial content for all tabs
     renderMarkdownContent('projectScope', initialScope);
-    renderMarkdownContent('hldContent', document.getElementById('hldContent').innerHTML);
-    renderMarkdownContent('lldDbContent', document.getElementById('lldDbContent').innerHTML);
-    renderMarkdownContent('lldUxContent', document.getElementById('lldUxContent').innerHTML);
-    renderMarkdownContent('lldCodeContent', document.getElementById('lldCodeContent').innerHTML);
+    renderMarkdownContent('hldContent', initialHld);
+    renderMarkdownContent('lldDbContent', initialLldDb);
+    renderMarkdownContent('lldUxContent', initialLldUx);
+    renderMarkdownContent('lldCodeContent', initialLldCode);
     renderMarkdownContent('codingPlanContent', document.getElementById('codingPlanContent').innerHTML);
     renderMarkdownContent('vfsContent', document.getElementById('vfsContent').innerHTML);
-
-    // Update the HLD button color if HLD content is present
-    const hldContent = document.getElementById('hldContent').innerHTML;
-    if (hldContent.trim() !== '') {
-        const hldButton = document.querySelector('.action-button[onclick="performAction(\'HLD\')"]');
-        if (hldButton) {
-            hldButton.classList.add('complete');
-        }
-    }
 };
 
 // Add event listeners when the DOM is fully loaded
