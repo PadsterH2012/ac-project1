@@ -62,16 +62,13 @@
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
-            <p>Outline the overall system architecture and main components.</p>
-            <ul>
-                <li>System overview</li>
-                <li>Main modules</li>
-                <li>Data flow</li>
-                <li>Technology stack</li>
-                <li>Virtual File System architecture</li>
-                <li>External action button integration</li>
-                <li>UI/UX considerations for action buttons</li>
-            </ul>
+            <div id="hldContent">
+                {% if project.hld %}
+                    {{ project.hld | safe }}
+                {% else %}
+                    <p>No high-level design has been created yet.</p>
+                {% endif %}
+            </div>
         </div>
         <div id="LLD - DB" class="tab-content">
             <h3>Low-Level Design - Database</h3>

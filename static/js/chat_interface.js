@@ -305,15 +305,22 @@ function performAction(action) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('HLD creation process initiated successfully!');
-                    // You might want to update the UI here to show the HLD is being created
+                    alert('HLD created successfully!');
+                    // Update the HLD content in the UI
+                    const hldContent = document.getElementById('hldContent');
+                    if (hldContent) {
+                        hldContent.innerHTML = data.hld;
+                    }
+                    // Change the HLD button color to green
+                    hldButton.classList.remove('amber');
+                    hldButton.classList.add('complete');
                 } else {
-                    alert('Failed to initiate HLD creation process: ' + data.error);
+                    alert('Failed to create HLD: ' + data.error);
                 }
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert(`An error occurred while initiating HLD creation: ${error.message}`);
+                alert(`An error occurred while creating HLD: ${error.message}`);
             });
         } else {
             alert('HLD creation is not available at this time. Please complete the Scope first.');

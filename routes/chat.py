@@ -28,11 +28,15 @@ def create_hld():
         hld_response = get_ai_response(architect_provider, architect_prompt)
         
         if hld_response:
-            # Store the HLD in the project (you might need to add an HLD field to your Project model)
+            # Store the HLD in the project
             project.hld = hld_response
             db.session.commit()
             
-            return jsonify({"success": True, "message": "HLD created successfully"})
+            return jsonify({
+                "success": True, 
+                "message": "HLD created successfully",
+                "hld": hld_response
+            })
         else:
             return jsonify({"success": False, "error": "Failed to generate HLD"}), 500
     except Exception as e:
