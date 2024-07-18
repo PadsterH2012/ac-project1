@@ -56,7 +56,7 @@
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
-            <div id="hldContent">{{ project_hld | safe }}</div>
+            <div id="hldContent" data-content="{{ project_hld | escape }}"></div>
         </div>
         <div id="LLD - DB" class="tab-content">
             <h3>Low-Level Design - Database</h3>

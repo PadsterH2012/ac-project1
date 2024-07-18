@@ -192,7 +192,7 @@ window.onload = function() {
     
     // Get initial content for all tabs
     const initialScope = document.getElementById('projectScope').innerHTML;
-    const initialHld = document.getElementById('hldContent').innerHTML;
+    const initialHld = document.getElementById('hldContent').dataset.content;
     const initialLldDb = document.getElementById('lldDbContent').innerHTML;
     const initialLldUx = document.getElementById('lldUxContent').innerHTML;
     const initialLldCode = document.getElementById('lldCodeContent').innerHTML;
