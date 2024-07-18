@@ -81,7 +81,8 @@ def chat():
             updated_scope_response = get_ai_response(writer_provider, writer_prompt)
             
             if updated_scope_response:
-                project.scope = updated_scope_response
+                structured_scope = structure_project_scope(updated_scope_response)
+                project.scope = structured_scope
                 db.session.commit()
             
             return jsonify({
@@ -92,6 +93,42 @@ def chat():
                 "planner_avatar": get_avatar_url(planner_agent.avatar),
                 "project_scope": project.scope
             })
+
+def structure_project_scope(scope_text):
+    sections = ["Project name", "Description", "Key features", "Requirements", "Project type", "Technology stack"]
+    structured_scope = ""
+    current_section = ""
+    unanswered_items = []
+
+    for line in scope_text.split('\n'):
+        if line.strip() == "":
+            continue
+        if "Unanswered items:" in line:
+            break
+        for section in sections:
+            if line.startswith(section):
+                if current_section:
+                    structured_scope += "</ul></div>"
+                current_section = section
+                structured_scope += f'<div class="scope-section"><h4>{section}</h4><ul>'
+                break
+        else:
+            if current_section:
+                structured_scope += f"<li>{line.strip()}</li>"
+            else:
+                structured_scope += f"<p>{line.strip()}</p>"
+
+    if current_section:
+        structured_scope += "</ul></div>"
+
+    if "Unanswered items:" in scope_text:
+        unanswered = scope_text.split("Unanswered items:")[-1].strip().split('\n')
+        structured_scope += '<div class="unanswered-items"><h5>Unanswered items:</h5><ul>'
+        for item in unanswered:
+            structured_scope += f"<li>{item.strip()}</li>"
+        structured_scope += "</ul></div>"
+
+    return structured_scope
         else:
             print("Failed to get response from AI provider")  # Log error
             return jsonify({"error": "Failed to get response from AI provider"}), 500
