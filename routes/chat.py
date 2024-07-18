@@ -59,6 +59,9 @@ def chat():
         writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
         architect_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Architect").first()
+        db_sme_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent DB SME").first()
+        ux_sme_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent UX SME").first()
+        coding_sme_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Coding SME").first()
         
         if not writer_agent:
             writer_agent = create_default_agent(current_user.id, "AI Agent Project Writer")
@@ -66,8 +69,14 @@ def chat():
             planner_agent = create_default_agent(current_user.id, "AI Agent Project Planner")
         if not architect_agent:
             architect_agent = create_default_agent(current_user.id, "AI Agent Architect")
+        if not db_sme_agent:
+            db_sme_agent = create_default_agent(current_user.id, "AI Agent DB SME")
+        if not ux_sme_agent:
+            ux_sme_agent = create_default_agent(current_user.id, "AI Agent UX SME")
+        if not coding_sme_agent:
+            coding_sme_agent = create_default_agent(current_user.id, "AI Agent Coding SME")
         
-        if not writer_agent or not planner_agent or not architect_agent:
+        if not all([writer_agent, planner_agent, architect_agent, db_sme_agent, ux_sme_agent, coding_sme_agent]):
             print(f"Failed to create default AI agents for user {current_user.id}")  # Log error
             return jsonify({"error": "Failed to create default AI agents for the current user"}), 500
         
@@ -75,8 +84,11 @@ def chat():
         writer_provider = Provider.query.get(writer_agent.provider_id)
         planner_provider = Provider.query.get(planner_agent.provider_id)
         architect_provider = Provider.query.get(architect_agent.provider_id)
+        db_sme_provider = Provider.query.get(db_sme_agent.provider_id)
+        ux_sme_provider = Provider.query.get(ux_sme_agent.provider_id)
+        coding_sme_provider = Provider.query.get(coding_sme_agent.provider_id)
         
-        if not writer_provider or not planner_provider or not architect_provider:
+        if not all([writer_provider, planner_provider, architect_provider, db_sme_provider, ux_sme_provider, coding_sme_provider]):
             print(f"Missing provider for agents")  # Log error
             return jsonify({"error": "Missing provider for the AI agents"}), 404
         
