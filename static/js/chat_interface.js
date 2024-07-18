@@ -117,11 +117,18 @@ function updateProjectScope(scope) {
 
 function updateScopeButtonColor(scope) {
     const scopeButton = document.querySelector('.action-button[onclick="performAction(\'Scope\')"]');
+    const hldButton = document.querySelector('.action-button[onclick="performAction(\'HLD\')"]');
     if (scopeButton) {
         if (!scope.includes("Unanswered items:")) {
             scopeButton.classList.add('complete');
+            if (hldButton) {
+                hldButton.classList.add('amber');
+            }
         } else {
             scopeButton.classList.remove('complete');
+            if (hldButton) {
+                hldButton.classList.remove('amber');
+            }
         }
     }
 }

@@ -256,6 +256,14 @@ body {
     background-color: #218838; /* Darker green on hover */
 }
 
+.action-button.amber {
+    background-color: #ffc107; /* Amber color */
+}
+
+.action-button.amber:hover {
+    background-color: #e0a800; /* Darker amber on hover */
+}
+
 .vfs-container {
     display: flex;
     flex-direction: column;
