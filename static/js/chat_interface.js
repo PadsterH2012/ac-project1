@@ -182,6 +182,8 @@ function renderMarkdownContent(elementId, content) {
         } else {
             element.innerHTML = '<p>No content available yet.</p>';
         }
+    } else {
+        console.error(`Element with id '${elementId}' not found`);
     }
 }
 
@@ -204,12 +206,22 @@ window.onload = function() {
     const projectScopeContent = document.getElementById('projectScope').dataset.content;
     console.log('Project Scope content:', projectScopeContent); // Debug log
     renderMarkdownContent('projectScope', projectScopeContent);
-    renderMarkdownContent('hldContent', initialHld);
+    
+    // Render HLD content
+    const hldContent = document.getElementById('hldContent').dataset.content;
+    console.log('HLD content:', hldContent); // Debug log
+    renderMarkdownContent('hldContent', hldContent);
 
     // Ensure project scope is visible
     const scopeTab = document.getElementById('Scope');
     if (scopeTab) {
         scopeTab.style.display = 'block';
+    }
+
+    // Ensure HLD tab is properly initialized
+    const hldTab = document.getElementById('HLD');
+    if (hldTab) {
+        hldTab.style.display = 'none'; // Initially hide the HLD tab
     }
     renderMarkdownContent('lldDbContent', initialLldDb);
     renderMarkdownContent('lldUxContent', initialLldUx);
