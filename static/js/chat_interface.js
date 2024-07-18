@@ -311,7 +311,7 @@ function performAction(action) {
         // ... (existing download code)
     } else if (action === 'HLD' || action.startsWith('LLD-') || action === 'Plan') {
         const button = document.querySelector(`.action-button[onclick="performAction('${action}')"]`);
-        if (button && button.classList.contains('amber')) {
+        if (button && (button.classList.contains('amber') || action === 'Plan')) {
             console.log(`Initiating ${action} creation process...`);
             const endpoint = action === 'Plan' ? '/create_coding_plan' : `/create_${action.toLowerCase()}`;
             fetch(endpoint, {
@@ -328,7 +328,7 @@ function performAction(action) {
                 if (data.success) {
                     alert(`${action} created successfully!`);
                     // Update the content in the UI
-                    const contentElement = document.getElementById(`${action.toLowerCase()}Content`);
+                    const contentElement = action === 'Plan' ? document.getElementById('codingPlanContent') : document.getElementById(`${action.toLowerCase()}Content`);
                     if (contentElement) {
                         contentElement.innerHTML = marked.parse(data[action.toLowerCase()]);
                     }
@@ -350,8 +350,6 @@ function performAction(action) {
                             document.querySelector('.action-button[onclick="performAction(\'Plan\')"]').classList.add('amber');
                         }
                     }
-                    // Update the content in the UI
-                    const contentElement = action === 'Plan' ? document.getElementById('codingPlanContent') : document.getElementById(`${action.toLowerCase()}Content`);
                 } else {
                     alert(`Failed to create ${action}: ` + data.error);
                 }
