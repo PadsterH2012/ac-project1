@@ -839,3 +839,25 @@
 +  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 7, in <module>
 +    from .misc import perform_restore
 +ImportError: cannot import name 'perform_restore' from 'routes.misc' (/mnt/local_repos/ac-project1/routes/misc.py)
+
+# 2024-07-18 00:30:11.404251
++could we have the layout of the project scope look better?
+
+# 2024-07-18 00:31:59.689967
++utes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/projects.py", line 22, in <module>
++    from routes.chat import create_default_agent
++  File "/mnt/local_repos/ac-project1/routes/chat.py", line 138
++    else:
+
+# 2024-07-18 00:33:02.159590
++could be have the journal laid out in markdown?
+
+# 2024-07-18 00:34:24.977840
++Project Scope
++**Project Scope Update** As discussed, "Dunstan" is an open-world RPG project that leverages AI Agents and uploaded rule books (PDFs) for storytelling and gameplay. The primary goal of the game is to create an immersive storytelling experience with a focus on turn-based gameplay. **Scope:** 1. **Gameplay Mechanics:** * Develop a text-driven UI with potential audio elements for player interaction. * Implement AI agent-generated quest options based on uploaded rule books (PDFs). * Incorporate character development and storyline progression through AI agents' narrative ideas. 2. **Storytelling and Story Generation:** * Utilize AI agents to generate storyline ideas, quests, and character developments based on uploaded game rules (PDFs). * Integrate player choices and actions into the storytelling process to create a dynamic and immersive experience. 3. **Game World and Exploration:** * Design an open-world environment for players to explore and play out their own story. * Implement exploration mechanics, such as mapping and discovery, to enhance the gameplay experience. 4. **Character Development and Progression:** * Integrate AI. this still isnt good for reading, i want the layout more like markdown text that you would have in a readme.md
+
+# 2024-07-18 00:36:05.603479
++please update the `README.md`
