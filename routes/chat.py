@@ -22,21 +22,25 @@ def chat():
         # Get or create the current user's AI agents
         writer_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Writer").first()
         planner_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Project Planner").first()
+        architect_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Architect").first()
         
         if not writer_agent:
             writer_agent = create_default_agent(current_user.id, "AI Agent Project Writer")
         if not planner_agent:
             planner_agent = create_default_agent(current_user.id, "AI Agent Project Planner")
+        if not architect_agent:
+            architect_agent = create_default_agent(current_user.id, "AI Agent Architect")
         
-        if not writer_agent or not planner_agent:
+        if not writer_agent or not planner_agent or not architect_agent:
             print(f"Failed to create default AI agents for user {current_user.id}")  # Log error
             return jsonify({"error": "Failed to create default AI agents for the current user"}), 500
         
         # Get the providers for the agents
         writer_provider = Provider.query.get(writer_agent.provider_id)
         planner_provider = Provider.query.get(planner_agent.provider_id)
+        architect_provider = Provider.query.get(architect_agent.provider_id)
         
-        if not writer_provider or not planner_provider:
+        if not writer_provider or not planner_provider or not architect_provider:
             print(f"Missing provider for agents")  # Log error
             return jsonify({"error": "Missing provider for the AI agents"}), 404
         
