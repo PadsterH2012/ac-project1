@@ -110,7 +110,7 @@ function updateProjectJournal(journalEntry) {
 
 function updateProjectScope(scope) {
     const projectScope = document.getElementById('projectScope');
-    projectScope.innerHTML = scope;
+    projectScope.innerHTML = marked.parse(scope);
     
     updateScopeButtonColor(scope);
 }
@@ -133,6 +133,15 @@ function updateScopeButtonColor(scope) {
     }
 }
 
+function renderMarkdownContent(elementId, content) {
+    const element = document.getElementById(elementId);
+    if (element && content) {
+        element.innerHTML = marked.parse(content);
+    } else if (element) {
+        element.innerHTML = '<p>No content available yet.</p>';
+    }
+}
+
 // Add this to your existing window.onload function or create one if it doesn't exist
 window.onload = function() {
     console.log('Chat interface initialized');
@@ -141,6 +150,15 @@ window.onload = function() {
     // Check the initial state of the scope
     const initialScope = document.getElementById('projectScope').innerHTML;
     updateScopeButtonColor(initialScope);
+
+    // Render initial content for all tabs
+    renderMarkdownContent('projectScope', initialScope);
+    renderMarkdownContent('hldContent', document.getElementById('hldContent').innerHTML);
+    renderMarkdownContent('lldDbContent', '# Low-Level Design - Database\n\n- Entity-Relationship Diagram\n- Table structures\n- Indexes and constraints\n- Data migration plan\n- VFS metadata storage');
+    renderMarkdownContent('lldUxContent', '# Low-Level Design - User Experience\n\n- Wireframes\n- User flow diagrams\n- Mockups\n- Interaction design\n- VFS user interface design\n- External action button placement and functionality\n- Button layout optimization for readability');
+    renderMarkdownContent('lldCodeContent', '# Low-Level Design - Code\n\n- Class diagrams\n- Sequence diagrams\n- API specifications\n- Code organization\n- VFS implementation details\n- External action button event handlers\n- CSS optimizations for button layout');
+    renderMarkdownContent('codingPlanContent', '# Coding Plan\n\n- Task breakdown\n- Coding standards\n- Testing approach\n- Code review process\n- VFS integration plan\n- External action button functionality implementation\n- UI/UX refinements for action buttons');
+    renderMarkdownContent('vfsContent', '# Virtual File System (VFS)\n\n- Root (/)\n  - Projects\n  - Documents\n  - readme.txt');
 };
 
 // Add event listeners when the DOM is fully loaded

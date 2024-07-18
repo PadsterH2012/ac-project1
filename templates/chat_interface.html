@@ -52,88 +52,31 @@
         </div>
         <div id="Scope" class="tab-content">
             <h3>Project Scope</h3>
-            <div id="projectScope">
-                {% if project_scope %}
-                    {{ project_scope | safe }}
-                {% else %}
-                    <p>No project scope defined yet.</p>
-                {% endif %}
-            </div>
+            <div id="projectScope"></div>
         </div>
         <div id="HLD" class="tab-content">
             <h3>High-Level Design</h3>
-            <div id="hldContent">
-                {% if project.hld %}
-                    {{ project.hld | safe }}
-                {% else %}
-                    <p>No high-level design has been created yet.</p>
-                {% endif %}
-            </div>
+            <div id="hldContent"></div>
         </div>
         <div id="LLD - DB" class="tab-content">
             <h3>Low-Level Design - Database</h3>
-            <p>Detailed database design and schema.</p>
-            <ul>
-                <li>Entity-Relationship Diagram</li>
-                <li>Table structures</li>
-                <li>Indexes and constraints</li>
-                <li>Data migration plan</li>
-                <li>VFS metadata storage</li>
-            </ul>
+            <div id="lldDbContent"></div>
         </div>
         <div id="LLD - UX" class="tab-content">
             <h3>Low-Level Design - User Experience</h3>
-            <p>Detailed user interface and experience design.</p>
-            <ul>
-                <li>Wireframes</li>
-                <li>User flow diagrams</li>
-                <li>Mockups</li>
-                <li>Interaction design</li>
-                <li>VFS user interface design</li>
-                <li>External action button placement and functionality</li>
-                <li>Button layout optimization for readability</li>
-            </ul>
+            <div id="lldUxContent"></div>
         </div>
         <div id="LLD - Code" class="tab-content">
             <h3>Low-Level Design - Code</h3>
-            <p>Detailed code structure and implementation plan.</p>
-            <ul>
-                <li>Class diagrams</li>
-                <li>Sequence diagrams</li>
-                <li>API specifications</li>
-                <li>Code organization</li>
-                <li>VFS implementation details</li>
-                <li>External action button event handlers</li>
-                <li>CSS optimizations for button layout</li>
-            </ul>
+            <div id="lldCodeContent"></div>
         </div>
         <div id="Coding Plan" class="tab-content">
             <h3>Coding Plan</h3>
-            <p>Outline the implementation strategy and coding tasks.</p>
-            <ul>
-                <li>Task breakdown</li>
-                <li>Coding standards</li>
-                <li>Testing approach</li>
-                <li>Code review process</li>
-                <li>VFS integration plan</li>
-                <li>External action button functionality implementation</li>
-                <li>UI/UX refinements for action buttons</li>
-            </ul>
+            <div id="codingPlanContent"></div>
         </div>
         <div id="VFS" class="tab-content">
             <h3>Virtual File System (VFS)</h3>
-            <div class="vfs-container">
-                <div class="vfs-path">/</div>
-                <div class="vfs-item folder" onclick="navigateVFS('projects')">
-                    <span class="vfs-icon"></span>projects
-                </div>
-                <div class="vfs-item folder" onclick="navigateVFS('documents')">
-                    <span class="vfs-icon"></span>documents
-                </div>
-                <div class="vfs-item file">
-                    <span class="vfs-icon"></span>readme.txt
-                </div>
-            </div>
+            <div id="vfsContent"></div>
         </div>
     </div>
     <div class="action-buttons">
