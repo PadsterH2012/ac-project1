@@ -72,7 +72,7 @@
         </div>
         <div id="Coding Plan" class="tab-content">
             <h3>Coding Plan</h3>
-            <div id="codingPlanContent"></div>
+            <div id="codingPlanContent">{{ project.coding_plan | default('No coding plan available yet.') | safe }}</div>
         </div>
         <div id="VFS" class="tab-content">
             <h3>Virtual File System (VFS)</h3>

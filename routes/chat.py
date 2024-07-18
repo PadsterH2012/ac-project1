@@ -26,6 +26,47 @@ def create_lld_ux():
 def create_lld_code():
     return create_design("lld_code", "AI Agent Coding SME")
 
+@routes.route("/create_coding_plan", methods=["POST"])
+@login_required
+def create_coding_plan():
+    try:
+        project_id = request.json.get('project_id')
+        project = Project.query.get(project_id)
+        if not project:
+            return jsonify({"success": False, "error": f"Project not found: {project_id}"}), 404
+        
+        coding_sme_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Coding SME").first()
+        if not coding_sme_agent:
+            return jsonify({"success": False, "error": "AI Agent Coding SME not found"}), 404
+        
+        provider = Provider.query.get(coding_sme_agent.provider_id)
+        if not provider:
+            return jsonify({"success": False, "error": "Provider for AI Agent Coding SME not found"}), 404
+        
+        prompt = f"{DEFAULT_PROMPTS.get(coding_sme_agent.role, '')}\n\n"
+        prompt += f"Current project scope:\n{project.scope or 'No scope defined yet.'}\n\n"
+        prompt += f"High-Level Design:\n{project.hld or 'No HLD defined yet.'}\n\n"
+        prompt += f"LLD-DB:\n{project.lld_db or 'No LLD-DB defined yet.'}\n\n"
+        prompt += f"LLD-UX:\n{project.lld_ux or 'No LLD-UX defined yet.'}\n\n"
+        prompt += f"LLD-Code:\n{project.lld_code or 'No LLD-Code defined yet.'}\n\n"
+        prompt += "Based on this information, please create a comprehensive coding plan with milestones and phases. If you need clarification, you can communicate with other SMEs and the Architect.\n\nAI:"
+        
+        response = get_ai_response(provider, prompt)
+        
+        if response:
+            project.coding_plan = response
+            db.session.commit()
+            
+            return jsonify({
+                "success": True, 
+                "message": "Coding plan created successfully",
+                "coding_plan": response
+            })
+        else:
+            return jsonify({"success": False, "error": "Failed to generate coding plan"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 def create_design(design_type, agent_role):
     try:
         project_id = request.json.get('project_id')

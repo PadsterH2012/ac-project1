@@ -309,11 +309,12 @@ function openTab(event, tabName) {
 function performAction(action) {
     if (action === 'Download') {
         // ... (existing download code)
-    } else if (action === 'HLD' || action.startsWith('LLD-')) {
+    } else if (action === 'HLD' || action.startsWith('LLD-') || action === 'Plan') {
         const button = document.querySelector(`.action-button[onclick="performAction('${action}')"]`);
         if (button && button.classList.contains('amber')) {
             console.log(`Initiating ${action} creation process...`);
-            fetch(`/create_${action.toLowerCase()}`, {
+            const endpoint = action === 'Plan' ? '/create_coding_plan' : `/create_${action.toLowerCase()}`;
+            fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -340,6 +341,17 @@ function performAction(action) {
                             btn.classList.add('amber');
                         });
                     }
+                    // If all LLDs are complete, make Plan button amber
+                    if (action.startsWith('LLD-')) {
+                        const allLLDsComplete = ['LLD-DB', 'LLD-UX', 'LLD-Code'].every(lld => 
+                            document.querySelector(`.action-button[onclick="performAction('${lld}')"]`).classList.contains('complete')
+                        );
+                        if (allLLDsComplete) {
+                            document.querySelector('.action-button[onclick="performAction(\'Plan\')"]').classList.add('amber');
+                        }
+                    }
+                    // Update the content in the UI
+                    const contentElement = action === 'Plan' ? document.getElementById('codingPlanContent') : document.getElementById(`${action.toLowerCase()}Content`);
                 } else {
                     alert(`Failed to create ${action}: ` + data.error);
                 }
