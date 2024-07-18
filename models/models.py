@@ -39,7 +39,10 @@ class Project(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
     scope = db.Column(db.Text, nullable=True)
-    hld = db.Column(db.Text, nullable=True)  # New field for High-Level Design
+    hld = db.Column(db.Text, nullable=True)  # Field for High-Level Design
+    lld_db = db.Column(db.Text, nullable=True)  # Field for Low-Level Design - Database
+    lld_ux = db.Column(db.Text, nullable=True)  # Field for Low-Level Design - User Experience
+    lld_code = db.Column(db.Text, nullable=True)  # Field for Low-Level Design - Code
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

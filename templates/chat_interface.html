@@ -60,15 +60,15 @@
         </div>
         <div id="LLD - DB" class="tab-content">
             <h3>Low-Level Design - Database</h3>
-            <div id="lldDbContent"></div>
+            <div id="lldDbContent">{{ project.lld_db | safe }}</div>
         </div>
         <div id="LLD - UX" class="tab-content">
             <h3>Low-Level Design - User Experience</h3>
-            <div id="lldUxContent"></div>
+            <div id="lldUxContent">{{ project.lld_ux | safe }}</div>
         </div>
         <div id="LLD - Code" class="tab-content">
             <h3>Low-Level Design - Code</h3>
-            <div id="lldCodeContent"></div>
+            <div id="lldCodeContent">{{ project.lld_code | safe }}</div>
         </div>
         <div id="Coding Plan" class="tab-content">
             <h3>Coding Plan</h3>
