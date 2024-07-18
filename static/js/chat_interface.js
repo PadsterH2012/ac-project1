@@ -103,9 +103,8 @@ window.onload = function() {
 
 function updateProjectJournal(journalEntry) {
     const projectJournal = document.getElementById('projectJournal');
-    const entryElement = document.createElement('p');
-    entryElement.textContent = journalEntry;
-    projectJournal.appendChild(entryElement);
+    const entryHtml = marked.parse(journalEntry);
+    projectJournal.innerHTML += `<hr>${entryHtml}`;
     projectJournal.scrollTop = projectJournal.scrollHeight;
 }
 

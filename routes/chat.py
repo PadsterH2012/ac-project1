@@ -69,11 +69,11 @@ def chat():
         
         if planner_response:
             print(f"Received AI response: {planner_response[:100]}...")  # Log AI response (truncated)
-            # Create a journal entry
-            journal_entry = f"User: {message}\n\nPlanner: {planner_response}"
+            # Create a journal entry in markdown format
+            journal_entry = f"## User\n\n{message}\n\n## Planner\n\n{planner_response}"
             
             # Update the project journal
-            project.journal = (project.journal or "") + "\n\n" + journal_entry
+            project.journal = (project.journal or "") + "\n\n---\n\n" + journal_entry
             db.session.commit()
             
             # Update the scope after the planner's response

@@ -38,6 +38,16 @@
             <div id="projectJournal" data-entries="{{ journal_entries }}">
                 <!-- Real-time journal entries will be added here -->
             </div>
+            <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const journalDiv = document.getElementById('projectJournal');
+                    const entries = journalDiv.dataset.entries;
+                    if (entries) {
+                        journalDiv.innerHTML = marked.parse(entries);
+                    }
+                });
+            </script>
             <button id="clearJournalBtn" class="btn btn-warning mt-3">Clear Journal</button>
         </div>
         <div id="Scope" class="tab-content">
