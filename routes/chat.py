@@ -135,12 +135,6 @@ def structure_project_scope(scope_text):
         structured_scope += "</ul></div>"
 
     return structured_scope
-        else:
-            print("Failed to get response from AI provider")  # Log error
-            return jsonify({"error": "Failed to get response from AI provider"}), 500
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")  # Log the specific error
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 @routes.route("/clear_journal", methods=["POST"])
 @login_required
