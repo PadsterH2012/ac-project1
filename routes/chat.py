@@ -101,38 +101,29 @@ def chat():
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 def structure_project_scope(scope_text):
-    sections = ["Project name", "Description", "Key features", "Requirements", "Project type", "Technology stack"]
     structured_scope = ""
     current_section = ""
     unanswered_items = []
 
     for line in scope_text.split('\n'):
-        if line.strip() == "":
+        line = line.strip()
+        if line == "":
             continue
-        if "Unanswered items:" in line:
+        if line.lower() == "unanswered items:":
             break
-        for section in sections:
-            if line.startswith(section):
-                if current_section:
-                    structured_scope += "</ul></div>"
-                current_section = section
-                structured_scope += f'<div class="scope-section"><h4>{section}</h4><ul>'
-                break
+        if line.endswith(':'):
+            current_section = line
+            structured_scope += f"## {current_section}\n\n"
+        elif line.startswith('*') or line.startswith('-'):
+            structured_scope += f"{line}\n"
         else:
-            if current_section:
-                structured_scope += f"<li>{line.strip()}</li>"
-            else:
-                structured_scope += f"<p>{line.strip()}</p>"
-
-    if current_section:
-        structured_scope += "</ul></div>"
+            structured_scope += f"{line}\n\n"
 
     if "Unanswered items:" in scope_text:
         unanswered = scope_text.split("Unanswered items:")[-1].strip().split('\n')
-        structured_scope += '<div class="unanswered-items"><h5>Unanswered items:</h5><ul>'
+        structured_scope += "## Unanswered items:\n\n"
         for item in unanswered:
-            structured_scope += f"<li>{item.strip()}</li>"
-        structured_scope += "</ul></div>"
+            structured_scope += f"- {item.strip()}\n"
 
     return structured_scope
 
