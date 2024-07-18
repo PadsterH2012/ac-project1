@@ -173,7 +173,12 @@ function renderMarkdownContent(elementId, content) {
     const element = document.getElementById(elementId);
     if (element) {
         if (content && content.trim() !== '') {
-            element.innerHTML = marked.parse(content);
+            try {
+                element.innerHTML = marked.parse(content);
+            } catch (error) {
+                console.error('Error parsing markdown:', error);
+                element.innerHTML = '<p>Error rendering content. Please try again.</p>';
+            }
         } else {
             element.innerHTML = '<p>No content available yet.</p>';
         }

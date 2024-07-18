@@ -63,7 +63,11 @@ def create_coding_plan():
                 "coding_plan": response
             })
         else:
-            return jsonify({"success": False, "error": "Failed to generate coding plan"}), 500
+            return jsonify({
+                "success": False, 
+                "error": "Failed to generate coding plan",
+                "coding_plan": "No coding plan available yet."
+            }), 500
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
