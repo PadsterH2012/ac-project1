@@ -112,6 +112,16 @@ function updateProjectJournal(journalEntry) {
 function updateProjectScope(scope) {
     const projectScope = document.getElementById('projectScope');
     projectScope.innerHTML = scope;
+    
+    // Check if all questions are answered
+    const scopeButton = document.querySelector('.action-button[onclick="performAction(\'Scope\')"]');
+    if (scopeButton) {
+        if (!scope.includes("Unanswered items:")) {
+            scopeButton.classList.add('complete');
+        } else {
+            scopeButton.classList.remove('complete');
+        }
+    }
 }
 
 // Add event listeners when the DOM is fully loaded

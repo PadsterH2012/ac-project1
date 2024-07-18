@@ -11,3 +11,823 @@
 +  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
 +    from routes import init_app as init_routes
 +ImportError: cannot import name 'init_app' from 'routes' (/mnt/local_repos/ac-project1/routes/__init__.py)
+
+# 2024-07-17 21:43:55.028536
++could we do the same to models?
+
+# 2024-07-17 21:46:22.622815
++i would like to move ollama_connection.py into services/provider_connections/
+
+# 2024-07-17 21:47:26.256515
++could you list the files that are no longer required
+
+# 2024-07-17 21:49:08.051631
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from backup_restore import backup_data, restore_data
++  File "/mnt/local_repos/ac-project1/backup_restore.py", line 3, in <module>
++    from ollama_connection import connect_to_ollama
++ModuleNotFoundError: No module named 'ollama_connection'
+
+# 2024-07-17 21:50:53.308104
++i have moved backup_restore.py into services/backup/
+
+# 2024-07-17 21:51:53.656546
++i have moved backup_restore.py into services/backup/ . Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from backup_restore import backup_data, restore_data
++ModuleNotFoundError: No module named 'backup_restore'
+
+# 2024-07-17 21:52:22.593208
++e "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from services.backup.backup_restore import backup_data, restore_data
++ModuleNotFoundError: No module named 'services.backup'
+
+# 2024-07-17 21:53:17.183814
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from ..services.backup.backup_restore import backup_data, restore_data
++ImportError: attempted relative import beyond top-level package
+
+# 2024-07-17 21:53:50.356303
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from services.backup.backup_restore import backup_data, restore_data
++ModuleNotFoundError: No module named 'services.backup'
+
+# 2024-07-17 21:55:37.381590
++i would like to move prompt_config.py into its own folder in services/ 
+
+# 2024-07-17 21:56:26.381946
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 3, in <module>
++    from routes import init_app as init_routes
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 6, in <module>
++    from . import auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/chat.py", line 4, in <module>
++    from prompt_config import DEFAULT_PROMPTS
++ImportError: cannot import name 'DEFAULT_PROMPTS' from 'prompt_config' (/mnt/local_repos/ac-project1/prompt_config.py)
+
+# 2024-07-17 21:58:22.311495
++i would like to move models.py into a models/ folder
+
+# 2024-07-17 22:00:46.435312
++could we look at separating the models into auth, project, etc etc
+
+# 2024-07-17 22:02:00.919696
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4177, in _configure_registries
++    _do_configure_registries(registries, cascade)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4219, in _do_configure_registries
++    mapper._post_configure_properties()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2379, in _post_configure_properties
++    prop.init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 549, in init
++    self.do_init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1634, in do_init
++    self._setup_entity()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1853, in _setup_entity
++    self._clsregistry_resolve_name(argument)(),
++    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 519, in _resolve_name
++    self._raise_for_name(name, err)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:02:57.753497
++File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/werkzeug/local.py", line 515, in _get_current_object
++    return get_name(local())  # type: ignore
++                    ^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 25, in <lambda>
++    current_user = LocalProxy(lambda: _get_user())
++                                      ^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 370, in _get_user
++    current_app.login_manager._load_user()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/login_manager.py", line 364, in _load_user
++    user = self._user_callback(user_id)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 16, in load_user
++    return User.query.get(int(user_id))
++           ^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_sqlalchemy/model.py", line 30, in __get__
++    return cls.query_class(
++           ^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 273, in __init__
++    self._set_entities(entities)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 283, in _set_entities
++    coercions.expect(
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 406, in expect
++    insp._post_inspect
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1257, in __get__
++    obj.__dict__[self.__name__] = result = self.fget(obj)
++                                           ^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2681, in _post_inspect
++    self._check_configure()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2362, in _check_configure
++    _configure_registries({self.registry}, cascade=True)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4177, in _configure_registries
++    _do_configure_registries(registries, cascade)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4219, in _do_configure_registries
++    mapper._post_configure_properties()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2379, in _post_configure_properties
++    prop.init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 549, in init
++    self.do_init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1634, in do_init
++    self._setup_entity()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1853, in _setup_entity
++    self._clsregistry_resolve_name(argument)(),
++    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 519, in _resolve_name
++    self._raise_for_name(name, err)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:03:59.859547
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 515, in _resolve_name
++    rval = d[token]
++           ~^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/_collections.py", line 346, in __missing__
++    self[key] = val = self.creator(key)
++                      ^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 483, in _access_cls
++    return self.fallback[key]
++           ~~~~~~~~~~~~~^^^^^
++KeyError: 'Project'
++
++The above exception was the direct cause of the following exception:
++
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
++    response = self.full_dispatch_request()
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
++    rv = self.handle_user_exception(e)
++         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
++    rv = self.dispatch_request()
++         ^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
++    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 284, in decorated_view
++    elif not current_user.is_authenticated:
++             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/werkzeug/local.py", line 311, in __get__
++    obj = instance._get_current_object()
++          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/werkzeug/local.py", line 515, in _get_current_object
++    return get_name(local())  # type: ignore
++                    ^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 25, in <lambda>
++    current_user = LocalProxy(lambda: _get_user())
++                                      ^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 370, in _get_user
++    current_app.login_manager._load_user()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/login_manager.py", line 364, in _load_user
++    user = self._user_callback(user_id)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 16, in load_user
++    return User.query.get(int(user_id))
++           ^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_sqlalchemy/model.py", line 30, in __get__
++    return cls.query_class(
++           ^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 273, in __init__
++    self._set_entities(entities)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 283, in _set_entities
++    coercions.expect(
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 406, in expect
++    insp._post_inspect
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1257, in __get__
++    obj.__dict__[self.__name__] = result = self.fget(obj)
++                                           ^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2681, in _post_inspect
++    self._check_configure()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2362, in _check_configure
++    _configure_registries({self.registry}, cascade=True)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4177, in _configure_registries
++    _do_configure_registries(registries, cascade)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4219, in _do_configure_registries
++    mapper._post_configure_properties()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2379, in _post_configure_properties
++    prop.init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 549, in init
++    self.do_init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1634, in do_init
++    self._setup_entity()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1853, in _setup_entity
++    self._clsregistry_resolve_name(argument)(),
++    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 519, in _resolve_name
++    self._raise_for_name(name, err)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:06:19.583439
++sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(user)]'. Original exception was: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:07:28.668496
++ File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4215, in _do_configure_registries
++    raise e
++sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(user)]'. Original exception was: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:08:09.940905
++  raise e
++sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(user)]'. Original exception was: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:09:28.628755
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 515, in _resolve_name
++    rval = d[token]
++           ~^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/_collections.py", line 346, in __missing__
++    self[key] = val = self.creator(key)
++                      ^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 483, in _access_cls
++    return self.fallback[key]
++           ~~~~~~~~~~~~~^^^^^
++KeyError: 'Project'
++
++The above exception was the direct cause of the following exception:
++
+
+# 2024-07-17 22:11:40.251475
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 515, in _resolve_name
++    rval = d[token]
++           ~^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/_collections.py", line 346, in __missing__
++    self[key] = val = self.creator(key)
++                      ^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 483, in _access_cls
++    return self.fallback[key]
++           ~~~~~~~~~~~~~^^^^^
++KeyError: 'Project'
++
++The above exception was the direct cause of the following exception: self._raise_for_name(name, err)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:12:36.459102
++sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'Mapper[User(user)]'. Original exception was: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:13:18.808525
++mnt/local_repos/ac-project1/models/__init__.py:12: SAWarning: Property User.projects on Mapper[User(user)] being replaced with new property User.projects; the old property will be discarded
++  User.projects = db.relationship('Project', back_populates='user', lazy=True)
++/mnt/local_repos/ac-project1/models/__init__.py:13: SAWarning: Property User.agents on Mapper[User(user)] being replaced with new property User.agents; the old property will be discarded
++  User.agents = db.relationship('Agent', backref='user', lazy=True)
++/mnt/local_repos/ac-project1/models/__init__.py:14: SAWarning: Property User.providers on Mapper[User(user)] being replaced with new property User.providers; the old property will be discarded
++  User.providers = db.relationship('Provider', backref='user', lazy=True)
+
+# 2024-07-17 22:13:42.831462
++ File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
+
+# 2024-07-17 22:14:36.235663
++[2024-07-17 22:14:08,075] ERROR in app: Exception on / [GET]
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 515, in _resolve_name
++    rval = d[token]
++           ~^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/_collections.py", line 346, in __missing__
++    self[key] = val = self.creator(key)
++                      ^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 483, in _access_cls
++    return self.fallback[key]
++           ~~~~~~~~~~~~~^^^^^
++KeyError: 'Project'
++
++The above exception was the direct cause of the following exception:
++
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
++    response = self.full_dispatch_request()
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
++    rv = self.handle_user_exception(e)
++         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
++    rv = self.dispatch_request()
++         ^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
++    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/auth.py", line 10, in index
++    if current_user.is_authenticated:
++       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/werkzeug/local.py", line 311, in __get__
++    obj = instance._get_current_object()
++          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/werkzeug/local.py", line 515, in _get_current_object
++    return get_name(local())  # type: ignore
++                    ^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 25, in <lambda>
++    current_user = LocalProxy(lambda: _get_user())
++                                      ^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 370, in _get_user
++    current_app.login_manager._load_user()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/login_manager.py", line 364, in _load_user
++    user = self._user_callback(user_id)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 16, in load_user
++    return User.query.get(int(user_id))
++           ^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_sqlalchemy/model.py", line 30, in __get__
++    return cls.query_class(
++           ^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 273, in __init__
++    self._set_entities(entities)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/query.py", line 283, in _set_entities
++    coercions.expect(
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/sql/coercions.py", line 406, in expect
++    insp._post_inspect
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 1257, in __get__
++    obj.__dict__[self.__name__] = result = self.fget(obj)
++                                           ^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2681, in _post_inspect
++    self._check_configure()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2362, in _check_configure
++    _configure_registries({self.registry}, cascade=True)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4177, in _configure_registries
++    _do_configure_registries(registries, cascade)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 4219, in _do_configure_registries
++    mapper._post_configure_properties()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/mapper.py", line 2379, in _post_configure_properties
++    prop.init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/interfaces.py", line 549, in init
++    self.do_init()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1634, in do_init
++    self._setup_entity()
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/relationships.py", line 1853, in _setup_entity
++    self._clsregistry_resolve_name(argument)(),
++    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 519, in _resolve_name
++    self._raise_for_name(name, err)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/orm/clsregistry.py", line 500, in _raise_for_name
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: When initializing mapper Mapper[User(user)], expression 'Project' failed to locate a name ('Project'). If this is a class name, consider adding this relationship() to the <class 'models.auth.User'> class after both dependent classes have been defined.
++127.0.0.1 - - [17/Jul/2024 22:14:08] "GET / HTTP/1.1" 500 -
+
+# 2024-07-17 22:16:51.239036
++/add old_model.py
+
+# 2024-07-17 22:17:15.317673
++`old_model.py` was the working file, would this show what order things should be?
+
+# 2024-07-17 22:17:49.738072
++no still no different
+
+# 2024-07-17 22:18:39.801855
++could we revert back to a single models file in the models/ folder?
+
+# 2024-07-17 22:19:30.292233
++ing>", line 2, in __new__
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/util/deprecations.py", line 283, in warned
++    return fn(*args, **kwargs)  # type: ignore[no-any-return]
++           ^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 435, in __new__
++    return cls._new(*args, **kw)
++           ^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py", line 467, in _new
++    raise exc.InvalidRequestError(
++sqlalchemy.exc.InvalidRequestError: Table 'user' is already defined for this MetaData instance.  Specify 'extend_existing=True' to redefine options and columns on an existing Table object.
+
+# 2024-07-17 22:20:34.741813
++port auth, projects, agents, providers, chat, misc
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 4, in <module>
++    from services.backup.backup_restore import backup_data, restore_data
++  File "/mnt/local_repos/ac-project1/services/backup/backup_restore.py", line 3, in <module>
++    from models.auth import User
++ImportError: cannot import name 'User' from 'models.auth' (/mnt/local_repos/ac-project1/models/auth.py)
+
+# 2024-07-17 22:21:47.909195
++    <br>Provider: {{ agent.provider.provider_type }} - {{ agent.provider.model }}
++    ^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/jinja2/environment.py", line 487, in getattr
++    return getattr(obj, attribute)
++           ^^^^^^^^^^^^^^^^^^^^^^^
++jinja2.exceptions.UndefinedError: 'models.models.Agent object' has no attribute 'provider'
+
+# 2024-07-17 22:23:06.497523
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 290, in decorated_view
++    return current_app.ensure_sync(func)(*args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 41, in backup
++    backup_data_json = backup_data(current_user.id, backup_type)
++                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/services/backup/backup_restore.py", line 19, in backup_data
++    backup_data["providers"] = [provider.to_dict() for provider in user.providers]
++                                ^^^^^^^^^^^^^^^^
++AttributeError: 'Provider' object has no attribute 'to_dict'
+
+# 2024-07-17 22:25:54.940185
++when we restore a backup, could we select what we restore? id like a list of whats in the backup file, and to have a tick option next to the item to restore, i would also like a select all/deselect all
+
+# 2024-07-17 22:27:14.110251
++could we list the project names, agents and providers?
+
+# 2024-07-17 22:28:10.472475
++could we list the project names, agents and providers in the select items to restore, as i may only want to restore a particular agent provider or project
+
+# 2024-07-17 22:29:18.590858
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
++    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
++    obj, end = self.scan_once(s, idx)
++               ^^^^^^^^^^^^^^^^^^^^^^
++json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+# 2024-07-17 22:30:43.553522
++/add services/backup/backup_restore.py
+
+# 2024-07-17 22:32:05.512154
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
++    response = self.full_dispatch_request()
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
++    rv = self.handle_user_exception(e)
++         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
++    rv = self.dispatch_request()
++         ^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
++    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 290, in decorated_view
++    return current_app.ensure_sync(func)(*args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 93, in perform_restore
++    backup_data = json.loads(request.form.get('backup_data'))
++                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
++    return _default_decoder.decode(s)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
++    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
++    obj, end = self.scan_once(s, idx)
++               ^^^^^^^^^^^^^^^^^^^^^^
++json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+# 2024-07-17 22:32:28.152018
++/add routes/misc.py
+
+# 2024-07-17 22:32:42.085180
++from flask import jsonify, send_file
++from flask_login import login_required, current_user
++from models import User
++from services.provider_connections.backup.backup_restore import backup_data, restore_data
++import tempfile
++from datetime import datetime
++import json
++from . import routes
++
++@routes.route("/users", methods=["GET"])
++def get_users():
++    users = User.query.all()
++    return jsonify([user.to_dict() for user in users])
++
++@routes.route("/backup", methods=['POST'])
++@login_required
++def backup():
++    print("Backup route called")  # Debug print
++    print(f"Request Content-Type: {request.content_type}")  # Debug print
++    print(f"Request data: {request.data}")  # Debug print
++    
++    backup_options = []
++    
++    if request.is_json:
++        data = request.get_json()
++    else:
++        data = request.form
++    
++    print(f"Parsed data: {data}")  # Debug print
++    
++    if data.get('backup_projects'):
++        backup_options.append('projects')
++    if data.get('backup_agents'):
++        backup_options.append('agents')
++    if data.get('backup_providers'):
++        backup_options.append('providers')
++    
++    backup_type = ','.join(backup_options) if backup_options else 'all'
++    
++    print(f"Calling backup_data with user_id: {current_user.id}, backup_type: {backup_type}")  # Debug print
++    backup_data_json = backup_data(current_user.id, backup_type)
++    
++    backup_data_dict = json.loads(backup_data_json)
++    if 'error' in backup_data_dict:
++        return jsonify({"error": backup_data_dict['error']}), 404
++    
++    # Create a temporary file
++    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as temp_file:
++        temp_file.write(backup_data_json)
++        temp_file_path = temp_file.name
++    
++    # Generate a filename for the download
++    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
++    filename = f"incubator_backup_{timestamp}.json"
++    
++    print(f"Sending file: {filename}")  # Debug print
++    
++    # Send the file
++    return send_file(temp_file_path, as_attachment=True, download_name=filename, max_age=0)
++
++@routes.route("/restore", methods=['POST'])
++@login_required
++def restore():
++    if 'restore_file' not in request.files:
++        flash('No file part', 'error')
++        return redirect(url_for('routes.settings'))
++    
++    file = request.files['restore_file']
++    
++    if file.filename == '':
++        flash('No selected file', 'error')
++        return redirect(url_for('routes.settings'))
++    
++    if file:
++        # Read the file content
++        backup_data_json = file.read().decode('utf-8')
++        
++        try:
++            # Restore the data
++            restore_data(current_user.id, backup_data_json)
++            flash('Data restored successfully', 'success')
++        except Exception as e:
++            flash(f'Error restoring data: {str(e)}', 'error')
++        
++        return redirect(url_for('routes.settings'))
++
+
+# 2024-07-17 22:34:09.494530
++    deferred(state)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/blueprints.py", line 431, in <lambda>
++    lambda s: s.add_url_rule(
++              ^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/blueprints.py", line 110, in add_url_rule
++    self.app.add_url_rule(
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/scaffold.py", line 51, in wrapper_func
++    return f(self, *args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1059, in add_url_rule
++    raise AssertionError(
++AssertionError: View function mapping is overwriting an existing endpoint function: routes.perform_restore
+
+# 2024-07-17 22:35:49.741086
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/wsgi.py", line 1, in <module>
++    from app import create_app
++  File "/mnt/local_repos/ac-project1/app.py", line 30, in <module>
++    @create_app().cli.command("db_migrate")
++     ^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/app.py", line 23, in create_app
++    init_routes(app)
++  File "/mnt/local_repos/ac-project1/routes/__init__.py", line 19, in init_app
++    app.register_blueprint(routes)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/scaffold.py", line 51, in wrapper_func
++    return f(self, *args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 997, in register_blueprint
++    blueprint.register(self, options)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/blueprints.py", line 365, in register
++    deferred(state)
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/blueprints.py", line 431, in <lambda>
++    lambda s: s.add_url_rule(
++              ^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/blueprints.py", line 110, in add_url_rule
++    self.app.add_url_rule(
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/scaffold.py", line 51, in wrapper_func
++    return f(self, *args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1059, in add_url_rule
++    raise AssertionError(
++AssertionError: View function mapping is overwriting an existing endpoint function: routes.perform_restore
+
+# 2024-07-17 22:36:48.779875
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
++    response = self.full_dispatch_request()
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
++    rv = self.handle_user_exception(e)
++         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
++    rv = self.dispatch_request()
++         ^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
++    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 290, in decorated_view
++    return current_app.ensure_sync(func)(*args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 95, in perform_restore
++    backup_data = json.loads(request.form.get('backup_data'))
++                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
++    return _default_decoder.decode(s)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
++    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
++    obj, end = self.scan_once(s, idx)
++               ^^^^^^^^^^^^^^^^^^^^^^
++json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+# 2024-07-17 22:38:08.317251
++[2024-07-17 22:36:38,067] ERROR in app: Exception on /perform_restore [POST]
++Traceback (most recent call last):
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 2190, in wsgi_app
++    response = self.full_dispatch_request()
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1486, in full_dispatch_request
++    rv = self.handle_user_exception(e)
++         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1484, in full_dispatch_request
++    rv = self.dispatch_request()
++         ^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask/app.py", line 1469, in dispatch_request
++    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/venv/lib/python3.12/site-packages/flask_login/utils.py", line 290, in decorated_view
++    return current_app.ensure_sync(func)(*args, **kwargs)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/mnt/local_repos/ac-project1/routes/misc.py", line 95, in perform_restore
++    backup_data = json.loads(request.form.get('backup_data'))
++                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/__init__.py", line 346, in loads
++    return _default_decoder.decode(s)
++           ^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 337, in decode
++    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
++               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
++  File "/usr/lib/python3.12/json/decoder.py", line 353, in raw_decode
++    obj, end = self.scan_once(s, idx)
++               ^^^^^^^^^^^^^^^^^^^^^^
++json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+# 2024-07-17 22:41:46.518150
++127.0.0.1 - - [17/Jul/2024 22:41:31] "GET /static/css/style.css HTTP/1.1" 304 -
++Received backup_data: {...
++Full backup_data: {
++JSON Decode Error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
++Error at position: 1
++Line number: 1, Column: 2
++JSON Decode Error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
++Error at position: 1
++Line number: 1, Column: 2
++127.0.0.1 - - [17/Jul/2024 22:41:34] "POST /perform_restore HTTP/1.1" 302 -
++127.0.0.1 - - [17/Jul/2024 22:41:34] "GET /settings HTTP/1.1" 200 -
++127.0.0.1 - - [17/Jul/2024 22:41:34] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:41:34] "GET /static/css/style.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:41:36] "GET /agent_settings HTTP/1.1" 200 -
++127.0.0.1 - - [17/Jul/2024 22:41:36] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:41:36] "GET /static/css/style.css HTTP/1.1" 304 -
+
+# 2024-07-17 22:43:48.219652
++Received backup_data: {...
++Full backup_data: {
++JSON Decode Error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
++Error at position: 1
++Line number: 1, Column: 2
++Problematic part: {
+
+# 2024-07-17 22:45:19.710500
++127.0.0.1 - - [17/Jul/2024 22:44:54] "GET /static/css/style.css HTTP/1.1" 304 -
++Received backup_data: {...
++Full backup_data: {
++JSON Decode Error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
++Error at position: 1
++Line number: 1, Column: 2
++Problematic part: {{}
++127.0.0.1 - - [17/Jul/2024 22:44:56] "POST /perform_restore HTTP/1.1" 302 -
+
+# 2024-07-17 22:49:46.670374
++this is the contents of the backup file. {"user": {"id": 1, "username": "pharrow75", "email": "paddy@bastiondata.com", "oauth_provider": null, "agent_settings": null}, "projects": [{"id": 1, "title": "test1", "description": "", "created_at": "2024-07-17T22:22:20.241748", "updated_at": "2024-07-17T22:22:31.737110", "user_id": 1}], "agents": [{"id": 1, "name": "Jenny", "role": "AI Agent Project Planner", "user_id": 1, "project_id": null, "provider_id": 1, "temperature": 0.7, "system_prompt": "You are an AI Agent Project Planner, a highly skilled and experienced professional in project management and software development. Your role is to assist users in \n\n    1. Gathering the required information around the project\n    2. You need to define if this is a homelab project or something for production use\n\nYour responses should be clear, concise, and tailored to the specific needs of each project."}], "providers": [{"id": 1, "user_id": 1, "provider_type": "ollama", "api_key": "na", "model": "llama3", "url": "http://10.203.20.94:11434/api/generate"}]}. Received backup_data: {...
++Full backup_data: {
++Raw backup data: {...
++Processed backup data: {}...
++General Error: 'agents'
++127.0.0.1 - - [17/Jul/2024 22:48:49] "POST /perform_restore HTTP/1.1" 302 -
++127.0.0.1 - - [17/Jul/2024 22:48:49] "GET /settings HTTP/1.1" 200 -
++127.0.0.1 - - [17/Jul/2024 22:48:49] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:48:49] "GET /static/css/style.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:49:02] "POST /restore HTTP/1.1" 200 -
++127.0.0.1 - - [17/Jul/2024 22:49:03] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:49:03] "GET /static/css/style.css HTTP/1.1" 304 -
++Received backup_data: {...
++Full backup_data: {
++Raw backup data: {...
++Processed backup data: {}...
++General Error: 'projects'
+
+# 2024-07-17 22:50:52.513381
++127.0.0.1 - - [17/Jul/2024 22:50:40] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:50:40] "GET /static/css/style.css HTTP/1.1" 304 -
++Received backup_data: {...
++Full backup_data: {
++Raw backup data: {...
++Processed backup data: {}...
++'agents' key not found in backup data
++127.0.0.1 - - [17/Jul/2024 22:50:43] "POST /perform_restore HTTP/1.1" 302 -
++127.0.0.1 - - [17/Jul/2024 22:50:43] "GET /settings HTTP/1.1" 200 -
++127.0.0.1 - - [17/Jul/2024 22:50:43] "GET /static/css/chat_interface.css HTTP/1.1" 304 -
++127.0.0.1 - - [17/Jul/2024 22:50:43] "GET /static/css/style.css HTTP/1.1" 
+
+# 2024-07-17 22:53:55.057567
++Received backup_data: {...
++Full backup_data: {
++Raw backup data: {...
++Processed backup data: {}...
++'agents' key not found in backup data
+
+# 2024-07-17 23:23:10.539923
++could we design a new backup file that will allow the selections of items to restore?
+
+# 2024-07-17 23:26:58.351660
++it still wont let me restore an agent or provider. i dont see any errors in the console
+
+# 2024-07-17 23:31:32.299589
++i would like the Ai Agent Project planning to ask me single questions around my idea. this should cover the basics only. i think this should be added into the `prompt_config` 
+
+# 2024-07-17 23:34:00.649038
++i would like the Ai Agent Project planning to ask me 5-10 single questions around my idea. this should cover the basics only. i think this should be added into the `prompt_config` 
+
+# 2024-07-17 23:40:28.697306
++so i think we need the project scope to be generated by the project writer, then the project planner could reference the current project scope, so not to ask the same questions
+
+# 2024-07-17 23:41:43.324842
++127.0.0.1 - - [17/Jul/2024 23:41:17] "POST /clear_journal HTTP/1.1" 200 -
++Received message: hi there
++Missing AI agent for user 1
++127.0.0.1 - - [17/Jul/2024 23:41:21] "POST /chat HTTP/1.1" 404 -
+
+# 2024-07-17 23:44:19.056851
++could we have the scope saved to the database and displayed in the side window next to the chat box. there is a tab for project scope i would like it displayed there
+
+# 2024-07-17 23:53:37.144967
++i only want the project writer to use information i have defined in the journal, nothing should be made up. the scope should contain only the basics. name, description, features, requirements, homelab or production. and proposed techstack is any
+
+# 2024-07-17 23:57:21.590243
++i do not see the Scope updated after initial conversations with the project planner
+
+# 2024-07-18 00:04:57.097653
++i would like the Project planner not to ask the same questions if they have already been asked. the project planner should be aware of the contect of the project scope before asking questions
+
+# 2024-07-18 00:07:50.777382
++if the project writer still has unanswered items for the scope it should prompt the project planner to ask the questions
+
+# 2024-07-18 00:09:33.429930
++the project planner is still asking questions that have already been answered, could we make the project planner also ware of the contents of the journal before repeating the questions
+
+# 2024-07-18 00:20:16.227694
++we have buttons at the RHS of the side window, currently these are blue. I would like them to have a default colour of grey, once Project Scope has all questions answered, i would like the Scope button to turn green
+
+# 2024-07-18 00:22:55.697763
++/add static/css/style.css
+
+# 2024-07-18 00:23:17.125475
++you may need to update the buttons within style.css also

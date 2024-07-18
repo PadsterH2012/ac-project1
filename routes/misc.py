@@ -95,96 +95,22 @@ def perform_restore():
     try:
         selected_items = request.form.getlist('restore_items')
         backup_data_str = request.form.get('backup_data')
-        print(f"Received backup_data: {backup_data_str[:100]}...")  # Print first 100 chars for debugging
-        print(f"Full backup_data: {backup_data_str}")  # Print the full backup data for debugging
         
         try:
-            # Remove any leading/trailing whitespace
-            backup_data_str = backup_data_str.strip()
-            
-            print(f"Raw backup data: {backup_data_str[:100]}...")  # Log raw data
-            
-            # Check if the string starts and ends with curly braces
-            if not (backup_data_str.startswith('{') and backup_data_str.endswith('}')):
-                backup_data_str = '{' + backup_data_str + '}'
-            
-            # Remove any extra curly braces at the beginning or end
-            backup_data_str = backup_data_str.strip('{}')
-            backup_data_str = '{' + backup_data_str + '}'
-            
-            print(f"Processed backup data: {backup_data_str[:100]}...")  # Log processed data
-            
-            # Attempt to parse the JSON
             backup_data = json.loads(backup_data_str)
-            
-            # Check if the required keys exist in the backup data
-            required_keys = ['projects', 'agents', 'providers']
-            for key in required_keys:
-                if key not in backup_data:
-                    print(f"'{key}' key not found in backup data")
-                    backup_data[key] = []  # Initialize with an empty list if the key is missing
-            
-        except json.JSONDecodeError as json_error:
-            print(f"JSON Decode Error: {str(json_error)}")
-            print(f"Error at position: {json_error.pos}")
-            print(f"Line number: {json_error.lineno}, Column: {json_error.colno}")
-            print(f"Problematic part: {backup_data_str[max(0, json_error.pos-20):json_error.pos+20]}")
-            
-            # Attempt to sanitize and parse the JSON
-            try:
-                # Replace single quotes with double quotes
-                sanitized_data = backup_data_str.replace("'", '"')
-                # Ensure property names are in double quotes
-                sanitized_data = re.sub(r'(\w+)(?=\s*:)', r'"\1"', sanitized_data)
-                # Remove any extra commas
-                sanitized_data = re.sub(r',\s*}', '}', sanitized_data)
-                sanitized_data = re.sub(r',\s*]', ']', sanitized_data)
-                print(f"Sanitized data: {sanitized_data[:100]}...")  # Log sanitized data
-                backup_data = json.loads(sanitized_data)
-                
-                # Check if the required keys exist in the sanitized backup data
-                for key in required_keys:
-                    if key not in backup_data:
-                        print(f"'{key}' key not found in sanitized backup data")
-                        backup_data[key] = []  # Initialize with an empty list if the key is missing
-                
-            except Exception as e:
-                print(f"Error after sanitization: {str(e)}")  # Log error after sanitization
-                flash(f'Error parsing backup data: {str(e)}', 'error')
-                return redirect(url_for('routes.settings'))
-        
-        # Prepare the data to restore
-        data_to_restore = {
-            'projects': [],
-            'agents': [],
-            'providers': []
-        }
-        
-        for item in selected_items:
-            item_type, item_id = item.split('_')
-            item_id = int(item_id)
-            
-            if item_type in ['project', 'agent', 'provider']:
-                items = backup_data.get(item_type + 's', [])
-                item_data = next((i for i in items if i['id'] == item_id), None)
-                if item_data:
-                    data_to_restore[item_type + 's'].append(item_data)
-                else:
-                    print(f"Item {item_type} with id {item_id} not found in backup data")
-        
-        # Check if any data was selected for restoration
-        if not any(data_to_restore.values()):
-            flash('No data selected for restoration or no matching data found in the backup', 'warning')
+        except json.JSONDecodeError as e:
+            flash(f'Error parsing backup data: {str(e)}', 'error')
             return redirect(url_for('routes.settings'))
         
+        # Prepare the selected items
+        selected_categories = set()
+        for item in selected_items:
+            category, _ = item.split('_')
+            selected_categories.add(category + 's')  # Add plural form
+        
         # Restore the selected data
-        restore_data(current_user.id, json.dumps(data_to_restore))
+        restore_data(current_user.id, json.dumps(backup_data), selected_items)
         flash('Data restored successfully', 'success')
-    except json.JSONDecodeError as e:
-        flash(f'Error parsing backup data: {str(e)}', 'error')
-        print(f"JSON Decode Error: {str(e)}")
-        print(f"Error at position: {e.pos}")
-        print(f"Line number: {e.lineno}, Column: {e.colno}")
     except Exception as e:
         flash(f'Error restoring data: {str(e)}', 'error')
         print(f"General Error: {str(e)}")
