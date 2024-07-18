@@ -289,6 +289,35 @@ function performAction(action) {
             console.error('Error:', error);
             alert(`An error occurred while creating the backup: ${error.message}`);
         });
+    } else if (action === 'HLD') {
+        const hldButton = document.querySelector('.action-button[onclick="performAction(\'HLD\')"]');
+        if (hldButton && hldButton.classList.contains('amber')) {
+            console.log('Initiating HLD creation process...');
+            fetch('/create_hld', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    project_id: currentProjectId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('HLD creation process initiated successfully!');
+                    // You might want to update the UI here to show the HLD is being created
+                } else {
+                    alert('Failed to initiate HLD creation process: ' + data.error);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert(`An error occurred while initiating HLD creation: ${error.message}`);
+            });
+        } else {
+            alert('HLD creation is not available at this time. Please complete the Scope first.');
+        }
     } else {
         alert(`Performing action: ${action}`);
     }

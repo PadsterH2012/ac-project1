@@ -6,6 +6,38 @@ from utils import get_avatar_url
 from . import routes
 from services.provider_connections.ollama_connection import connect_to_ollama
 
+@routes.route("/create_hld", methods=["POST"])
+@login_required
+def create_hld():
+    try:
+        project_id = request.json.get('project_id')
+        project = Project.query.get(project_id)
+        if not project:
+            return jsonify({"success": False, "error": f"Project not found: {project_id}"}), 404
+        
+        architect_agent = Agent.query.filter_by(user_id=current_user.id, role="AI Agent Architect").first()
+        if not architect_agent:
+            return jsonify({"success": False, "error": "Architect agent not found"}), 404
+        
+        architect_provider = Provider.query.get(architect_agent.provider_id)
+        if not architect_provider:
+            return jsonify({"success": False, "error": "Architect provider not found"}), 404
+        
+        architect_prompt = f"{DEFAULT_PROMPTS.get(architect_agent.role, '')}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nBased on this information, please create a high-level design (HLD) for the project.\n\nAI:"
+        
+        hld_response = get_ai_response(architect_provider, architect_prompt)
+        
+        if hld_response:
+            # Store the HLD in the project (you might need to add an HLD field to your Project model)
+            project.hld = hld_response
+            db.session.commit()
+            
+            return jsonify({"success": True, "message": "HLD created successfully"})
+        else:
+            return jsonify({"success": False, "error": "Failed to generate HLD"}), 500
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @routes.route("/chat", methods=["POST"])
 @login_required
 def chat():
