@@ -41,16 +41,27 @@ def chat():
             return jsonify({"error": "Missing provider for the AI agents"}), 404
         
         # Generate or update project scope with the writer
-        writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project journal:\n{project.journal or 'No journal entries yet.'}\n\nBased on this information, please generate or update the project scope.\n\nAI:"
+        writer_prompt = f"{DEFAULT_PROMPTS.get(writer_agent.role, '')}\n\nCurrent project journal:\n{project.journal or 'No journal entries yet.'}\n\nBased on this information, please generate or update the project scope. If there are any unanswered items in the scope, list them at the end.\n\nAI:"
         scope_response = get_ai_response(writer_provider, writer_prompt)
         
         if scope_response:
             project.scope = scope_response
             db.session.commit()
         
-        # Prepare the planner prompt with the updated scope
-        system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
-        planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nHuman: {message}\n\nAI:"
+        # Check if there are unanswered items in the scope
+        unanswered_items = []
+        if "Unanswered items:" in scope_response:
+            unanswered_items = scope_response.split("Unanswered items:")[-1].strip().split("\n")
+        
+        if unanswered_items:
+            # Prepare the planner prompt to ask about unanswered items
+            system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+            planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nThere are some unanswered items in the project scope. Please ask the user about these items one by one:\n\n" + "\n".join(unanswered_items) + "\n\nAI:"
+        else:
+            # Prepare the regular planner prompt with the updated scope
+            system_prompt = DEFAULT_PROMPTS.get(planner_agent.role, "")
+            planner_prompt = f"{system_prompt}\n\nCurrent project scope:\n{project.scope or 'No scope defined yet.'}\n\nHuman: {message}\n\nAI:"
+        
         print(f"Prepared prompt: {planner_prompt[:100]}...")  # Log prepared prompt (truncated)
         
         # Make request to the AI provider for the planner
