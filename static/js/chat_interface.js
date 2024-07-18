@@ -112,7 +112,10 @@ function updateProjectScope(scope) {
     const projectScope = document.getElementById('projectScope');
     projectScope.innerHTML = scope;
     
-    // Check if all questions are answered
+    updateScopeButtonColor(scope);
+}
+
+function updateScopeButtonColor(scope) {
     const scopeButton = document.querySelector('.action-button[onclick="performAction(\'Scope\')"]');
     if (scopeButton) {
         if (!scope.includes("Unanswered items:")) {
@@ -122,6 +125,16 @@ function updateProjectScope(scope) {
         }
     }
 }
+
+// Add this to your existing window.onload function or create one if it doesn't exist
+window.onload = function() {
+    console.log('Chat interface initialized');
+    document.getElementById('clearJournalBtn').addEventListener('click', clearJournal);
+    
+    // Check the initial state of the scope
+    const initialScope = document.getElementById('projectScope').innerHTML;
+    updateScopeButtonColor(initialScope);
+};
 
 // Add event listeners when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
