@@ -1,11 +1,10 @@
-from flask import jsonify, send_file, request, flash, redirect, url_for, render_template
+from flask import jsonify, send_file
 from flask_login import login_required, current_user
-from models.models import User, Project, Agent, Provider
-from services.backup.backup_restore import backup_data, restore_data
+from models import User
+from services.provider_connections.backup.backup_restore import backup_data, restore_data
 import tempfile
 from datetime import datetime
 import json
-import re
 from . import routes
 
 @routes.route("/users", methods=["GET"])
@@ -77,56 +76,10 @@ def restore():
         backup_data_json = file.read().decode('utf-8')
         
         try:
-            # Parse the backup data
-            backup_data = json.loads(backup_data_json)
-            
-            # Render a template with the backup contents for selection
-            return render_template('restore_selection.html', backup_data=backup_data)
-        except json.JSONDecodeError as e:
-            flash(f'Error parsing backup file: {str(e)}', 'error')
+            # Restore the data
+            restore_data(current_user.id, backup_data_json)
+            flash('Data restored successfully', 'success')
         except Exception as e:
-            flash(f'Error processing backup file: {str(e)}', 'error')
+            flash(f'Error restoring data: {str(e)}', 'error')
         
         return redirect(url_for('routes.settings'))
-
-@routes.route("/perform_restore", methods=['POST'])
-@login_required
-def perform_restore():
-    try:
-        selected_items = request.form.getlist('restore_items')
-        backup_data_str = request.form.get('backup_data')
-        
-        try:
-            backup_data = json.loads(backup_data_str)
-        except json.JSONDecodeError as e:
-            flash(f'Error parsing backup data: {str(e)}', 'error')
-            return redirect(url_for('routes.settings'))
-        
-        # Prepare the selected items
-        selected_categories = set()
-        for item in selected_items:
-            category, _ = item.split('_')
-            selected_categories.add(category + 's')  # Add plural form
-        
-        # Restore the selected data
-        restore_data(current_user.id, json.dumps(backup_data), selected_items)
-        flash('Data restored successfully', 'success')
-    except Exception as e:
-        flash(f'Error restoring data: {str(e)}', 'error')
-        print(f"General Error: {str(e)}")
-    
-    return redirect(url_for('routes.settings'))
-
-@routes.route("/list_items", methods=['GET'])
-@login_required
-def list_items():
-    projects = Project.query.filter_by(user_id=current_user.id).all()
-    agents = Agent.query.filter_by(user_id=current_user.id).all()
-    providers = Provider.query.filter_by(user_id=current_user.id).all()
-
-    return jsonify({
-        'projects': [{'id': p.id, 'title': p.title} for p in projects],
-        'agents': [{'id': a.id, 'name': a.name, 'role': a.role} for a in agents],
-        'providers': [{'id': p.id, 'provider_type': p.provider_type, 'model': p.model} for p in providers]
-    })
-
