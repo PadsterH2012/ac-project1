@@ -322,6 +322,7 @@ function displayMessage(sender, text, agentName = '', agentRole = '', agentAvata
 }
 
 function openTab(event, tabName) {
+    console.log('Opening tab:', tabName);  // Debug log
     const tabContents = document.getElementsByClassName('tab-content');
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].style.display = 'none';
@@ -332,9 +333,25 @@ function openTab(event, tabName) {
         tabs[i].classList.remove('active');
     }
 
-    document.getElementById(tabName).style.display = 'block';
-    event.currentTarget.classList.add('active');
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.style.display = 'block';
+        event.currentTarget.classList.add('active');
+    } else {
+        console.error('Tab not found:', tabName);  // Debug log
+    }
 }
+
+// Add event listeners to tabs
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.getElementsByClassName('tab');
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].addEventListener('click', function(event) {
+            const tabName = this.textContent.trim();
+            openTab(event, tabName);
+        });
+    }
+});
 
 function performAction(action) {
     if (action === 'Download') {
